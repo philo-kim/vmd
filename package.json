@@ -1,9 +1,8 @@
 {
   "name": "vmd",
   "version": "0.1.0",
-  "description": "Semantic visual document language and Chrome viewer prototype.",
+  "description": "Open draft for a semantic visual document format.",
   "type": "module",
-  "private": true,
   "scripts": {
     "render:sample": "node tools/render-html.mjs",
     "check": "node --check extension/vmd-parser.js && node --check extension/vmd-renderer.js && node --check extension/viewer.js && node --check extension/popup.js && node --check tools/render-html.mjs && npm run render:sample"
@@ -14,5 +13,5 @@
     "visual-documents",
     "chrome-extension"
   ],
-  "license": "UNLICENSED"
+  "license": "MIT"
 }
