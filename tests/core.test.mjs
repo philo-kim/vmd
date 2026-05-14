@@ -156,9 +156,13 @@ audience: growth team
 purpose: inspect revenue and accounts quickly
 ::
 
-@tokens {
-  accent: #c96442
+@tokens.editable {
+  accent: #c96442 [editable]
   surface: #ffffff
+}
+
+@tokens.locked {
+  title.line-height: 1.05 [locked]
 }
 
 ::frame[role="dashboard-overview"]
@@ -199,6 +203,12 @@ assert.match(renderVmd(lossless, "read"), /directive-lock/);
 assert.match(renderVmd(lossless, "read"), /directive-edit_state/);
 assert.match(renderVmd(lossless, "read"), /directive-residual_index/);
 assert.match(renderVmd(lossless, "read"), /--accent: #c96442/);
+assert.match(renderVmd(lossless, "read"), /tokens\.editable/);
+assert.match(renderVmd(lossless, "read"), /tokens\.locked/);
+assert.match(renderVmd(lossless, "read"), /token-badge-editable/);
+assert.match(renderVmd(lossless, "read"), /token-badge-locked/);
+assert.match(renderVmd(lossless, "read"), /--title-line-height: 1\.05/);
+assert.doesNotMatch(renderVmd(lossless, "read"), /--accent: #c96442 \[editable\]/);
 
 assert.throws(
   () => parseVmd("::claim\nmissing close"),

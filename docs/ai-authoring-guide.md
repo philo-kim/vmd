@@ -8,12 +8,13 @@ browser implementation layer.
 For `fidelity: visual-lossless`, AI should edit only:
 
 - `::intent`
-- `@tokens`
+- `@tokens.editable`
 - `::frame`
 - component, layout, visual, and semantic blocks
 
 AI should read but not edit:
 
+- `@tokens.locked`
 - `@residual_index`
 - `@edit_state`
 - `@dirty`
@@ -28,6 +29,10 @@ AI should not directly edit:
 Those replay blocks are renderer-owned. If an edit changes the visual structure,
 the converter or renderer must regenerate replay data and run restoration
 verification.
+
+Plain `@tokens` remains valid for simpler documents. For visual-lossless work,
+prefer `@tokens.editable` and `@tokens.locked`, or inline annotations such as
+`accent: #c96442 [editable]` and `title.line-height: 1.05 [locked]`.
 
 ## Required Mental Model
 

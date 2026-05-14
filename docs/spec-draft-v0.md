@@ -165,19 +165,36 @@ again.
 
 ## Token Layer
 
-`@tokens` stores renderer-readable design tokens.
+`@tokens` stores renderer-readable design tokens. The default block is allowed,
+but visual-lossless documents should separate AI-editable tokens from
+render-critical locked tokens when that distinction affects replay validity.
 
 ```vmd
-@tokens {
+@tokens.editable {
   accent: #c96442
   surface: #ffffff
+}
+
+@tokens.locked {
   border: #e6e4e0
+  title.line-height: 1.05
+  grid.gap: 24px
 }
 ```
 
 Tokens should be edited by AI only when the user is changing visual style.
 Render-critical tokens should be locked or listed in `@residual_index` so AI
 edits do not silently invalidate replay data.
+
+Inline annotations are a compact equivalent when a single block is easier to
+author:
+
+```vmd
+@tokens {
+  accent: #c96442 [editable]
+  title.line-height: 1.05 [locked]
+}
+```
 
 ## Recipe Layer
 

@@ -20,7 +20,7 @@ VMD keeps editable source and restoration data in the same file.
 AI Source Layer
   @doc
   ::intent
-  @tokens
+  @tokens.editable
   ::frame
   ::component.*
   ::visual.*
@@ -29,6 +29,7 @@ AI Source Layer
 
 Render Replay Layer
   @lock
+  @tokens.locked
   @recipes
   @replay
   @residual

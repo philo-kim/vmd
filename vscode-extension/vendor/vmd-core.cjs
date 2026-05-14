@@ -8,7 +8,7 @@
   const BLOCK_OPEN_RE = /^::([a-zA-Z][\w-]*)(?:\.([a-zA-Z][\w-]*))?(?:\[(.*)\])?\s*$/;
   const HEADING_RE = /^(#{1,6})\s+(.+)$/;
   const DOC_RE = /^@doc\s+"([^"]+)"\s*\{\s*$/;
-  const DIRECTIVE_BLOCK_RE = /^@([a-zA-Z][\w-]*)(?:\[(.*)\])?\s*\{\s*$/;
+  const DIRECTIVE_BLOCK_RE = /^@([a-zA-Z][\w-]*)(?:\.([a-zA-Z][\w-]*))?(?:\[(.*)\])?\s*\{\s*$/;
   const SEMANTIC_BLOCK_TYPES = [
     "intent",
     "claim",
@@ -108,8 +108,8 @@
 
       const directiveMatch = trimmed.match(DIRECTIVE_BLOCK_RE);
       if (directiveMatch) {
-        const [, rawType, attrSource] = directiveMatch;
-        const { node, endIndex } = parseDirectiveBlock(lines, index + 1, rawType, attrSource || "");
+        const [, rawType, variant, attrSource] = directiveMatch;
+        const { node, endIndex } = parseDirectiveBlock(lines, index + 1, rawType, variant || null, attrSource || "");
         appendNode(stack[stack.length - 1], node);
         index = endIndex;
         continue;
@@ -559,8 +559,9 @@
       return renderTokenDirective(node);
     }
 
-    const label = directiveLabel(node.type);
+    const label = directiveLabel(node.type, node.variant);
     const isReplay = ["lock", "edit_state", "dirty", "replay", "residual", "residual_index", "raw"].includes(node.type);
+    const variantClass = node.variant ? ` directive-${escapeClass(node.type)}-${escapeClass(node.variant)}` : "";
     const fields = parseFlexibleFields(node.lines);
     const fieldRows = fields.length
       ? `<dl class="directive-fields">${fields.map((field) => `<div><dt>${escapeHtml(field.key)}</dt><dd>${escapeHtml(field.value)}</dd></div>`).join("")}</dl>`
@@ -568,7 +569,7 @@
     const body = node.lines.length
       ? `<pre>${escapeHtml(normalizeRawLines(node.lines))}</pre>`
       : "";
-    return `<section class="block directive-block directive-${escapeClass(node.type)}${isReplay ? " replay-layer" : ""}">
+    return `<section class="block directive-block directive-${escapeClass(node.type)}${variantClass}${isReplay ? " replay-layer" : ""}">
     <p class="block-label">${escapeHtml(label)}</p>
     ${fieldRows}
     ${body}
@@ -583,15 +584,17 @@
       return value ? `--${escapeCssIdentifier(token.name)}: ${value};` : "";
     }).filter(Boolean).join("\n");
     const style = styleVars ? `<style data-vmd-style-tokens>\n:root {\n${styleVars}\n}\n</style>` : "";
-    return `${style}<section class="block style-token-block directive-block directive-tokens">
-    <p class="block-label">tokens</p>
+    const label = node.variant ? `tokens.${node.variant}` : "tokens";
+    const variantClass = node.variant ? ` directive-tokens-${escapeClass(node.variant)}` : "";
+    return `${style}<section class="block style-token-block directive-block directive-tokens${variantClass}">
+    <p class="block-label">${escapeHtml(label)}</p>
     <div class="token-grid">
       ${tokens.map(renderToken).join("")}
     </div>
   </section>`;
   }
 
-  function directiveLabel(type) {
+  function directiveLabel(type, variant = null) {
     const labels = {
       lock: "render lock",
       tokens: "tokens",
@@ -603,7 +606,8 @@
       residual_index: "residual index",
       raw: "raw fallback"
     };
-    return labels[type] || type;
+    const label = labels[type] || type;
+    return variant ? `${label}.${variant}` : label;
   }
 
   function renderRawBlock(node, options = {}) {
@@ -961,11 +965,11 @@ ${css}
     throw new Error("Unclosed @doc block");
   }
 
-  function parseDirectiveBlock(lines, startIndex, rawType, attrSource) {
+  function parseDirectiveBlock(lines, startIndex, rawType, variant, attrSource) {
     const node = {
       type: rawType,
       tag: rawType,
-      variant: null,
+      variant,
       attrs: parseInlineAttrs(attrSource || ""),
       lines: [],
       children: [],
@@ -981,7 +985,7 @@ ${css}
       node.lines.push(shouldPreserveLineWhitespace(node) ? raw : raw.trim());
     }
 
-    throw new Error(`Unclosed @${rawType} block opened at line ${startIndex}`);
+    throw new Error(`Unclosed @${rawType}${variant ? `.${variant}` : ""} block opened at line ${startIndex}`);
   }
 
   function parseInlineAttrs(source) {
@@ -1211,41 +1215,62 @@ ${css}
       if (!cleaned) {
         return null;
       }
+      const annotated = extractTokenAnnotations(cleaned.replace(/[;,]\s*$/, ""));
+      const tokenSource = annotated.text;
 
-      const pipeParts = cleaned.split("|").map((part) => part.trim());
+      const pipeParts = tokenSource.split("|").map((part) => part.trim());
       if (pipeParts.length >= 2) {
         return {
           name: pipeParts[0],
           value: pipeParts[1],
-          note: pipeParts.slice(2).join(" | ")
+          note: pipeParts.slice(2).join(" | "),
+          annotations: annotated.annotations
         };
       }
 
-      const match = cleaned.replace(/[;,]\s*$/, "").match(/^([a-zA-Z][\w-]*)\s*:\s*(.+?)(?:\s+-\s+(.+))?$/);
+      const match = tokenSource.match(/^([a-zA-Z][\w.-]*)\s*:\s*(.+?)(?:\s+-\s+(.+))?$/);
       if (!match) {
         return {
-          name: cleaned,
+          name: tokenSource,
           value: "",
-          note: ""
+          note: "",
+          annotations: annotated.annotations
         };
       }
       return {
         name: match[1],
         value: match[2],
-        note: match[3] || ""
+        note: match[3] || "",
+        annotations: annotated.annotations
       };
     }).filter(Boolean);
+  }
+
+  function extractTokenAnnotations(source) {
+    const annotations = [];
+    let text = source.trim();
+    let match = text.match(/\s+\[([a-zA-Z][\w-]*)\]\s*$/);
+    while (match) {
+      annotations.unshift(match[1]);
+      text = text.slice(0, match.index).trim();
+      match = text.match(/\s+\[([a-zA-Z][\w-]*)\]\s*$/);
+    }
+    return { text, annotations };
   }
 
   function renderToken(token) {
     const swatch = looksLikeColor(token.value)
       ? `<span class="token-swatch" style="background: ${safeCssValue(token.value)}"></span>`
       : "";
+    const badges = token.annotations?.length
+      ? `<div class="token-badges">${token.annotations.map((annotation) => `<span class="token-badge token-badge-${escapeClass(annotation)}">${escapeHtml(annotation)}</span>`).join("")}</div>`
+      : "";
     return `<div class="token-item">
       ${swatch}
       <strong>${escapeHtml(token.name)}</strong>
       <code>${escapeHtml(token.value)}</code>
       ${token.note ? `<span>${escapeHtml(token.note)}</span>` : ""}
+      ${badges}
     </div>`;
   }
 

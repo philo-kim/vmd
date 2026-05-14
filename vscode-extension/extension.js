@@ -280,7 +280,7 @@ function createCompletionProvider() {
         ),
         createSnippet(
           "doc.visual-lossless",
-          '@doc "${1:Document title}" {\n  spec: vmd@0.1\n  fidelity: visual-lossless\n  intent: ${2:dashboard}\n}\n\n@lock {\n  renderer: vmd-web@${3:0.3.0}\n  dictionary: ${4:system}@${5:1.0.0}\n  browser: chromium\n  viewport: ${6:1440x1200}\n}\n\n@edit_state {\n  source: clean\n  replay: current\n  dirty: none\n  on-source-edit: mark affected slots stale, rerender, remeasure, update-render-hash\n}\n\n::intent\npurpose: ${7:restore this visual document and keep AI edits safe}\neditable: ${8:title, metrics, tables}\n::\n\n@tokens {\n  accent: ${9:#c96442}\n  surface: #ffffff\n}\n\n::frame[role="${10:overview}"]\n  $0\n::\n\n@residual_index {\n  affected:\n    - frame.${10:overview}.title\n  constraints:\n    frame.${10:overview}.title.max-lines: 2\n  ai-note: Edit source slots only. Do not edit replay data directly.\n}\n\n@replay {\n  encoding: visual-replay@0.1\n  contains: dom-delta css-cascade layout-boxes\n}\n\n@residual {\n  mode: visual-lossless\n  ai: ignore\n}\n',
+          '@doc "${1:Document title}" {\n  spec: vmd@0.1\n  fidelity: visual-lossless\n  intent: ${2:dashboard}\n}\n\n@lock {\n  renderer: vmd-web@${3:0.3.0}\n  dictionary: ${4:system}@${5:1.0.0}\n  browser: chromium\n  viewport: ${6:1440x1200}\n}\n\n@edit_state {\n  source: clean\n  replay: current\n  dirty: none\n  on-source-edit: mark affected slots stale, rerender, remeasure, update-render-hash\n}\n\n::intent\npurpose: ${7:restore this visual document and keep AI edits safe}\neditable: ${8:title, metrics, tables}\n::\n\n@tokens.editable {\n  accent: ${9:#c96442}\n  surface: #ffffff\n}\n\n@tokens.locked {\n  title.line-height: 1.05\n  grid.gap: 24px\n}\n\n::frame[role="${10:overview}"]\n  $0\n::\n\n@residual_index {\n  affected:\n    - frame.${10:overview}.title\n  constraints:\n    frame.${10:overview}.title.max-lines: 2\n  ai-note: Edit source slots only. Do not edit replay data directly.\n}\n\n@replay {\n  encoding: visual-replay@0.1\n  contains: dom-delta css-cascade layout-boxes\n}\n\n@residual {\n  mode: visual-lossless\n  ai: ignore\n}\n',
           "Create a visual-lossless VMD shell."
         ),
         createSnippet(
@@ -345,6 +345,19 @@ function createCompletionProvider() {
           `Create a @${block} directive.`
         ));
       }
+
+      items.push(
+        createSnippet(
+          "@tokens.editable",
+          "@tokens.editable {\n  accent: ${1:#c96442}\n  surface: #ffffff\n}",
+          "Create editable design tokens for AI-safe changes."
+        ),
+        createSnippet(
+          "@tokens.locked",
+          "@tokens.locked {\n  title.line-height: ${1:1.05}\n  grid.gap: ${2:24px}\n}",
+          "Create locked design tokens tied to replay fidelity."
+        )
+      );
 
       return items;
     }
@@ -453,7 +466,7 @@ function snippetForDirectiveBlock(block) {
   }
 
   if (block === "tokens") {
-    return "@tokens {\n  accent: ${1:#c96442}\n  surface: #ffffff\n  border: #e6e4e0\n}";
+    return "@tokens.editable {\n  accent: ${1:#c96442}\n  surface: #ffffff\n}\n\n@tokens.locked {\n  border: #e6e4e0\n  title.line-height: 1.05\n}";
   }
 
   if (block === "edit_state") {

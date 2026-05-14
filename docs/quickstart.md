@@ -35,6 +35,14 @@ The source is plain text. It declares a visual-lossless contract:
   replay: current
   dirty: none
 }
+
+@tokens.editable {
+  accent: #c96442
+}
+
+@tokens.locked {
+  title.line-height: 1.05
+}
 ```
 
 ## 3. Render To Static HTML

@@ -62,6 +62,14 @@ async function run() {
     completions.items.some((item) => item.label === "@edit_state"),
     "completion provider should offer visual-lossless edit state snippets"
   );
+  assert.ok(
+    completions.items.some((item) => item.label === "@tokens.editable"),
+    "completion provider should offer editable token directive snippets"
+  );
+  assert.ok(
+    completions.items.some((item) => item.label === "@tokens.locked"),
+    "completion provider should offer locked token directive snippets"
+  );
 
   const panel = await vscode.commands.executeCommand("vmd.preview.openToSide");
   assert.ok(panel, "preview command should return a WebviewPanel");

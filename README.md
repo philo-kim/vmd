@@ -108,10 +108,14 @@ purpose: scan revenue, accounts, and recent events quickly
 editable: title, metrics, tables, events, date range
 ::
 
-@tokens {
+@tokens.editable {
   accent: #c96442
   surface: #ffffff
+}
+
+@tokens.locked {
   border: #e6e4e0
+  title.line-height: 1.05
 }
 
 ::frame[role="dashboard-overview" recipe="analytics.workspace"]
