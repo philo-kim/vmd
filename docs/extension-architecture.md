@@ -29,7 +29,9 @@ Purpose:
 - warn when claims lack evidence
 - inspect frame roles and render decisions
 
-This is the DevTools-like surface.
+The first slice now exists as shared validator diagnostics in the CLI, VS Code
+extension, and playground. A richer DevTools-like inspector can build on the
+same AST and diagnostic model.
 
 ### 3. VMD Authoring Helper
 
@@ -40,7 +42,8 @@ Purpose:
 - convert Markdown into VMD
 - help AI agents generate valid VMD
 
-This can start as an extension page and later become an editor plugin.
+The first authoring helper exists in the VS Code extension through snippets,
+diagnostics, syntax highlighting, folding, and preview.
 
 ### 4. VMD Publisher
 
@@ -51,7 +54,8 @@ Purpose:
 - package assets
 - publish to GitHub Pages or a static host
 
-This belongs outside the core renderer but can share the same parser and AST.
+The first publisher surface exists as the CLI gallery builder and GitHub Pages
+workflow. PDF, PPT, and richer asset packaging remain future adapters.
 
 ## Runtime Layers
 

@@ -1,0 +1,23 @@
+name: Render VMD
+description: Render a VMD file to static HTML.
+inputs:
+  input:
+    description: Input .vmd file
+    required: true
+  output:
+    description: Output HTML file
+    required: true
+  mode:
+    description: Render mode
+    required: false
+    default: read
+  css:
+    description: Stylesheet href to write into the rendered HTML
+    required: false
+    default: ../extension/styles.css
+runs:
+  using: composite
+  steps:
+    - name: Render VMD
+      shell: bash
+      run: node "$GITHUB_ACTION_PATH/../../../bin/vmd.mjs" render "${{ inputs.input }}" --out "${{ inputs.output }}" --mode "${{ inputs.mode }}" --css "${{ inputs.css }}"

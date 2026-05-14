@@ -11,6 +11,7 @@ clarity, portability, and usefulness for AI-assisted visual documents.
 - Improve wording in the public docs.
 - Propose semantic block definitions.
 - Add renderer test cases.
+- Improve CLI, validator, or gallery behavior.
 - Improve accessibility mappings.
 - Improve extension preview behavior.
 
@@ -36,6 +37,12 @@ npm run test:chrome
 npm run test:vscode
 ```
 
+Build the public gallery:
+
+```bash
+npm run build:site
+```
+
 Package local extensions:
 
 ```bash
@@ -50,6 +57,7 @@ Before opening a PR:
 - Run `npm run check`.
 - Update docs when behavior changes.
 - Add or update samples when adding syntax.
+- Run `npm run capture:screenshots` when README-visible rendering changes.
 - Run extension tests when changing Chrome or VS Code behavior.
 - Keep generated runtime copies synced with `npm run sync:core`.
 

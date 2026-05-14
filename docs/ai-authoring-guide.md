@@ -65,6 +65,16 @@ Before accepting AI-generated VMD, check:
 - Is the document understandable as plain text?
 - Could the same source render as read, deck, and map views?
 
+Then run:
+
+```bash
+node bin/vmd.mjs validate path/to/document.vmd
+```
+
+For AI workflows, validation should be treated as the first feedback loop. The
+model can revise the source until parse errors are gone and semantic warnings
+are intentional.
+
 ## Example Request
 
 ```text

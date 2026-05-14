@@ -203,6 +203,39 @@ Example:
 }
 ```
 
+The draft machine-readable schema is:
+
+```text
+schemas/vmd-ast.schema.json
+```
+
+The schema describes the AST shape. It does not freeze the final vocabulary.
+
+## Validation
+
+The reference validator reports diagnostics after parsing.
+
+Current warning examples:
+
+- missing `@doc` title
+- document without frames
+- frame without a `role` attribute
+- frame without semantic child blocks
+- claim without evidence in the same frame
+- unknown block type
+
+Current error examples:
+
+- parse failure
+- `visual.compare` without comparison rows
+- `visual.loop` with fewer than two steps
+
+The CLI exits with a non-zero code only for errors:
+
+```bash
+node bin/vmd.mjs validate samples/family-platform.vmd
+```
+
 ## Renderer Rule
 
 Renderers should treat semantic blocks as meaning, not fixed visual components.

@@ -55,6 +55,15 @@ text/vmd
 Before native support exists, a server could transform VMD to HTML at request
 time or serve a small renderer shell that loads the VMD source.
 
+The current repository implements the static version of this path:
+
+```text
+.vmd source -> CLI/gallery builder -> static HTML -> GitHub Pages
+```
+
+That is not native browser support, but it gives the format a public,
+browser-readable distribution surface immediately.
+
 ## Level 4: Native Browser Support
 
 If VMD becomes widely used, the long-term target is native browser support:
@@ -81,6 +90,7 @@ Current practical paths are:
 - upload and drag-and-drop viewer
 - installed PWA file handling
 - static HTML export
+- GitHub Pages gallery and playground
 - future browser-native support if adoption justifies it
 
 ## References

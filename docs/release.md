@@ -3,6 +3,8 @@
 VMD currently has three distributable surfaces:
 
 - source repository
+- CLI and static renderer
+- GitHub Pages gallery
 - Chrome extension zip
 - VS Code VSIX
 
@@ -15,6 +17,8 @@ npm install
 npm run check
 npm run test:chrome
 npm run test:vscode
+npm run build:site
+npm run capture:screenshots
 npm run package:chrome
 npm run package:vscode
 ```
@@ -25,9 +29,14 @@ Expected artifacts:
 dist/vmd-chrome-extension.zip
 dist/vmd-vscode.vsix
 dist/family-platform.html
+dist/site/index.html
+docs/assets/vmd-gallery.png
+docs/assets/vmd-playground.png
 ```
 
-Artifacts are generated locally and are not committed to Git by default.
+Package artifacts and `dist/` output are generated locally and are not committed
+to Git by default. Screenshot assets are committed because they are part of the
+public README.
 
 ## Versioning
 
@@ -68,6 +77,19 @@ Before marketplace publication:
 - add screenshots
 - verify extension display names
 - decide whether preview should be a default editor or optional editor
+
+## GitHub Pages Release
+
+The Pages workflow builds `dist/site` from sample `.vmd` files and publishes the
+gallery and playground.
+
+Before relying on Pages as the public demo surface:
+
+- verify the repository Pages setting is enabled
+- confirm the latest Pages workflow has deployed successfully
+- open the published gallery URL and check a sample page plus playground
+
+The generated site is not committed to Git.
 
 ## GitHub Release
 

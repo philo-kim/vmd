@@ -16,9 +16,32 @@ async function run() {
   assert.strictEqual(document.languageId, "vmd");
 
   await vscode.window.showTextDocument(document);
+  await wait(250);
+
+  const diagnostics = vscode.languages.getDiagnostics(document.uri);
+  assert.ok(
+    diagnostics.some((diagnostic) => diagnostic.code === "claim-without-evidence"),
+    "validator diagnostics should be published for the active document"
+  );
+
+  const completions = await vscode.commands.executeCommand(
+    "vscode.executeCompletionItemProvider",
+    document.uri,
+    new vscode.Position(0, 0),
+    "@"
+  );
+  assert.ok(
+    completions.items.some((item) => item.label === "doc"),
+    "completion provider should offer VMD snippets"
+  );
+
   const panel = await vscode.commands.executeCommand("vmd.preview.openToSide");
   assert.ok(panel, "preview command should return a WebviewPanel");
   assert.ok(panel.webview, "preview panel should expose a webview");
+}
+
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 module.exports = {

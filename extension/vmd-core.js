@@ -8,7 +8,7 @@
   const BLOCK_OPEN_RE = /^::([a-zA-Z][\w-]*)(?:\.([a-zA-Z][\w-]*))?(?:\[(.*)\])?\s*$/;
   const HEADING_RE = /^(#{1,6})\s+(.+)$/;
   const DOC_RE = /^@doc\s+"([^"]+)"\s*\{\s*$/;
-  const SEMANTIC_BLOCKS = new Set([
+  const SEMANTIC_BLOCK_TYPES = [
     "claim",
     "evidence",
     "insight",
@@ -19,7 +19,14 @@
     "principle",
     "risk",
     "question"
-  ]);
+  ];
+  const VISUAL_BLOCK_TYPES = [
+    "visual.compare",
+    "visual.loop",
+    "visual.timeline"
+  ];
+  const SEMANTIC_BLOCKS = new Set(SEMANTIC_BLOCK_TYPES);
+  const VISUAL_BLOCKS = new Set(VISUAL_BLOCK_TYPES);
 
   function parseVmd(source) {
     const lines = source.replace(/\r\n?/g, "\n").split("\n");
@@ -123,6 +130,66 @@
     ${renderVmd(ast, mode)}
   </body>
 </html>`;
+  }
+
+  function validateVmdSource(source) {
+    try {
+      return validateVmdAst(parseVmd(source));
+    } catch (error) {
+      return [
+        {
+          level: "error",
+          code: "parse-error",
+          message: error.message
+        }
+      ];
+    }
+  }
+
+  function validateVmdAst(ast) {
+    const diagnostics = [];
+    const frames = ast.children.filter((node) => node.type === "frame");
+
+    if (!ast.doc || !ast.doc.title || ast.doc.title === "Untitled VMD") {
+      diagnostics.push({
+        level: "warning",
+        code: "missing-doc-title",
+        message: "Document should define an @doc title."
+      });
+    }
+
+    if (!frames.length) {
+      diagnostics.push({
+        level: "warning",
+        code: "missing-frames",
+        message: "Document should contain at least one frame."
+      });
+    }
+
+    walkAst(ast, (node) => {
+      if (node.type === "document" || node.type === "heading") {
+        return;
+      }
+
+      if (node.type === "frame") {
+        validateFrame(node, diagnostics);
+        return;
+      }
+
+      if (SEMANTIC_BLOCKS.has(node.type) || VISUAL_BLOCKS.has(node.type)) {
+        validateKnownBlock(node, diagnostics);
+        return;
+      }
+
+      diagnostics.push({
+        level: "warning",
+        code: "unknown-block",
+        line: node.line,
+        message: `Unknown block "${node.type}" will render as a generic block.`
+      });
+    });
+
+    return diagnostics;
   }
 
   function renderRead(ast) {
@@ -300,6 +367,111 @@
     return parsed;
   }
 
+  function validateFrame(node, diagnostics) {
+    if (!node.attrs.role) {
+      diagnostics.push({
+        level: "warning",
+        code: "missing-frame-role",
+        line: node.line,
+        message: "Frame should include a role attribute."
+      });
+    }
+
+    const hasSemanticChild = node.children.some((child) => SEMANTIC_BLOCKS.has(child.type));
+    if (!hasSemanticChild) {
+      diagnostics.push({
+        level: "warning",
+        code: "frame-without-semantic-block",
+        line: node.line,
+        message: "Frame should include at least one semantic block."
+      });
+    }
+
+    const hasClaim = node.children.some((child) => child.type === "claim");
+    const hasEvidence = node.children.some((child) => child.type === "evidence");
+    if (hasClaim && !hasEvidence) {
+      diagnostics.push({
+        level: "warning",
+        code: "claim-without-evidence",
+        line: node.line,
+        message: "Frame has a claim but no evidence block."
+      });
+    }
+  }
+
+  function validateKnownBlock(node, diagnostics) {
+    if (SEMANTIC_BLOCKS.has(node.type) && !hasNodeContent(node)) {
+      diagnostics.push({
+        level: "warning",
+        code: "empty-semantic-block",
+        line: node.line,
+        message: `Semantic block "${node.type}" should not be empty.`
+      });
+    }
+
+    if (node.type === "visual.compare") {
+      const parsed = parseCompare(node.lines);
+      const hasLeft = node.lines.some((line) => line.startsWith("left:"));
+      const hasRight = node.lines.some((line) => line.startsWith("right:"));
+
+      if (!hasLeft || !hasRight) {
+        diagnostics.push({
+          level: "warning",
+          code: "compare-missing-labels",
+          line: node.line,
+          message: "visual.compare should include left: and right: labels."
+        });
+      }
+
+      if (!parsed.rows.length) {
+        diagnostics.push({
+          level: "error",
+          code: "compare-missing-rows",
+          line: node.line,
+          message: "visual.compare should include at least one '- left vs right' row."
+        });
+      }
+    }
+
+    if (node.type === "visual.loop") {
+      const steps = node.lines.join(" ").split(/\s*->\s*/).map((step) => step.trim()).filter(Boolean);
+      if (steps.length < 2) {
+        diagnostics.push({
+          level: "error",
+          code: "loop-too-short",
+          line: node.line,
+          message: "visual.loop should include at least two steps separated by ->."
+        });
+      }
+    }
+
+    if (node.type === "visual.timeline") {
+      const items = node.lines.map((line) => line.replace(/^-\s*/, "").trim()).filter(Boolean);
+      if (items.length < 2) {
+        diagnostics.push({
+          level: "warning",
+          code: "timeline-too-short",
+          line: node.line,
+          message: "visual.timeline is more useful with two or more items."
+        });
+      }
+    }
+  }
+
+  function walkAst(node, visit) {
+    visit(node);
+    for (const child of node.children || []) {
+      walkAst(child, visit);
+    }
+  }
+
+  function hasNodeContent(node) {
+    return Boolean(
+      (node.lines && node.lines.some((line) => line.trim())) ||
+      (node.children && node.children.length)
+    );
+  }
+
   function parseDocAttrs(lines, startIndex) {
     const attrs = {};
 
@@ -396,6 +568,10 @@
     parseVmd,
     renderVmd,
     renderFullHtml,
+    validateVmdAst,
+    validateVmdSource,
+    SEMANTIC_BLOCK_TYPES,
+    VISUAL_BLOCK_TYPES,
     escapeHtml
   };
 });

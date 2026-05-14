@@ -41,7 +41,36 @@ The rendered file is written to:
 dist/family-platform.html
 ```
 
-## 4. Try The Chrome Polyfill
+You can also use the CLI directly:
+
+```bash
+node bin/vmd.mjs render samples/family-platform.vmd --out dist/family-platform.html --mode read
+```
+
+## 4. Validate The Source
+
+```bash
+node bin/vmd.mjs validate samples/family-platform.vmd
+```
+
+Validation reports parse errors, unknown blocks, incomplete visual blocks, and
+semantic authoring warnings such as claims without evidence.
+
+## 5. Build The Gallery And Playground
+
+```bash
+npm run build:site
+```
+
+Open:
+
+```text
+dist/site/index.html
+```
+
+The generated site includes rendered samples and a browser playground.
+
+## 6. Try The Chrome Polyfill
 
 ```bash
 npm run package:chrome
@@ -59,7 +88,7 @@ Then:
 
 The file should render as a visual document instead of remaining plain text.
 
-## 5. Try The VS Code Extension
+## 7. Try The VS Code Extension
 
 ```bash
 npm run package:vscode
@@ -83,7 +112,10 @@ Open a `.vmd` file and run:
 VMD: Open Preview to Side
 ```
 
-## 6. Run Checks
+The extension also provides syntax highlighting, snippets, validator
+diagnostics, and a live preview webview.
+
+## 8. Run Checks
 
 ```bash
 npm run check

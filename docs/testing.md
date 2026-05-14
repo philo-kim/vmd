@@ -1,6 +1,6 @@
 # Testing
 
-VMD tests cover the core renderer, Chrome extension, and VS Code extension.
+VMD tests cover the core renderer, CLI, Chrome extension, and VS Code extension.
 
 ## Core Check
 
@@ -14,7 +14,9 @@ This command:
 - checks JavaScript syntax
 - validates the VS Code extension syntax
 - runs core parser/renderer assertions
+- runs CLI assertions
 - renders the sample document to static HTML
+- builds the static gallery and playground
 
 If this fails because runtime copies are stale, run:
 
@@ -48,11 +50,22 @@ npm run test:vscode
 
 This test downloads or reuses a VS Code build through `@vscode/test-electron`,
 loads the extension development path, opens a `.vmd` fixture, verifies language
-registration, and runs the preview command.
+registration, validator diagnostics, snippet completions, and the preview
+command.
 
 The test script clears inherited VS Code/Electron environment variables before
 launching the test host. This matters when the command is run from an existing
 VS Code terminal.
+
+## CLI Test
+
+```bash
+npm run test:cli
+```
+
+This test renders a sample to HTML, writes an AST file, validates all samples,
+builds a gallery in a temporary directory, and confirms invalid VMD returns a
+non-zero exit code.
 
 ## Packaging Smoke Tests
 
@@ -69,3 +82,16 @@ dist/vmd-vscode.vsix
 ```
 
 The `dist/` directory is ignored by Git.
+
+## Screenshot Capture
+
+```bash
+npm run capture:screenshots
+```
+
+This rebuilds the static site, serves it locally, and captures:
+
+```text
+docs/assets/vmd-gallery.png
+docs/assets/vmd-playground.png
+```

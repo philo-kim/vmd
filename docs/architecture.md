@@ -23,7 +23,10 @@ vscode-extension/
   VS Code authoring and preview extension
 
 tools/
-  CLI helpers
+  render helpers and static gallery builder
+
+bin/
+  reference CLI
 
 tests/
   Core and extension integration tests
@@ -41,6 +44,10 @@ It exports:
 - `parseVmd(source)`
 - `renderVmd(ast, mode)`
 - `renderFullHtml(ast, mode, options)`
+- `validateVmdAst(ast)`
+- `validateVmdSource(source)`
+- `SEMANTIC_BLOCK_TYPES`
+- `VISUAL_BLOCK_TYPES`
 - `escapeHtml(value)`
 
 The core is CommonJS plus a browser global wrapper so it can run in:
@@ -49,6 +56,32 @@ The core is CommonJS plus a browser global wrapper so it can run in:
 - Chrome extension pages
 - Chrome content scripts
 - VS Code extension host
+
+## Validation
+
+The runtime validator is intentionally separate from parsing.
+
+Parsing answers:
+
+```text
+Is this source structurally readable?
+```
+
+Validation answers:
+
+```text
+Is this source useful as a semantic visual document?
+```
+
+Current diagnostics cover missing document structure, unknown blocks, incomplete
+frames, weak claim/evidence pairing, and invalid visual blocks.
+
+The validator is used by:
+
+- `node bin/vmd.mjs validate`
+- VS Code diagnostics
+- playground diagnostics
+- core tests
 
 ## Runtime Copies
 
@@ -86,6 +119,21 @@ These modes are intentionally early. The format should not assume that every
 renderer has to look the same. The shared rule is that semantic blocks keep
 their meaning across output modes.
 
+## CLI And Static Site
+
+`bin/vmd.mjs` is the reference CLI.
+
+It supports:
+
+- `render`: convert `.vmd` to static HTML
+- `ast`: print or write the semantic AST
+- `validate`: run semantic diagnostics
+- `gallery`: build the public sample gallery and playground
+
+`tools/site-builder.mjs` builds the static site used by GitHub Pages. This is
+also the smallest public proof that VMD can be useful as a web-native document
+format before any native browser support exists.
+
 ## Chrome Extension
 
 The Chrome extension is a browser polyfill.
@@ -107,6 +155,8 @@ It contributes:
 - `.vmd` language support
 - syntax highlighting
 - block folding
+- snippet completions for document, frame, semantic, and visual blocks
+- diagnostics from the shared validator
 - preview commands
 - optional custom preview editor
 

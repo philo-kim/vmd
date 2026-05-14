@@ -92,6 +92,9 @@ Current behavior:
 - `docs/adoption-playbook.md`: adoption path for AI-assisted creators
 - `docs/ecosystem-research-and-adoption-plan.md`: lessons from Markdown and adjacent formats
 - `docs/architecture.md`: source, AST, renderer, and extension architecture
+- `docs/cli.md`: command-line rendering, AST, validation, and gallery workflow
+- `docs/ast-schema.md`: draft JSON Schema for the semantic AST
+- `docs/public-site-and-actions.md`: GitHub Pages and reusable render action
 - `docs/language-design.md`: language direction and design principles
 - `docs/spec-draft-v0.md`: first public grammar and AST draft
 - `docs/project-readiness.md`: current readiness and known limitations
@@ -105,6 +108,8 @@ Current behavior:
 - `vscode-extension/`: VS Code authoring and preview extension
 - `core/`: shared parser and renderer runtime
 - `tools/render-html.mjs`: local renderer that converts a VMD file to static HTML
+- `bin/vmd.mjs`: CLI for rendering, AST output, validation, and gallery builds
+- `schemas/vmd-ast.schema.json`: draft AST JSON Schema
 
 ## Format Preview
 
@@ -171,6 +176,8 @@ It supports:
 - `.vmd` language detection
 - syntax highlighting
 - block folding
+- semantic block snippets
+- validator diagnostics
 - `VMD: Open Preview`
 - `VMD: Open Preview to Side`
 - `Open With... VMD Preview`
@@ -221,6 +228,43 @@ The output is written to:
 ```text
 dist/family-platform.html
 ```
+
+## CLI
+
+The reference CLI can render HTML, print the semantic AST, validate source, and
+build the public gallery.
+
+```bash
+node bin/vmd.mjs validate samples/family-platform.vmd
+node bin/vmd.mjs ast samples/family-platform.vmd
+node bin/vmd.mjs render samples/family-platform.vmd --out dist/family-platform.html --mode deck
+node bin/vmd.mjs gallery --out dist/site
+```
+
+See `docs/cli.md`.
+
+## Public Gallery
+
+Build the static gallery and playground:
+
+```bash
+npm run build:site
+```
+
+The output is written to:
+
+```text
+dist/site/
+```
+
+The repository also includes a GitHub Pages workflow and a reusable local GitHub
+Action for rendering `.vmd` files.
+
+## Screenshots
+
+![VMD gallery](docs/assets/vmd-gallery.png)
+
+![VMD playground](docs/assets/vmd-playground.png)
 
 ## Draft Vocabulary
 

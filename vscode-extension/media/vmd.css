@@ -57,7 +57,7 @@ h3 {
 }
 
 .vmd-toolbar h1 {
-  font-size: clamp(18px, 2.5vw, 28px);
+  font-size: 24px;
   line-height: 1.1;
 }
 
@@ -96,7 +96,7 @@ h3 {
 
 .doc-title h1 {
   margin-top: 6px;
-  font-size: clamp(34px, 5vw, 68px);
+  font-size: 56px;
   line-height: 0.98;
 }
 
@@ -134,7 +134,7 @@ h3 {
 
 .frame h2 {
   margin-bottom: 16px;
-  font-size: clamp(22px, 3vw, 34px);
+  font-size: 30px;
   line-height: 1.15;
 }
 
@@ -160,7 +160,7 @@ h3 {
 .block-claim {
   background: #ecfeff;
   border: 1px solid #a5f3fc;
-  font-size: clamp(20px, 2.6vw, 30px);
+  font-size: 26px;
   line-height: 1.28;
 }
 
@@ -328,6 +328,22 @@ h3 {
   .vmd-toolbar {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .vmd-toolbar h1 {
+    font-size: 20px;
+  }
+
+  .doc-title h1 {
+    font-size: 42px;
+  }
+
+  .frame h2 {
+    font-size: 24px;
+  }
+
+  .block-claim {
+    font-size: 22px;
   }
 
   .compare-grid {

@@ -1,12 +1,25 @@
 const path = require("path");
 const vscode = require("vscode");
-const { parseVmd, renderVmd, escapeHtml } = require("./vendor/vmd-core.cjs");
+const {
+  parseVmd,
+  renderVmd,
+  validateVmdAst,
+  SEMANTIC_BLOCK_TYPES,
+  VISUAL_BLOCK_TYPES,
+  escapeHtml
+} = require("./vendor/vmd-core.cjs");
 
 function activate(context) {
   const previewManager = new PreviewManager(context);
   const customEditorProvider = new VmdPreviewEditorProvider(context);
+  const diagnostics = vscode.languages.createDiagnosticCollection("vmd");
+
+  for (const document of vscode.workspace.textDocuments) {
+    updateDiagnostics(document, diagnostics);
+  }
 
   context.subscriptions.push(
+    diagnostics,
     vscode.commands.registerCommand("vmd.preview.open", async (uri) => {
       return previewManager.open(uri, vscode.ViewColumn.Active);
     }),
@@ -18,7 +31,11 @@ function activate(context) {
       webviewOptions: {
         retainContextWhenHidden: true
       }
-    })
+    }),
+    vscode.languages.registerCompletionItemProvider("vmd", createCompletionProvider(), ":", "@"),
+    vscode.workspace.onDidOpenTextDocument((document) => updateDiagnostics(document, diagnostics)),
+    vscode.workspace.onDidChangeTextDocument((event) => updateDiagnostics(event.document, diagnostics)),
+    vscode.workspace.onDidCloseTextDocument((document) => diagnostics.delete(document.uri))
   );
 }
 
@@ -211,6 +228,113 @@ function createNonce() {
 
 function serializeScriptData(value) {
   return JSON.stringify(value).replace(/<\//g, "<\\/");
+}
+
+function createCompletionProvider() {
+  return {
+    provideCompletionItems() {
+      const items = [
+        createSnippet(
+          "doc",
+          '@doc "${1:Document title}" {\n  format: ${2:deck}\n  theme: ${3:clean}\n  audience: ${4:reader}\n}\n\n$0',
+          "Create a VMD document header."
+        ),
+        createSnippet(
+          "frame",
+          '::frame[role="${1:opening}"]\n  $0\n::',
+          "Create a frame block."
+        )
+      ];
+
+      for (const block of SEMANTIC_BLOCK_TYPES) {
+        items.push(createSnippet(
+          block,
+          `::${block}\n  $0\n::`,
+          `Create a ${block} semantic block.`
+        ));
+      }
+
+      for (const block of VISUAL_BLOCK_TYPES) {
+        items.push(createSnippet(
+          block,
+          snippetForVisualBlock(block),
+          `Create a ${block} visual block.`
+        ));
+      }
+
+      return items;
+    }
+  };
+}
+
+function createSnippet(label, snippet, detail) {
+  const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.Snippet);
+  item.insertText = new vscode.SnippetString(snippet);
+  item.detail = detail;
+  item.sortText = `0-${label}`;
+  return item;
+}
+
+function snippetForVisualBlock(block) {
+  if (block === "visual.compare") {
+    return "::visual.compare\nleft: ${1:Current}\nright: ${2:Future}\n\n- ${3:A} vs ${4:B}\n::";
+  }
+
+  if (block === "visual.loop") {
+    return "::visual.loop\n${1:Start} -> ${2:Action} -> ${3:Feedback}\n::";
+  }
+
+  if (block === "visual.timeline") {
+    return "::visual.timeline\n- ${1:First step}\n- ${2:Second step}\n- ${3:Third step}\n::";
+  }
+
+  return `::${block}\n  $0\n::`;
+}
+
+function updateDiagnostics(document, collection) {
+  if (!isVmdDocument(document)) {
+    return;
+  }
+
+  try {
+    const ast = parseVmd(document.getText());
+    collection.set(document.uri, validateVmdAst(ast).map((diagnostic) => toVsCodeDiagnostic(document, diagnostic)));
+  } catch (error) {
+    const line = parseLineNumber(error.message);
+    collection.set(document.uri, [
+      toVsCodeDiagnostic(document, {
+        level: "error",
+        code: "parse-error",
+        line,
+        message: error.message
+      })
+    ]);
+  }
+}
+
+function toVsCodeDiagnostic(document, diagnostic) {
+  const range = rangeForLine(document, diagnostic.line);
+  const severity = diagnostic.level === "error"
+    ? vscode.DiagnosticSeverity.Error
+    : vscode.DiagnosticSeverity.Warning;
+  const result = new vscode.Diagnostic(range, `${diagnostic.code}: ${diagnostic.message}`, severity);
+  result.source = "vmd";
+  result.code = diagnostic.code;
+  return result;
+}
+
+function rangeForLine(document, oneBasedLine) {
+  const lineNumber = Math.min(
+    Math.max((oneBasedLine || 1) - 1, 0),
+    Math.max(document.lineCount - 1, 0)
+  );
+  const line = document.lineAt(lineNumber);
+  return new vscode.Range(lineNumber, 0, lineNumber, line.text.length);
+}
+
+function parseLineNumber(message) {
+  const match = String(message).match(/line\s+(\d+)/i);
+  return match ? Number(match[1]) : 1;
 }
 
 module.exports = {
