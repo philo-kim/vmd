@@ -1,12 +1,21 @@
 {
   "name": "vmd",
   "version": "0.1.0",
-  "description": "Open draft for a semantic visual document format.",
+  "description": "Open draft for a browser-native semantic visual document format.",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/philo-kim/vmd.git"
+  },
+  "homepage": "https://github.com/philo-kim/vmd#readme",
+  "bugs": {
+    "url": "https://github.com/philo-kim/vmd/issues"
+  },
   "scripts": {
     "sync:core": "node tools/sync-core.mjs",
     "render:sample": "node tools/render-html.mjs",
-    "check": "npm run sync:core && node --check core/vmd-core.cjs && node --check extension/vmd-core.js && node --check extension/viewer.js && node --check extension/popup.js && node --check extension/background.js && node --check extension/auto-render.js && node --check tools/render-html.mjs && node --check tools/sync-core.mjs && npm --prefix vscode-extension run check && npm run test:core && npm run render:sample",
+    "check": "npm run check:core-sync && node --check core/vmd-core.cjs && node --check extension/vmd-core.js && node --check extension/viewer.js && node --check extension/popup.js && node --check extension/background.js && node --check extension/auto-render.js && node --check tools/render-html.mjs && node --check tools/sync-core.mjs && node --check tools/check-core-sync.mjs && npm --prefix vscode-extension run check && npm run test:core && npm run render:sample",
+    "check:core-sync": "node tools/check-core-sync.mjs",
     "test:core": "node tests/core.test.mjs",
     "test:chrome": "node tests/chrome-extension.test.mjs",
     "test:vscode": "node tests/vscode-extension.test.mjs",
@@ -15,10 +24,14 @@
     "package:chrome": "mkdir -p dist && cd extension && zip -qr ../dist/vmd-chrome-extension.zip ."
   },
   "keywords": [
+    "ai-documents",
+    "browser-extension",
+    "file-format",
     "markdown",
     "semantic-documents",
     "visual-documents",
-    "chrome-extension"
+    "vmd",
+    "vscode-extension"
   ],
   "devDependencies": {
     "@vscode/test-electron": "^2.4.1",

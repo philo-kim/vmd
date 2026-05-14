@@ -1,0 +1,44 @@
+name: Bug report
+description: Report a parser, renderer, extension, or documentation bug.
+title: "[bug] "
+labels:
+  - bug
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - VMD syntax/parser
+        - Renderer
+        - Chrome extension
+        - VS Code extension
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include the smallest `.vmd` source or steps that reproduce the issue.
+      render: vmd
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Environment
+      description: Browser, VS Code, Node, OS, or commit SHA if relevant.

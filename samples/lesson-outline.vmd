@@ -1,0 +1,43 @@
+@doc "PMs And Implementation Awareness" {
+  format: lesson
+  theme: clean
+  audience: product-teams
+}
+
+# Implementation awareness is collaboration leverage
+
+::frame[role="opening"]
+  ::claim
+  A PM does not need to write all the code, but they do need to understand how a
+  decision spreads through implementation.
+  ::
+::
+
+::frame[role="case"]
+  ## A small copy change delayed the release
+
+  ::evidence
+  The button label was connected to state names, analytics events, notification
+  rules, support copy, and QA scripts.
+  ::
+
+  ::visual.timeline
+  - Button text changed
+  - State definition changed
+  - API response changed
+  - QA cases expanded
+  - Release moved
+  ::
+::
+
+::frame[role="lesson"]
+  ::insight
+  The useful skill is not knowing every implementation detail. It is knowing
+  where to ask about blast radius.
+  ::
+
+  ::action
+  Before changing user-facing behavior, ask which systems read, store, display,
+  or measure that behavior.
+  ::
+::

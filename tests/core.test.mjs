@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -33,5 +33,17 @@ assert.throws(
   () => parseVmd("::claim\nmissing close"),
   /Unclosed block/
 );
+
+const sampleFiles = (await readdir(path.join(root, "samples")))
+  .filter((file) => file.endsWith(".vmd"));
+
+for (const file of sampleFiles) {
+  const sample = await readFile(path.join(root, "samples", file), "utf8");
+  const sampleAst = parseVmd(sample);
+  assert.ok(sampleAst.doc.title, `${file} should have a document title`);
+  assert.match(renderVmd(sampleAst, "read"), /doc-view/, `${file} should render read mode`);
+  assert.match(renderVmd(sampleAst, "deck"), /deck-view/, `${file} should render deck mode`);
+  assert.match(renderVmd(sampleAst, "map"), /map-view/, `${file} should render map mode`);
+}
 
 console.log("core renderer test passed");

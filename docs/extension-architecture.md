@@ -71,15 +71,20 @@ shared core parser and renderer package.
 
 ## Auto-Render Strategy
 
-For local files, the extension uses a content script:
+For local files and web-served VMD URLs, the extension uses a content script:
 
-1. Chrome opens a local `.vmd` file as text.
+1. Chrome opens a `.vmd` file or URL as text.
 2. The extension checks that the URL ends with `.vmd`.
 3. It reads the browser's text view.
 4. It parses VMD into an AST.
 5. It replaces the page with rendered HTML.
 
-The script intentionally does nothing on non-`.vmd` local files.
+The script intentionally does nothing on non-`.vmd` URLs.
+
+For `file://` URLs, Chrome still requires the user to grant file URL access in
+the extension details page. Web-served `.vmd` files do not require that local
+file permission, but the extension still needs normal host access for matched
+`.vmd` URLs.
 
 ## Design Rules
 

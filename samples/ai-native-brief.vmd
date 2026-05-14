@@ -1,0 +1,52 @@
+@doc "AI-Native Visual Documents" {
+  format: deck
+  theme: clean
+  audience: builders
+}
+
+# AI needs a better visual document target
+
+::frame[role="problem"]
+  ::claim
+  Raw HTML is too low-level for most AI-assisted visual documents.
+  ::
+
+  ::evidence
+  The model must decide content, structure, spacing, hierarchy, responsive
+  behavior, and visual polish at the same time.
+  ::
+::
+
+::frame[role="shift"]
+  ::insight
+  The better target is semantic visual structure, not final layout code.
+  ::
+
+  ::visual.compare
+  left: HTML-first
+  right: VMD-first
+
+  - layout decisions everywhere vs semantic blocks first
+  - fragile one-off pages vs reusable renderers
+  - visual output only vs portable meaning
+  ::
+::
+
+::frame[role="path"]
+  ::decision
+  Let AI generate `.vmd` and let renderers produce the page.
+  ::
+
+  ::visual.timeline
+  - Author describes intent
+  - AI drafts VMD
+  - Renderer creates read, deck, and map views
+  - Browser eventually renders VMD natively
+  ::
+::
+
+::frame[role="action"]
+  ::action
+  Build the format, extensions, samples, and interoperability tests in public.
+  ::
+::

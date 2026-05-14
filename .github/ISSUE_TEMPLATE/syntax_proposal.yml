@@ -1,0 +1,38 @@
+name: Syntax proposal
+description: Propose a new semantic or visual VMD block.
+title: "[syntax] "
+labels:
+  - syntax
+  - proposal
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What authoring or rendering problem does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: Proposed VMD source
+      render: vmd
+    validations:
+      required: true
+  - type: textarea
+    id: ast
+    attributes:
+      label: Expected AST shape
+      render: json
+  - type: textarea
+    id: rendering
+    attributes:
+      label: Rendering behavior
+      description: Describe read, deck, and map behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Why existing blocks are not enough.

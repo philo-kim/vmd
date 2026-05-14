@@ -86,14 +86,23 @@ Current behavior:
 
 ## Repository Contents
 
+- `docs/quickstart.md`: fastest path from source to rendered output
 - `docs/manifesto.md`: why this format should exist
 - `docs/vision.md`: the maximum-state product and ecosystem vision
+- `docs/adoption-playbook.md`: adoption path for AI-assisted creators
+- `docs/architecture.md`: source, AST, renderer, and extension architecture
 - `docs/language-design.md`: language direction and design principles
 - `docs/spec-draft-v0.md`: first public grammar and AST draft
+- `docs/project-readiness.md`: current readiness and known limitations
+- `docs/ai-authoring-guide.md`: how to use VMD as an AI generation target
 - `docs/browser-integration.md`: path from extension polyfill to browser-native support
 - `docs/extension-architecture.md`: extension family design
+- `docs/testing.md`: local and integration test workflow
+- `docs/release.md`: release and packaging workflow
 - `samples/family-platform.vmd`: sample VMD source
 - `extension/`: reference Chrome polyfill and viewer
+- `vscode-extension/`: VS Code authoring and preview extension
+- `core/`: shared parser and renderer runtime
 - `tools/render-html.mjs`: local renderer that converts a VMD file to static HTML
 
 ## Format Preview
@@ -230,6 +239,12 @@ Visual blocks:
 - `visual.timeline`
 
 See `docs/spec-draft-v0.md` for the current draft.
+
+## Samples
+
+- `samples/family-platform.vmd`: strategy/deck example
+- `samples/ai-native-brief.vmd`: AI-native visual document argument
+- `samples/lesson-outline.vmd`: education/lesson example
 
 ## Current Status
 

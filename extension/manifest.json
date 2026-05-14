@@ -16,9 +16,9 @@
   "content_scripts": [
     {
       "matches": [
-        "file:///*",
-        "http://*/*",
-        "https://*/*"
+        "file:///*.vmd*",
+        "http://*/*.vmd*",
+        "https://*/*.vmd*"
       ],
       "js": [
         "vmd-core.js",
