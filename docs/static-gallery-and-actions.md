@@ -27,6 +27,7 @@ dist/site/
   index.html
   playground.html
   benchmark.html
+  ai-artifact-stress.html
   ai-native-brief.html
   source-layer-brief.html
   lesson-outline.html

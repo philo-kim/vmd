@@ -8,6 +8,10 @@ the renderer handle the page. For imported design documents, the model should
 choose an explicit fidelity tier instead of pretending semantic blocks can
 preserve arbitrary HTML/CSS pixels.
 
+The strongest VMD examples should not feel like syntax demonstrations. They
+should feel like real visual artifacts that could otherwise have been a
+presentation deck, PDF report, design handoff, or generated HTML page.
+
 ## Prompt Pattern
 
 Use prompts that ask for VMD source, not final HTML, and state the fidelity
@@ -20,6 +24,7 @@ Use frames, claims, evidence, insights, decisions, actions, and visual.compare
 where useful.
 Keep the source readable as plain text.
 Use layout and component blocks if the document needs visual structure.
+Include the intended surfaces, such as browser-page, deck, pdf, or design-handoff.
 Do not use raw HTML/CSS unless exact preservation is required.
 ```
 
@@ -77,6 +82,8 @@ Before accepting AI-generated VMD, check:
 - Are raw blocks limited to compatibility needs?
 - Is the document understandable as plain text?
 - Could the same source render as read, deck, and map views?
+- Could the same source plausibly feed a deck, PDF, design handoff, or browser
+  page without rewriting the document?
 
 Then run:
 

@@ -1,0 +1,127 @@
+@doc "Visual Decision Room" {
+  format: product-design-brief
+  theme: system-spec
+  audience: founder-designer-builder
+  fidelity: visual
+  surfaces: browser-page deck pdf design-handoff
+}
+
+# Replace The Design Deck With A Living Source
+
+::frame[role="decision-room"]
+  ::claim
+  One VMD file can become a visual web page, a presentation deck, a PDF report,
+  and a design handoff without losing source meaning.
+  ::
+
+  ::evidence
+  The source names the decision, the evidence, the layout, the visual system,
+  and the fidelity boundaries before any renderer draws pixels.
+  ::
+
+  ::layout.grid[columns="4" gap="medium"]
+    ::component.metric[label="PPT" value="deck" detail="frames become slides"]
+    ::
+
+    ::component.metric[label="PDF" value="report" detail="same source, fixed output"]
+    ::
+
+    ::component.metric[label="Design" value="spec" detail="tokens and components"]
+    ::
+
+    ::component.metric[label="Web" value="page" detail="browser-native render"]
+    ::
+  ::
+::
+
+::frame[role="visual-proof"]
+  ## The Output Still Has To Feel Designed
+
+  ::style.tokens
+  ink: #0f172a - editorial text
+  accent: #0f766e - decision signal
+  surface: #ffffff - document surface
+  highlight: #f59e0b - visual proof marker
+  ::
+
+  ::visual.matrix[x="editable source -> designed output" y="light document -> high-fidelity artifact"]
+  top-left: VMD design brief
+  top-right: generated design board
+  bottom-left: Markdown outline
+  bottom-right: one-off HTML or slide file
+  ::
+
+  ::layout.split[gap="large"]
+    ::component.card[title="AI-readable source"]
+    The model edits intent, hierarchy, state, and evidence instead of chasing
+    every DOM node or slide object.
+    ::
+
+    ::component.card[title="Human-grade visual output"]
+    The renderer makes the artifact feel like a polished report, deck, spec, or
+    browser-native document.
+    ::
+  ::
+::
+
+::frame[role="artifact-surfaces"]
+  ## One Source, Multiple Artifact Classes
+
+  ::layout.grid[columns="4" gap="medium"]
+    ::component.card[title="Presentation"]
+    Slides are a view over frames, not the only editable source.
+    ::
+
+    ::component.card[title="PDF report"]
+    A fixed artifact can be generated after semantic validation.
+    ::
+
+    ::component.card[title="Design file"]
+    Tokens, components, states, and decisions remain upstream from handoff.
+    ::
+
+    ::component.card[title="Browser page"]
+    HTML and CSS stay the render target, not the mandatory authoring surface.
+    ::
+  ::
+
+  ::visual.timeline
+  - AI drafts semantic VMD
+  - Renderer creates a polished visual artifact
+  - Reviewer edits the VMD source, not scattered output objects
+  - Exporters produce web, deck, PDF, and design-handoff surfaces
+  ::
+::
+
+::frame[role="preserve-island"]
+  ## Preserve The Hard Part Without Making Everything Raw
+
+  ::raw.css
+  .artifact-island {
+    display: grid;
+    grid-template-columns: 1fr 160px;
+    gap: 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 18px;
+    background: linear-gradient(135deg, #ffffff, #ecfeff);
+  }
+
+  .artifact-island strong {
+    display: block;
+    font-size: 22px;
+  }
+  ::
+
+  ::layout.device[kind="browser" width="720px"]
+    ::raw.html
+    <section class="artifact-island">
+      <div>
+        <strong>Preserved design fragment</strong>
+        <p>This region can keep exact HTML/CSS while the rest remains semantic.</p>
+      </div>
+      <aside>raw island</aside>
+    </section>
+    ::
+  ::
+::

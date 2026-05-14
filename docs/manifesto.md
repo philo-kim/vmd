@@ -71,6 +71,15 @@ The same `.vmd` file should be able to move across tools, renderers, and media
 without losing its declared intent. For semantic documents, that means meaning.
 For preserve documents, that means visual fidelity.
 
+The long-term replacement target is the editable source behind artifacts that
+are currently split across decks, PDFs, design files, generated HTML, and
+one-off visual reports. Those outputs can remain useful delivery surfaces, but
+the source should be smaller, more explicit, and easier for AI to revise.
+
+```text
+VMD source -> browser page / presentation deck / PDF report / design handoff
+```
+
 ## A Better Target For AI
 
 AI-assisted creation is changing how people make software and documents.
@@ -106,6 +115,6 @@ The format should be:
 - parseable into a stable AST
 - renderer-independent
 - friendly to web output
-- useful for documents, decks, reports, and maps
+- useful for documents, decks, reports, maps, and design handoff surfaces
 - explicit about fidelity tiers
 - simple enough for people to write directly

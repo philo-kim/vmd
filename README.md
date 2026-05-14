@@ -4,7 +4,7 @@ VMD is an open draft for a layered visual document format.
 
 The web has languages for structure, style, and behavior. VMD explores a missing
 layer: a portable way to describe the role of an idea so the same source can
-become a document, deck, map, report, or interactive page.
+become a document, deck, map, report, design handoff, or interactive page.
 
 ## Purpose
 
@@ -16,6 +16,10 @@ portable target: layered visual structure.
 The format is not an HTML wrapper. It is a readable source format for visual
 documents, with preservation features available when exact browser output
 matters.
+
+The long-term ambition is broader than a new note format. VMD should become the
+editable source layer for visual artifacts that are often locked inside
+presentations, PDFs, design files, generated HTML, or one-off visual reports.
 
 ## Core Idea
 
@@ -85,6 +89,20 @@ then let the renderer handle the visual page.
 An author can ask for a `.vmd` document. The browser, extension, app, or renderer
 can turn that semantic source into a web-native visual page.
 
+## Artifact Replacement Target
+
+VMD does not need to replace every final file people share. Decks, PDFs, design
+handoffs, and browser pages are still useful output surfaces.
+
+The replacement target is the fragile editable source underneath those outputs.
+A VMD file should be readable enough for AI to revise, structured enough for
+validation, and visual enough to render into artifacts people actually want to
+show.
+
+```text
+VMD source -> browser page / deck / PDF report / design handoff / preserve artifact
+```
+
 ## Browser Polyfill
 
 This repository provides a Chrome-based browser polyfill for `.vmd` files.
@@ -108,6 +126,7 @@ Current behavior:
 - `docs/ast-schema.md`: draft JSON Schema for the layered AST
 - `docs/static-gallery-and-actions.md`: local gallery and reusable render action
 - `docs/language-design.md`: language direction and design principles
+- `docs/artifact-replacement.md`: VMD as source for decks, PDFs, design files, and visual reports
 - `docs/spec-draft-v0.md`: first public grammar and AST draft
 - `docs/format-benchmark.md`: VMD vs Markdown vs HTML benchmark results
 - `docs/open-design-ai-artifact-benchmark.md`: Open Design AI artifact benchmark
@@ -118,6 +137,7 @@ Current behavior:
 - `docs/testing.md`: local and integration test workflow
 - `docs/release.md`: release and packaging workflow
 - `samples/source-layer-brief.vmd`: sample VMD source
+- `samples/ai-artifact-stress.vmd`: stress case for a visual decision room across deck, PDF, design, and web surfaces
 - `samples/visual-fidelity-layers.vmd`: layered fidelity and raw compatibility example
 - `extension/`: reference Chrome polyfill and viewer
 - `vscode-extension/`: VS Code authoring and preview extension
@@ -344,6 +364,7 @@ See `docs/spec-draft-v0.md` for the current draft.
 
 - `samples/source-layer-brief.vmd`: deck example
 - `samples/ai-native-brief.vmd`: AI-native visual document argument
+- `samples/ai-artifact-stress.vmd`: visual decision room using semantic, layout, visual, and raw layers
 - `samples/lesson-outline.vmd`: education/lesson example
 - `samples/visual-fidelity-layers.vmd`: layout, style, component, and raw preservation example
 
