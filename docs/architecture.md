@@ -198,7 +198,8 @@ The preview uses a VS Code webview and the same core renderer.
 
 The VS Code preview allows inline style output from trusted VMD source so
 `style.css` and `raw.css` can be inspected while authoring. The reference
-renderer still disables `raw.js`.
+renderer still disables `raw.js` and executable script surfaces inside raw
+HTML/SVG.
 
 ## Build Philosophy
 

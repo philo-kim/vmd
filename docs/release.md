@@ -1,12 +1,15 @@
 # Release Guide
 
-VMD currently has three distributable surfaces:
+VMD currently has five distributable surfaces:
 
 - source repository
 - CLI and static renderer
 - GitHub Pages gallery
 - Chrome extension zip
 - VS Code VSIX
+
+The npm package name is `vmd-format` because `vmd` is already used by another
+published package. The installed binary remains `vmd`.
 
 ## Pre-Release Checklist
 

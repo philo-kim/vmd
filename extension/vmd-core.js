@@ -187,12 +187,21 @@
   function validateVmdAst(ast) {
     const diagnostics = [];
     const frames = ast.children.filter((node) => node.type === "frame");
+    const fidelity = String(ast.doc?.attrs?.fidelity || "").toLowerCase();
 
     if (!ast.doc || !ast.doc.title || ast.doc.title === "Untitled VMD") {
       diagnostics.push({
         level: "warning",
         code: "missing-doc-title",
         message: "Document should define an @doc title."
+      });
+    }
+
+    if (fidelity && !FIDELITY_TIERS.has(fidelity)) {
+      diagnostics.push({
+        level: "warning",
+        code: "unknown-fidelity-tier",
+        message: `Unknown fidelity tier "${ast.doc.attrs.fidelity}". Use semantic, structured, visual, preserve, or interactive.`
       });
     }
 
@@ -496,7 +505,7 @@
   </section>`;
     }
 
-    const content = normalizeRawLines(node.lines);
+    const content = sanitizeRawMarkup(normalizeRawLines(node.lines));
     if (options.preserve || node.type === "raw.html" || node.type === "raw.svg") {
       return options.preserve ? content : `<div class="raw-embed raw-embed-${escapeClass(node.variant || node.tag)}">${content}</div>`;
     }
@@ -680,6 +689,15 @@ ${css}
         code: "empty-raw-block",
         line: node.line,
         message: `Raw block "${node.type}" should contain preserved source.`
+      });
+    }
+
+    if ((node.type === "raw.html" || node.type === "raw.svg") && hasExecutableRawMarkup(node.lines)) {
+      diagnostics.push({
+        level: "warning",
+        code: "raw-executable-disabled",
+        line: node.line,
+        message: `Raw block "${node.type}" contains executable markup that the reference renderer disables.`
       });
     }
 
@@ -971,6 +989,26 @@ ${css}
       .map((line) => line.match(/^\s*/)[0].length);
     const commonIndent = indents.length ? Math.min(...indents) : 0;
     return copy.map((line) => line.slice(commonIndent)).join("\n");
+  }
+
+  function sanitizeRawMarkup(markup) {
+    return String(markup)
+      .replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, (match) => {
+        return `<template data-vmd-disabled-script>${escapeHtml(match)}</template>`;
+      })
+      .replace(/<script\b[^>]*\/?>/gi, (match) => {
+        return `<template data-vmd-disabled-script>${escapeHtml(match)}</template>`;
+      })
+      .replace(/\s+on[a-z][\w:-]*\s*=\s*(?:"[^"]*"|'[^']*'|[^\s"'=<>`]+)/gi, "")
+      .replace(/\s+(href|src|xlink:href|formaction)\s*=\s*(["'])\s*javascript:[\s\S]*?\2/gi, " $1=\"#\"")
+      .replace(/\s+(href|src|xlink:href|formaction)\s*=\s*javascript:[^\s>]+/gi, " $1=\"#\"");
+  }
+
+  function hasExecutableRawMarkup(lines = []) {
+    const source = normalizeRawLines(lines);
+    return /<script\b/i.test(source) ||
+      /\s+on[a-z][\w:-]*\s*=/i.test(source) ||
+      /\s+(?:href|src|xlink:href|formaction)\s*=\s*(?:"|')?\s*javascript:/i.test(source);
   }
 
   function parseFields(lines = []) {

@@ -231,6 +231,12 @@ Raw blocks preserve existing browser-native source.
 `raw.html`, `raw.css`, and `raw.svg` are rendered by the reference renderer.
 `raw.js` is parsed and displayed as disabled source; it is not executed.
 
+For raw HTML/SVG, the reference renderer disables executable surfaces that do
+not affect static visual output: `<script>` tags, inline event-handler
+attributes, and `javascript:` URL attributes. This keeps preserve mode useful
+for visual compatibility without silently turning `.vmd` into a script execution
+container.
+
 Example:
 
 ```vmd
@@ -319,7 +325,9 @@ Warning examples:
 - frame without content
 - claim without evidence in the same frame
 - unknown block type
+- unknown `fidelity` tier
 - empty layout or raw block
+- executable raw HTML/SVG that will be disabled
 - `raw.js` parsed but disabled
 - sparse `visual.matrix`
 

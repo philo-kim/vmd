@@ -7,7 +7,7 @@ This project follows a human-readable changelog style inspired by
 
 ### Added
 
-- Public VMD manifesto, vision, draft spec, roadmap, and browser integration
+- Public VMD manifesto, draft spec, browser integration, and implementation
   documents.
 - Shared VMD parser and renderer core.
 - Chrome extension browser polyfill for `.vmd` URLs.
@@ -20,7 +20,6 @@ This project follows a human-readable changelog style inspired by
 - Static gallery and playground builder with GitHub Pages workflow.
 - Reusable local GitHub Action for rendering VMD to HTML.
 - Public Pages smoke test script.
-- End-to-end project audit document.
 - Reproducible VMD vs Markdown vs HTML format benchmark.
 - Open Design AI artifact benchmark for measuring generated HTML as VMD source
   material.
@@ -32,6 +31,8 @@ This project follows a human-readable changelog style inspired by
   into preserved documents.
 - Preserve-mode rendering for supported `html` and `body` attributes so
   imported pages can keep root selectors such as `body.source-page`.
+- Raw HTML/SVG executable markup guard that disables script tags, inline event
+  handlers, and `javascript:` URL attributes in the reference renderer.
 - Packaged Chrome viewer layered sample for layout/style/raw compatibility
   preview.
 - Playwright visual fidelity checker for semantic and preserve conversion.

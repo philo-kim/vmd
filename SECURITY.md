@@ -24,9 +24,15 @@ Include:
 
 ## Security Notes
 
-The current renderer escapes text content before inserting it into generated
-HTML. Any future feature that allows embedded HTML, remote assets, scripting, or
-custom themes must be reviewed as a security-sensitive change.
+The renderer escapes normal text content before inserting it into generated
+HTML.
+
+Compatibility blocks can intentionally carry raw HTML, SVG, CSS, and preserved
+browser output. Treat `.vmd` files that use `raw.*` or `style.css` as trusted
+content. The reference renderer disables `raw.js`, and raw HTML/SVG rendering
+also disables `<script>` tags, inline event-handler attributes, and
+`javascript:` URL attributes. This is a defense-in-depth guard, not a complete
+HTML sanitizer.
 
 Chrome extension permissions should remain narrow. The extension should only
 auto-render `.vmd` URLs and should not inspect unrelated pages.

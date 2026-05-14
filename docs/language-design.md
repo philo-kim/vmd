@@ -148,9 +148,10 @@ Raw blocks preserve browser-native source:
 - `raw.svg`
 - `raw.js`
 
-The reference renderer renders HTML, CSS, and SVG. It parses but does not execute
-JavaScript. This keeps VMD useful for high-fidelity import without making
-script execution the default trust model.
+The reference renderer renders HTML, CSS, and SVG. It parses but does not
+execute JavaScript. Raw HTML/SVG also has executable script surfaces disabled by
+the reference renderer. This keeps VMD useful for high-fidelity import without
+making script execution the default trust model.
 
 ## Fidelity Tiers
 

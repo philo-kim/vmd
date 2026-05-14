@@ -77,6 +77,37 @@ assert.doesNotMatch(renderFullHtml(layered, "read", { cssHref: null }), /extensi
 assert.match(renderFullHtml(layered, "read", { cssHref: null }), /<html lang="ko">/);
 assert.match(renderFullHtml(layered, "read", { cssHref: null }), /<body class="source-body" id="source-root" style="margin: 0" data-theme="imported">/);
 
+const unsafeRaw = parseVmd(`@doc "Unsafe Raw" {
+  fidelity: preserve
+}
+
+::raw.html
+<main>
+  <a href="javascript:alert(1)" onclick="alert(2)">Unsafe link</a>
+  <script>alert(3)</script>
+</main>
+::`);
+const unsafeHtml = renderVmd(unsafeRaw, "read");
+assert.match(unsafeHtml, /data-vmd-disabled-script/);
+assert.doesNotMatch(unsafeHtml, /<script\b/i);
+assert.doesNotMatch(unsafeHtml, /onclick=/i);
+assert.doesNotMatch(unsafeHtml, /javascript:alert/i);
+assert.ok(
+  validateVmdAst(unsafeRaw).some((diagnostic) => diagnostic.code === "raw-executable-disabled"),
+  "executable raw markup should produce a warning"
+);
+
+assert.ok(
+  validateVmdSource(`@doc "Bad Fidelity" {
+  fidelity: exact
+}
+
+::frame[role="x"]
+Body
+::`).some((diagnostic) => diagnostic.code === "unknown-fidelity-tier"),
+  "unknown fidelity tiers should produce a warning"
+);
+
 const visual = parseVmd(`@doc "Visual" {
   fidelity: visual
 }

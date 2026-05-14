@@ -1,5 +1,5 @@
 {
-  "name": "vmd",
+  "name": "vmd-format",
   "version": "0.1.0",
   "description": "Open draft for a browser-native layered visual document format.",
   "type": "module",
