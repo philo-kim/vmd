@@ -77,8 +77,6 @@ selected conversion mode does not represent:
 - scripted interaction or animation
 - custom component geometry such as device mockups
 
-## Product Implication
-
 ## Conversion Modes
 
 ### Semantic Mode
