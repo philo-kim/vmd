@@ -26,6 +26,10 @@ This project follows a human-readable changelog style inspired by
   and future interactive documents.
 - Layout, style, raw compatibility, component, and matrix visual blocks.
 - Preserve-mode Chrome auto-render behavior for high-fidelity HTML/CSS imports.
+- Preserve-mode Chrome auto-render guard that avoids injecting extension CSS
+  into preserved documents.
+- Packaged Chrome viewer layered sample for layout/style/raw compatibility
+  preview.
 - Playwright visual fidelity checker for semantic and preserve conversion.
 - Static HTML sample rendering.
 - CLI test coverage.

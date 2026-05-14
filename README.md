@@ -181,7 +181,7 @@ Manual viewer:
 - dragging and dropping a `.vmd` file
 - rendering read, deck, and map modes from the same source
 - showing validator diagnostics for the loaded source
-- loading the packaged sample document
+- loading packaged semantic and layered sample documents
 
 Package the Chrome extension:
 

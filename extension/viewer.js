@@ -7,6 +7,7 @@ const preview = document.getElementById("preview");
 const dropZone = document.getElementById("drop-zone");
 const diagnostics = document.getElementById("diagnostics");
 const sampleButton = document.getElementById("sample-button");
+const layeredSampleButton = document.getElementById("layered-sample-button");
 const modeTabs = Array.from(document.querySelectorAll(".mode-tab"));
 
 let mode = "read";
@@ -28,6 +29,14 @@ sampleButton.addEventListener("click", async () => {
   const source = await response.text();
   sourceInput.value = source;
   fileName.textContent = "family-platform.vmd";
+  render();
+});
+
+layeredSampleButton.addEventListener("click", async () => {
+  const response = await fetch(chrome.runtime.getURL("layered-sample.vmd"));
+  const source = await response.text();
+  sourceInput.value = source;
+  fileName.textContent = "visual-fidelity-layers.vmd";
   render();
 });
 

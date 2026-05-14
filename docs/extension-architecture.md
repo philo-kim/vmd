@@ -86,8 +86,10 @@ For local files and web-served VMD URLs, the extension uses a content script:
 5. It replaces the page with rendered HTML.
 
 If the AST declares `fidelity: preserve`, the renderer skips the VMD toolbar and
-emits the preserved raw output directly. For semantic documents, it keeps the
-toolbar so users can switch read, deck, and map views.
+emits the preserved raw output directly. It also avoids injecting the extension
+stylesheet, because even global reset rules can alter a preserved HTML/CSS page.
+For semantic documents, it keeps the toolbar so users can switch read, deck, and
+map views.
 
 The script intentionally does nothing on non-`.vmd` URLs.
 

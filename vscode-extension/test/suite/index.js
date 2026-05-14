@@ -34,6 +34,22 @@ async function run() {
     completions.items.some((item) => item.label === "doc"),
     "completion provider should offer VMD snippets"
   );
+  assert.ok(
+    completions.items.some((item) => item.label === "layout.grid"),
+    "completion provider should offer layout snippets"
+  );
+  assert.ok(
+    completions.items.some((item) => item.label === "component.metric"),
+    "completion provider should offer component snippets"
+  );
+  assert.ok(
+    completions.items.some((item) => item.label === "style.tokens"),
+    "completion provider should offer style snippets"
+  );
+  assert.ok(
+    completions.items.some((item) => item.label === "raw.html"),
+    "completion provider should offer raw compatibility snippets"
+  );
 
   const panel = await vscode.commands.executeCommand("vmd.preview.openToSide");
   assert.ok(panel, "preview command should return a WebviewPanel");

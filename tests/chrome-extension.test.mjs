@@ -3,7 +3,7 @@ import http from "node:http";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "playwright";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -12,6 +12,7 @@ const chromePath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), "vmd-chrome-test-"));
 const userDataDir = path.join(tempRoot, "profile");
 const fixturePath = path.join(tempRoot, "fixture.vmd");
+const preserveFixturePath = path.join(tempRoot, "preserve.vmd");
 const fixtureSource = `@doc "Chrome Auto Render Test" {
   format: deck
   theme: clean
@@ -48,6 +49,7 @@ body { margin: 0; background: rgb(12, 20, 31); }
 `;
 
 await writeFile(fixturePath, fixtureSource, "utf8");
+await writeFile(preserveFixturePath, preserveSource, "utf8");
 
 const server = http.createServer((request, response) => {
   if (request.url === "/fixture.vmd") {
@@ -113,8 +115,16 @@ try {
   await preservePage.waitForSelector("body.vmd-preserve-page", { timeout: 15000 });
   await preservePage.waitForSelector(".preserved-fixture", { timeout: 15000 });
   assert.equal(await preservePage.locator(".auto-banner").count(), 0, "preserve mode should not inject the VMD toolbar");
+  assert.equal(await preservePage.locator("head style").count(), 0, "preserve mode should not inject extension stylesheet into head");
   const preservedTextColor = await preservePage.locator(".preserved-fixture").evaluate((element) => getComputedStyle(element).color);
   assert.equal(preservedTextColor, "rgb(240, 253, 250)");
+
+  const localPreservePage = await context.newPage();
+  await localPreservePage.goto(pathToFileURL(preserveFixturePath).href);
+  await localPreservePage.waitForSelector("body.vmd-preserve-page", { timeout: 15000 });
+  await localPreservePage.waitForSelector(".preserved-fixture", { timeout: 15000 });
+  assert.equal(await localPreservePage.locator(".auto-banner").count(), 0, "local preserve files should not inject the VMD toolbar");
+  assert.equal(await localPreservePage.locator("head style").count(), 0, "local preserve files should not inject extension stylesheet into head");
 
   const viewerPage = await context.newPage();
   await viewerPage.goto(`chrome-extension://${extensionId}/viewer.html`);
@@ -123,6 +133,10 @@ try {
   await viewerPage.waitForSelector(".diagnostic", { timeout: 5000 });
   const diagnosticText = await viewerPage.locator(".diagnostic").first().textContent();
   assert.match(diagnosticText, /claim-without-evidence/);
+
+  await viewerPage.locator("#layered-sample-button").click();
+  await viewerPage.waitForSelector(".component-metric", { timeout: 5000 });
+  await viewerPage.waitForSelector(".raw-embed-html", { timeout: 5000 });
 
   console.log("chrome extension test passed");
 } finally {

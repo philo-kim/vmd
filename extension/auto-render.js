@@ -8,14 +8,11 @@
     return;
   }
 
-  injectStyles().catch(() => {});
-
   try {
     const { parseVmd, renderVmd, escapeHtml } = globalThis.VMDCore;
     const ast = parseVmd(source);
     document.documentElement.lang = "en";
     document.title = ast.doc.title;
-    document.body.className = "vmd-auto-page";
 
     if (String(ast.doc.attrs?.fidelity || "").toLowerCase() === "preserve") {
       document.body.className = "vmd-auto-page vmd-preserve-page";
@@ -23,6 +20,8 @@
       return;
     }
 
+    injectStyles().catch(() => {});
+    document.body.className = "vmd-auto-page";
     document.body.innerHTML = renderShell(ast, escapeHtml);
 
     const preview = document.getElementById("vmd-auto-preview");
@@ -41,6 +40,7 @@
     renderMode("read");
   } catch (error) {
     const escapeHtml = globalThis.VMDCore ? globalThis.VMDCore.escapeHtml : fallbackEscapeHtml;
+    injectStyles().catch(() => {});
     document.body.className = "vmd-auto-page";
     document.body.innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
   }

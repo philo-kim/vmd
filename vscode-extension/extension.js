@@ -65,7 +65,7 @@ class PreviewManager {
       "vmd.preview",
       `VMD: ${path.basename(document.uri.fsPath)}`,
       column,
-      webviewOptions(this.context)
+      webviewOptions(this.context, document)
     );
     const update = () => {
       panel.webview.html = renderPreviewHtml(this.context, panel.webview, document);
@@ -94,7 +94,7 @@ class VmdPreviewEditorProvider {
   }
 
   resolveCustomTextEditor(document, webviewPanel) {
-    webviewPanel.webview.options = webviewOptions(this.context);
+    webviewPanel.webview.options = webviewOptions(this.context, document);
     const update = () => {
       webviewPanel.webview.html = renderPreviewHtml(this.context, webviewPanel.webview, document);
     };
@@ -141,12 +141,18 @@ function isVmdDocument(document) {
   return document.languageId === "vmd" || document.uri.fsPath.toLowerCase().endsWith(".vmd");
 }
 
-function webviewOptions(context) {
+function webviewOptions(context, document) {
+  const roots = [
+    vscode.Uri.joinPath(context.extensionUri, "media")
+  ];
+
+  if (document && document.uri.scheme === "file") {
+    roots.push(vscode.Uri.file(path.dirname(document.uri.fsPath)));
+  }
+
   return {
     enableScripts: true,
-    localResourceRoots: [
-      vscode.Uri.joinPath(context.extensionUri, "media")
-    ]
+    localResourceRoots: roots
   };
 }
 
@@ -240,7 +246,7 @@ function createCompletionProvider() {
       const items = [
         createSnippet(
           "doc",
-          '@doc "${1:Document title}" {\n  format: ${2:deck}\n  theme: ${3:clean}\n  audience: ${4:reader}\n}\n\n$0',
+          '@doc "${1:Document title}" {\n  format: ${2:deck}\n  theme: ${3:clean}\n  audience: ${4:reader}\n  fidelity: ${5:semantic}\n}\n\n$0',
           "Create a VMD document header."
         ),
         createSnippet(

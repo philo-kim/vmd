@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "VMD Viewer",
-  "description": "Render VMD files as semantic visual webpages.",
+  "description": "Render VMD files as layered visual webpages.",
   "version": "0.1.0",
   "action": {
     "default_title": "Open VMD Viewer",
