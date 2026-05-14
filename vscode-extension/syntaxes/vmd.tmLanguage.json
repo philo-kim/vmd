@@ -1,0 +1,35 @@
+{
+  "scopeName": "source.vmd",
+  "name": "VMD",
+  "patterns": [
+    {
+      "name": "keyword.control.vmd",
+      "match": "^\\s*@(?:doc|theme)\\b"
+    },
+    {
+      "name": "markup.heading.vmd",
+      "match": "^#{1,6}\\s+.*$"
+    },
+    {
+      "name": "entity.name.tag.vmd",
+      "match": "^\\s*::[a-zA-Z][\\w-]*(?:\\.[a-zA-Z][\\w-]*)?"
+    },
+    {
+      "name": "punctuation.definition.block.end.vmd",
+      "match": "^\\s*::\\s*$"
+    },
+    {
+      "name": "variable.parameter.vmd",
+      "match": "\\b[a-zA-Z][\\w-]*(?=\\=)"
+    },
+    {
+      "name": "string.quoted.double.vmd",
+      "begin": "\"",
+      "end": "\""
+    },
+    {
+      "name": "markup.list.unnumbered.vmd",
+      "match": "^\\s*-\\s+"
+    }
+  ]
+}

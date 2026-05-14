@@ -1,5 +1,4 @@
-import { parseVmd } from "./vmd-parser.js";
-import { renderVmd } from "./vmd-renderer.js";
+const { parseVmd, renderVmd } = window.VMDCore;
 
 const fileInput = document.getElementById("file-input");
 const sourceInput = document.getElementById("source-input");

@@ -140,6 +140,64 @@ Manual viewer:
 - rendering read, deck, and map modes from the same source
 - loading the packaged sample document
 
+Package the Chrome extension:
+
+```bash
+npm run package:chrome
+```
+
+The zip is written to:
+
+```text
+dist/vmd-chrome-extension.zip
+```
+
+## VS Code Extension
+
+The VS Code extension is the authoring-side companion for VMD.
+
+It supports:
+
+- `.vmd` language detection
+- syntax highlighting
+- block folding
+- `VMD: Open Preview`
+- `VMD: Open Preview to Side`
+- `Open With... VMD Preview`
+- live preview updates from the active document
+
+Package the extension:
+
+```bash
+npm run package:vscode
+```
+
+The VSIX is written to:
+
+```text
+dist/vmd-vscode.vsix
+```
+
+## Extension Tests
+
+Run the shared checks:
+
+```bash
+npm run check
+```
+
+Run the Chrome extension integration test:
+
+```bash
+npm run test:chrome
+```
+
+Run the VS Code extension integration test:
+
+```bash
+npm run test:vscode
+```
+
 ## Local Static Render
 
 Requires Node.js 18 or newer.

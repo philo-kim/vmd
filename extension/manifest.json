@@ -7,12 +7,21 @@
     "default_title": "Open VMD Viewer",
     "default_popup": "popup.html"
   },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": [
+    "file:///*"
+  ],
   "content_scripts": [
     {
       "matches": [
-        "file:///*"
+        "file:///*",
+        "http://*/*",
+        "https://*/*"
       ],
       "js": [
+        "vmd-core.js",
         "auto-render.js"
       ],
       "run_at": "document_idle"

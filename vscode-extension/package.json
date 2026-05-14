@@ -1,0 +1,106 @@
+{
+  "name": "vmd-vscode",
+  "displayName": "VMD",
+  "description": "Author and preview semantic visual documents.",
+  "version": "0.1.0",
+  "publisher": "vmd",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/philo-kim/vmd.git",
+    "directory": "vscode-extension"
+  },
+  "engines": {
+    "vscode": "^1.88.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Visualization",
+    "Other"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:vmd",
+    "onCommand:vmd.preview.open",
+    "onCommand:vmd.preview.openToSide",
+    "onCustomEditor:vmd.previewEditor"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "vmd",
+        "aliases": [
+          "VMD",
+          "vmd"
+        ],
+        "extensions": [
+          ".vmd"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "vmd",
+        "scopeName": "source.vmd",
+        "path": "./syntaxes/vmd.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "vmd.preview.open",
+        "title": "VMD: Open Preview"
+      },
+      {
+        "command": "vmd.preview.openToSide",
+        "title": "VMD: Open Preview to Side"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "vmd.preview.openToSide",
+          "when": "resourceExtname == .vmd",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "vmd.preview.open",
+          "when": "resourceExtname == .vmd",
+          "group": "navigation"
+        }
+      ]
+    },
+    "customEditors": [
+      {
+        "viewType": "vmd.previewEditor",
+        "displayName": "VMD Preview",
+        "selector": [
+          {
+            "filenamePattern": "*.vmd"
+          }
+        ],
+        "priority": "option"
+      }
+    ],
+    "configuration": {
+      "title": "VMD",
+      "properties": {
+        "vmd.preview.defaultMode": {
+          "type": "string",
+          "enum": [
+            "read",
+            "deck",
+            "map"
+          ],
+          "default": "read",
+          "description": "Default render mode for VMD previews."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "check": "node --check extension.js && node --check test/suite/index.js"
+  }
+}

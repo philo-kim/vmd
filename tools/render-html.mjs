@@ -1,9 +1,10 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { parseVmd } from "../extension/vmd-parser.js";
-import { renderFullHtml } from "../extension/vmd-renderer.js";
+const require = createRequire(import.meta.url);
+const { parseVmd, renderFullHtml } = require("../core/vmd-core.cjs");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const input = process.argv[2] || path.join(root, "samples", "family-platform.vmd");
