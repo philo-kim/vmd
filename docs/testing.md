@@ -35,9 +35,9 @@ npm run test:chrome
 This test launches a real Chromium instance with the unpacked Chrome extension.
 It serves a `.vmd` file over localhost, opens the URL, waits for automatic VMD
 rendering, switches render mode, verifies preserve-mode rendering without the
-toolbar wrapper or extension stylesheet injection, verifies local `file://`
-preserve-mode rendering, opens the extension viewer, loads the packaged samples,
-and verifies viewer diagnostics.
+toolbar wrapper, extension stylesheet injection, or VMD body class mutation,
+verifies local `file://` preserve-mode rendering, opens the extension viewer,
+loads the packaged samples, and verifies viewer diagnostics.
 
 The test runs headed by default because extension service workers and content
 scripts are more reliable in a real browser window. To try headless mode:
@@ -55,7 +55,7 @@ npm run test:vscode
 This test downloads or reuses a VS Code build through `@vscode/test-electron`,
 loads the extension development path, opens a `.vmd` fixture, verifies language
 registration, validator diagnostics, semantic/layout/component/style/raw snippet
-completions, and the preview command.
+completions, local resource webview roots, and the preview command.
 
 The test script clears inherited VS Code/Electron environment variables before
 launching the test host. This matters when the command is run from an existing

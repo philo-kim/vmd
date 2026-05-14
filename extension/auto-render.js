@@ -15,7 +15,7 @@
     document.title = ast.doc.title;
 
     if (String(ast.doc.attrs?.fidelity || "").toLowerCase() === "preserve") {
-      document.body.className = "vmd-auto-page vmd-preserve-page";
+      document.body.removeAttribute("class");
       document.body.innerHTML = renderVmd(ast, "read");
       return;
     }

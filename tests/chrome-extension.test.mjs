@@ -112,8 +112,8 @@ try {
 
   const preservePage = await context.newPage();
   await preservePage.goto(`http://127.0.0.1:${port}/preserve.vmd`);
-  await preservePage.waitForSelector("body.vmd-preserve-page", { timeout: 15000 });
   await preservePage.waitForSelector(".preserved-fixture", { timeout: 15000 });
+  assert.equal(await preservePage.locator("body").getAttribute("class"), null, "preserve mode should not add VMD classes to body");
   assert.equal(await preservePage.locator(".auto-banner").count(), 0, "preserve mode should not inject the VMD toolbar");
   assert.equal(await preservePage.locator("head style").count(), 0, "preserve mode should not inject extension stylesheet into head");
   const preservedTextColor = await preservePage.locator(".preserved-fixture").evaluate((element) => getComputedStyle(element).color);
@@ -121,8 +121,8 @@ try {
 
   const localPreservePage = await context.newPage();
   await localPreservePage.goto(pathToFileURL(preserveFixturePath).href);
-  await localPreservePage.waitForSelector("body.vmd-preserve-page", { timeout: 15000 });
   await localPreservePage.waitForSelector(".preserved-fixture", { timeout: 15000 });
+  assert.equal(await localPreservePage.locator("body").getAttribute("class"), null, "local preserve files should not add VMD classes to body");
   assert.equal(await localPreservePage.locator(".auto-banner").count(), 0, "local preserve files should not inject the VMD toolbar");
   assert.equal(await localPreservePage.locator("head style").count(), 0, "local preserve files should not inject extension stylesheet into head");
 

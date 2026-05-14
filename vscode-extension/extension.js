@@ -165,9 +165,9 @@ function renderPreviewHtml(context, webview, document) {
   try {
     const ast = parseVmd(document.getText());
     const views = {
-      read: renderVmd(ast, "read"),
-      deck: renderVmd(ast, "deck"),
-      map: renderVmd(ast, "map")
+      read: rewritePreviewResourceUris(renderVmd(ast, "read"), document, webview),
+      deck: rewritePreviewResourceUris(renderVmd(ast, "deck"), document, webview),
+      map: rewritePreviewResourceUris(renderVmd(ast, "map"), document, webview)
     };
     const data = serializeScriptData({ mode, views });
 
@@ -176,7 +176,7 @@ function renderPreviewHtml(context, webview, document) {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} data: https: http:; font-src ${webview.cspSource} data:; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
     <link rel="stylesheet" href="${styleUri}">
     <title>${title}</title>
   </head>
@@ -238,6 +238,34 @@ function createNonce() {
 
 function serializeScriptData(value) {
   return JSON.stringify(value).replace(/<\//g, "<\\/");
+}
+
+function rewritePreviewResourceUris(html, document, webview) {
+  if (!document || document.uri.scheme !== "file") {
+    return html;
+  }
+
+  const baseDir = path.dirname(document.uri.fsPath);
+  return String(html)
+    .replace(/\b(src|href|poster)=["']([^"']+)["']/gi, (match, attr, value) => {
+      if (isExternalOrSpecialUrl(value)) {
+        return match;
+      }
+      const uri = webview.asWebviewUri(vscode.Uri.file(path.resolve(baseDir, value)));
+      return `${attr}="${uri}"`;
+    })
+    .replace(/url\(([^)]+)\)/gi, (match, rawValue) => {
+      const value = rawValue.trim().replace(/^["']|["']$/g, "");
+      if (isExternalOrSpecialUrl(value)) {
+        return match;
+      }
+      const uri = webview.asWebviewUri(vscode.Uri.file(path.resolve(baseDir, value)));
+      return `url("${uri}")`;
+    });
+}
+
+function isExternalOrSpecialUrl(value) {
+  return /^(?:[a-z][a-z0-9+.-]*:|#|\/)/i.test(String(value));
 }
 
 function createCompletionProvider() {

@@ -87,9 +87,9 @@ For local files and web-served VMD URLs, the extension uses a content script:
 
 If the AST declares `fidelity: preserve`, the renderer skips the VMD toolbar and
 emits the preserved raw output directly. It also avoids injecting the extension
-stylesheet, because even global reset rules can alter a preserved HTML/CSS page.
-For semantic documents, it keeps the toolbar so users can switch read, deck, and
-map views.
+stylesheet or adding VMD classes to `body`, because even reset rules and body
+selectors can alter a preserved HTML/CSS page. For semantic documents, it keeps
+the toolbar so users can switch read, deck, and map views.
 
 The script intentionally does nothing on non-`.vmd` URLs.
 
@@ -97,6 +97,14 @@ For `file://` URLs, Chrome still requires the user to grant file URL access in
 the extension details page. Web-served `.vmd` files do not require that local
 file permission, but the extension still needs normal host access for matched
 `.vmd` URLs.
+
+## VS Code Resource Strategy
+
+VS Code webviews cannot load arbitrary local files directly. The VMD preview
+therefore rewrites local `src`, `href`, `poster`, and CSS `url(...)` references
+into webview-safe resource URIs when the source document is opened from the
+local filesystem. This matters for layered and preserve-oriented documents that
+reference nearby images, fonts, or stylesheets.
 
 ## Design Rules
 
