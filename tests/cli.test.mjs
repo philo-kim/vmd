@@ -14,7 +14,7 @@ const tempRoot = await mkdtemp(path.join(os.tmpdir(), "vmd-cli-test-"));
 
 try {
   const renderOut = path.join(tempRoot, "rendered.html");
-  await execFileAsync("node", [cli, "render", sample, "--out", renderOut, "--mode", "deck"], {
+  await execFileAsync("node", [cli, "render", sample, "--out", renderOut, "--mode=deck"], {
     cwd: root
   });
   const html = await readFile(renderOut, "utf8");
@@ -38,6 +38,22 @@ try {
     cwd: root
   });
   assert.match(validateResult.stdout, /family-platform\.vmd/);
+
+  const jsonValidation = await execFileAsync("node", [cli, "validate", sample, "--json"], {
+    cwd: root
+  });
+  const validationResults = JSON.parse(jsonValidation.stdout);
+  assert.equal(validationResults[0].input, sample);
+  assert.ok(Array.isArray(validationResults[0].diagnostics));
+
+  try {
+    await execFileAsync("node", [cli, "validate", sample, "--strict"], {
+      cwd: root
+    });
+    assert.fail("strict validation should fail on warnings");
+  } catch (error) {
+    assert.match(error.stdout, /claim-without-evidence/);
+  }
 
   const siteOut = path.join(tempRoot, "site");
   await execFileAsync("node", [cli, "gallery", "--out", siteOut], {

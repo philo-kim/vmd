@@ -90,27 +90,48 @@ async function validateCommand(args) {
   }
 
   let hasErrors = false;
+  const results = [];
 
   for (const input of inputs) {
     try {
       const ast = parseVmd(await readFile(input, "utf8"));
       const diagnostics = validateVmdAst(ast);
       const errors = diagnostics.filter((diagnostic) => diagnostic.level === "error");
-      hasErrors = hasErrors || Boolean(errors.length);
+      const warnings = diagnostics.filter((diagnostic) => diagnostic.level === "warning");
+      hasErrors = hasErrors || Boolean(errors.length) || Boolean(options.strict && warnings.length);
+      results.push({
+        input,
+        diagnostics
+      });
 
-      if (!diagnostics.length) {
+      if (!options.json && !diagnostics.length) {
         console.log(`${input}: ok`);
         continue;
       }
 
-      for (const diagnostic of diagnostics) {
+      for (const diagnostic of options.json ? [] : diagnostics) {
         const line = diagnostic.line ? `:${diagnostic.line}` : "";
         console.log(`${input}${line}: ${diagnostic.level} ${diagnostic.code} - ${diagnostic.message}`);
       }
     } catch (error) {
       hasErrors = true;
-      console.log(`${input}: error parse-error - ${error.message}`);
+      const diagnostic = {
+        level: "error",
+        code: "parse-error",
+        message: error.message
+      };
+      results.push({
+        input,
+        diagnostics: [diagnostic]
+      });
+      if (!options.json) {
+        console.log(`${input}: error parse-error - ${error.message}`);
+      }
     }
+  }
+
+  if (options.json) {
+    process.stdout.write(`${JSON.stringify(results, null, 2)}\n`);
   }
 
   if (hasErrors) {
@@ -152,7 +173,12 @@ function parseArgs(args) {
       continue;
     }
 
-    const key = arg.replace(/^-+/, "");
+    const [key, inlineValue] = arg.replace(/^-+/, "").split(/=(.*)/s);
+    if (inlineValue !== undefined) {
+      options[key] = inlineValue;
+      continue;
+    }
+
     const next = args[index + 1];
     if (!next || next.startsWith("-")) {
       options[key] = true;
@@ -181,7 +207,7 @@ function printHelp() {
 Usage:
   vmd render <file.vmd> [--out output.html] [--mode read|deck|map] [--css href]
   vmd ast <file.vmd> [--out output.json]
-  vmd validate <file.vmd> [...]
+  vmd validate <file.vmd> [...] [--strict] [--json]
   vmd gallery [--samples samples] [--out dist/site]
 `);
 }

@@ -33,3 +33,6 @@ jobs:
 
       - name: Package VS Code extension
         run: npm run package:vscode
+
+      - name: Check npm package contents
+        run: npm run package:npm:dry-run

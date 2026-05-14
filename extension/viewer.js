@@ -1,10 +1,11 @@
-const { parseVmd, renderVmd } = window.VMDCore;
+const { parseVmd, renderVmd, validateVmdAst } = window.VMDCore;
 
 const fileInput = document.getElementById("file-input");
 const sourceInput = document.getElementById("source-input");
 const fileName = document.getElementById("file-name");
 const preview = document.getElementById("preview");
 const dropZone = document.getElementById("drop-zone");
+const diagnostics = document.getElementById("diagnostics");
 const sampleButton = document.getElementById("sample-button");
 const modeTabs = Array.from(document.querySelectorAll(".mode-tab"));
 
@@ -68,6 +69,7 @@ async function loadFile(file) {
 function render() {
   const source = sourceInput.value.trim();
   if (!source) {
+    renderDiagnostics([]);
     preview.className = "preview empty-state";
     preview.innerHTML = "<p>Open or drop a `.vmd` file to render it.</p>";
     return;
@@ -75,11 +77,31 @@ function render() {
 
   try {
     const ast = parseVmd(source);
+    renderDiagnostics(validateVmdAst(ast));
     preview.className = "preview";
     preview.innerHTML = renderVmd(ast, mode);
   } catch (error) {
+    renderDiagnostics([
+      {
+        level: "error",
+        code: "parse-error",
+        message: error.message
+      }
+    ]);
     preview.className = "preview";
     preview.innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
+  }
+}
+
+function renderDiagnostics(items) {
+  diagnostics.classList.toggle("active", Boolean(items.length));
+  diagnostics.innerHTML = "";
+
+  for (const item of items) {
+    const row = document.createElement("div");
+    row.className = `diagnostic ${item.level}`;
+    row.textContent = `${item.line ? `Line ${item.line}: ` : ""}${item.code} - ${item.message}`;
+    diagnostics.appendChild(row);
   }
 }
 

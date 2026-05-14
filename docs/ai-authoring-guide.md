@@ -69,6 +69,8 @@ Then run:
 
 ```bash
 node bin/vmd.mjs validate path/to/document.vmd
+node bin/vmd.mjs validate path/to/document.vmd --strict
+node bin/vmd.mjs validate path/to/document.vmd --json
 ```
 
 For AI workflows, validation should be treated as the first feedback loop. The

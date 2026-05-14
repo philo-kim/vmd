@@ -33,7 +33,8 @@ npm run test:chrome
 
 This test launches a real Chromium instance with the unpacked Chrome extension.
 It serves a `.vmd` file over localhost, opens the URL, waits for automatic VMD
-rendering, and switches render mode.
+rendering, switches render mode, opens the extension viewer, loads the packaged
+sample, and verifies viewer diagnostics.
 
 The test runs headed by default because extension service workers and content
 scripts are more reliable in a real browser window. To try headless mode:
@@ -72,6 +73,7 @@ non-zero exit code.
 ```bash
 npm run package:chrome
 npm run package:vscode
+npm run package:npm:dry-run
 ```
 
 Expected outputs:
@@ -82,6 +84,16 @@ dist/vmd-vscode.vsix
 ```
 
 The `dist/` directory is ignored by Git.
+
+## Public Pages Smoke Test
+
+```bash
+npm run smoke:public
+```
+
+This opens the deployed GitHub Pages gallery, a rendered sample page, and the
+playground in Chromium. It is intentionally not part of `npm run check` because
+it depends on the public network and the latest Pages deployment.
 
 ## Screenshot Capture
 

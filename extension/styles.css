@@ -193,6 +193,35 @@ h3 {
   color: #fff;
 }
 
+.diagnostics {
+  display: none;
+  gap: 8px;
+  max-height: 120px;
+  overflow: auto;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+}
+
+.diagnostics.active {
+  display: grid;
+}
+
+.diagnostic {
+  border-left: 3px solid var(--warn);
+  padding-left: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.diagnostic.error {
+  border-color: #dc2626;
+  color: #991b1b;
+}
+
 .drop-zone {
   min-height: 460px;
   height: calc(100vh - 160px);

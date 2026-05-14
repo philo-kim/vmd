@@ -48,6 +48,7 @@ Package local extensions:
 ```bash
 npm run package:chrome
 npm run package:vscode
+npm run package:npm:dry-run
 ```
 
 ## Pull Request Checklist
@@ -60,6 +61,7 @@ Before opening a PR:
 - Run `npm run capture:screenshots` when README-visible rendering changes.
 - Run extension tests when changing Chrome or VS Code behavior.
 - Keep generated runtime copies synced with `npm run sync:core`.
+- Run `npm run smoke:public` after Pages-facing changes are deployed.
 
 ## Proposing Syntax
 

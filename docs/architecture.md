@@ -130,6 +130,8 @@ It supports:
 - `validate`: run semantic diagnostics
 - `gallery`: build the public sample gallery and playground
 
+Validation supports strict mode for CI and JSON output for tools or AI agents.
+
 `tools/site-builder.mjs` builds the static site used by GitHub Pages. This is
 also the smallest public proof that VMD can be useful as a web-native document
 format before any native browser support exists.
@@ -141,7 +143,7 @@ The Chrome extension is a browser polyfill.
 It handles two flows:
 
 - automatic render for `.vmd` URLs
-- manual viewer for upload and drag-and-drop
+- manual viewer for upload, drag-and-drop, preview, and diagnostics
 
 Automatic local file rendering requires Chrome's `Allow access to file URLs`
 setting.

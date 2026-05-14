@@ -66,6 +66,7 @@ try {
     worker = await context.waitForEvent("serviceworker", { timeout: 10000 });
   }
   assert.ok(worker.url().startsWith("chrome-extension://"), "extension service worker should be loaded");
+  const extensionId = new URL(worker.url()).host;
 
   const page = await context.newPage();
   await page.goto(`http://127.0.0.1:${port}/fixture.vmd`);
@@ -78,7 +79,15 @@ try {
   await page.locator('button[data-mode="deck"]').click();
   await page.waitForSelector(".slide .block-claim", { timeout: 5000 });
 
-  console.log("chrome extension auto-render test passed");
+  const viewerPage = await context.newPage();
+  await viewerPage.goto(`chrome-extension://${extensionId}/viewer.html`);
+  await viewerPage.locator("#sample-button").click();
+  await viewerPage.waitForSelector(".doc-title h1", { timeout: 5000 });
+  await viewerPage.waitForSelector(".diagnostic", { timeout: 5000 });
+  const diagnosticText = await viewerPage.locator(".diagnostic").first().textContent();
+  assert.match(diagnosticText, /claim-without-evidence/);
+
+  console.log("chrome extension test passed");
 } finally {
   if (context) {
     await context.close();

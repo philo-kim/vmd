@@ -29,9 +29,9 @@ Purpose:
 - warn when claims lack evidence
 - inspect frame roles and render decisions
 
-The first slice now exists as shared validator diagnostics in the CLI, VS Code
-extension, and playground. A richer DevTools-like inspector can build on the
-same AST and diagnostic model.
+The first slice now exists as shared validator diagnostics in the CLI, Chrome
+viewer, VS Code extension, and playground. A richer DevTools-like inspector can
+build on the same AST and diagnostic model.
 
 ### 3. VMD Authoring Helper
 

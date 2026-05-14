@@ -98,6 +98,7 @@ Current behavior:
 - `docs/language-design.md`: language direction and design principles
 - `docs/spec-draft-v0.md`: first public grammar and AST draft
 - `docs/project-readiness.md`: current readiness and known limitations
+- `docs/project-audit.md`: end-to-end implementation and release audit
 - `docs/ai-authoring-guide.md`: how to use VMD as an AI generation target
 - `docs/browser-integration.md`: path from extension polyfill to browser-native support
 - `docs/extension-architecture.md`: extension family design
@@ -153,6 +154,7 @@ Manual viewer:
 - uploading a `.vmd` file
 - dragging and dropping a `.vmd` file
 - rendering read, deck, and map modes from the same source
+- showing validator diagnostics for the loaded source
 - loading the packaged sample document
 
 Package the Chrome extension:
@@ -236,6 +238,8 @@ build the public gallery.
 
 ```bash
 node bin/vmd.mjs validate samples/family-platform.vmd
+node bin/vmd.mjs validate samples/family-platform.vmd --strict
+node bin/vmd.mjs validate samples/family-platform.vmd --json
 node bin/vmd.mjs ast samples/family-platform.vmd
 node bin/vmd.mjs render samples/family-platform.vmd --out dist/family-platform.html --mode deck
 node bin/vmd.mjs gallery --out dist/site

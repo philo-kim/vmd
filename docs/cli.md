@@ -56,6 +56,8 @@ should depend on the AST, not on source-string scraping.
 
 ```bash
 node bin/vmd.mjs validate samples/family-platform.vmd
+node bin/vmd.mjs validate samples/family-platform.vmd --strict
+node bin/vmd.mjs validate samples/family-platform.vmd --json
 ```
 
 The validator reports:
@@ -68,7 +70,16 @@ The validator reports:
 - invalid visual blocks, such as empty `visual.compare` or one-step loops
 
 Validation exits with a non-zero code when an error is found. Warnings do not
-fail the command.
+fail the command unless `--strict` is used.
+
+Use `--json` when another tool or AI agent should consume diagnostics
+programmatically.
+
+CLI options can be passed either as separate arguments or with equals syntax:
+
+```bash
+node bin/vmd.mjs render samples/family-platform.vmd --mode=deck --out=dist/family-platform.html
+```
 
 ## Build Gallery And Playground
 

@@ -21,6 +21,7 @@ npm run build:site
 npm run capture:screenshots
 npm run package:chrome
 npm run package:vscode
+npm run package:npm:dry-run
 ```
 
 Expected artifacts:
@@ -37,6 +38,14 @@ docs/assets/vmd-playground.png
 Package artifacts and `dist/` output are generated locally and are not committed
 to Git by default. Screenshot assets are committed because they are part of the
 public README.
+
+After Pages deploys, run:
+
+```bash
+npm run smoke:public
+```
+
+This checks the published gallery, sample page, and playground in Chromium.
 
 ## Versioning
 
