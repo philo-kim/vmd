@@ -157,14 +157,14 @@
       ? `<link rel="stylesheet" href="${escapeHtml(cssHref)}">`
       : "";
     return `<!doctype html>
-<html lang="en">
+<html${renderHtmlAttrs(ast)}>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${escapeHtml(ast.doc.title)}</title>
     ${stylesheet}
   </head>
-  <body>
+  <body${renderBodyAttrs(ast)}>
     ${renderVmd(ast, mode)}
   </body>
 </html>`;
@@ -893,6 +893,51 @@ ${css}
     flushParagraph();
     flushList();
     return chunks.join("");
+  }
+
+  function renderHtmlAttrs(ast) {
+    const attrs = ast.doc?.attrs || {};
+    const rendered = [];
+    const lang = attrs["html-lang"] || (isPreserveDocument(ast) ? "" : "en");
+    if (lang) {
+      rendered.push(`lang="${escapeHtml(lang)}"`);
+    }
+    if (attrs["html-dir"]) {
+      rendered.push(`dir="${escapeHtml(attrs["html-dir"])}"`);
+    }
+    return rendered.length ? ` ${rendered.join(" ")}` : "";
+  }
+
+  function renderBodyAttrs(ast) {
+    const attrs = ast.doc?.attrs || {};
+    const rendered = [];
+    const aliases = {
+      "body-class": "class",
+      "body-id": "id",
+      "body-style": "style",
+      "body-dir": "dir",
+      "body-lang": "lang"
+    };
+
+    for (const [sourceKey, attrName] of Object.entries(aliases)) {
+      if (attrs[sourceKey]) {
+        rendered.push(`${attrName}="${escapeHtml(attrs[sourceKey])}"`);
+      }
+    }
+
+    for (const [key, value] of Object.entries(attrs)) {
+      if (!value || !key.startsWith("body-")) {
+        continue;
+      }
+
+      const attrName = key.slice("body-".length);
+      if (!/^(?:data-[\w-]+|aria-[\w-]+)$/.test(attrName)) {
+        continue;
+      }
+      rendered.push(`${attrName}="${escapeHtml(value)}"`);
+    }
+
+    return rendered.length ? ` ${rendered.join(" ")}` : "";
   }
 
   function isKnownBlock(type) {

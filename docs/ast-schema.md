@@ -1,6 +1,6 @@
 # AST Schema
 
-VMD source is not the long-term contract. The semantic AST is.
+VMD source is not the long-term contract. The layered AST is.
 
 The draft JSON Schema lives at:
 
@@ -32,7 +32,8 @@ shape without freezing every future block type.
     "attrs": {
       "format": "deck",
       "theme": "clean",
-      "audience": "investor"
+      "audience": "investor",
+      "fidelity": "semantic"
     }
   },
   "children": []
@@ -43,7 +44,8 @@ shape without freezing every future block type.
 
 Every block node can carry:
 
-- `type`: semantic or visual type, such as `frame`, `claim`, or `visual.compare`
+- `type`: semantic, visual, layout, style, raw, or component type, such as
+  `frame`, `claim`, `visual.compare`, or `layout.grid`
 - `tag`: source tag before variant expansion
 - `variant`: optional variant after the dot
 - `attrs`: quoted inline attributes
@@ -64,7 +66,8 @@ Headings are represented as:
 
 ## Validation Boundary
 
-The schema checks shape. The runtime validator checks semantic quality.
+The schema checks shape. The runtime validator checks semantic and visual
+authoring quality.
 
 Examples:
 

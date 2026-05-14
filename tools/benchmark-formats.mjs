@@ -327,8 +327,8 @@ the same source can be checked and rendered as read, deck, and map views.
 HTML is the strongest deployment target because browsers open it natively today.
 The tradeoff is authoring burden: matching VMD's three output modes in raw HTML
 requires duplicated content, CSS, JavaScript, and custom class conventions. VMD
-keeps new documents smaller and semantic, while the new preserve tier gives
-existing HTML/CSS pages a compatibility path when pixel fidelity matters.
+keeps new documents smaller and layered, while the preserve tier gives existing
+HTML/CSS pages a compatibility path when pixel fidelity matters.
 
 ## Pros, Cons, And Effects
 
@@ -336,7 +336,7 @@ existing HTML/CSS pages a compatibility path when pixel fidelity matters.
 | --- | --- | --- | --- |
 | Markdown | Linear notes, READMEs, essays, simple docs | Lowest writing friction and strong plain-text readability | Semantic roles and visual structure remain conventions |
 | HTML | Final browser-native pages and custom web apps | Opens directly in browsers with full layout and interaction control | High authoring overhead when content, style, and interaction are hand-written together |
-| VMD | Semantic visual reports, decks, maps, AI-authored visual documents, and preserved HTML/CSS imports | One source can carry meaning, validation, render modes, and explicit fidelity tier | Needs a renderer, extension, or converter until browsers support it natively |
+| VMD | Layered visual reports, decks, maps, AI-authored visual documents, and preserved HTML/CSS imports | One source can carry meaning, validation, render modes, and explicit fidelity tier | Needs a renderer, extension, or converter until browsers support it natively |
 
 The practical effect is not that VMD should replace Markdown or HTML everywhere.
 It creates a middle source layer for documents that are too visual and structured

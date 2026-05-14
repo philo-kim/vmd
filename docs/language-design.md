@@ -159,6 +159,7 @@ VMD documents should declare their target fidelity.
 ```vmd
 @doc "Imported Design" {
   fidelity: preserve
+  body-class: imported-page
 }
 ```
 
@@ -228,10 +229,12 @@ avoid adding wrappers that would break imported CSS selectors.
 @doc "Imported HTML Page" {
   format: preserved-html
   fidelity: preserve
+  html-lang: en
+  body-class: imported-page
 }
 
 ::raw.css
-body { margin: 0; }
+body.imported-page { margin: 0; }
 .page { min-height: 100vh; }
 ::
 
@@ -244,8 +247,10 @@ body { margin: 0; }
 
 This is intentionally less semantic. It exists because visual formats need a
 lossless escape hatch before they can become practical migration targets.
+Preserve documents can carry supported `html` and `body` attributes in the
+document header so root selectors survive conversion.
 
-## Semantic AST
+## Layered AST
 
 The AST is the real product boundary.
 

@@ -11,16 +11,16 @@
   try {
     const { parseVmd, renderVmd, escapeHtml } = globalThis.VMDCore;
     const ast = parseVmd(source);
-    document.documentElement.lang = "en";
     document.title = ast.doc.title;
 
     if (String(ast.doc.attrs?.fidelity || "").toLowerCase() === "preserve") {
-      document.body.removeAttribute("class");
+      applyPreserveDocumentAttrs(ast);
       document.body.innerHTML = renderVmd(ast, "read");
       return;
     }
 
     injectStyles().catch(() => {});
+    document.documentElement.lang = "en";
     document.body.className = "vmd-auto-page";
     document.body.innerHTML = renderShell(ast, escapeHtml);
 
@@ -61,6 +61,47 @@
       return pre.innerText;
     }
     return document.body ? document.body.innerText : "";
+  }
+
+  function applyPreserveDocumentAttrs(ast) {
+    const attrs = ast.doc?.attrs || {};
+    applyElementAttrs(document.documentElement, {
+      lang: attrs["html-lang"] || "",
+      dir: attrs["html-dir"] || ""
+    });
+    applyElementAttrs(document.body, {
+      class: attrs["body-class"] || "",
+      id: attrs["body-id"] || "",
+      style: attrs["body-style"] || "",
+      dir: attrs["body-dir"] || "",
+      lang: attrs["body-lang"] || ""
+    });
+
+    for (const attr of Array.from(document.body.attributes)) {
+      if (/^(?:data-|aria-)/.test(attr.name)) {
+        document.body.removeAttribute(attr.name);
+      }
+    }
+
+    for (const [key, value] of Object.entries(attrs)) {
+      if (!value || !key.startsWith("body-")) {
+        continue;
+      }
+      const attrName = key.slice("body-".length);
+      if (/^(?:data-[\w-]+|aria-[\w-]+)$/.test(attrName)) {
+        document.body.setAttribute(attrName, value);
+      }
+    }
+  }
+
+  function applyElementAttrs(element, attrs) {
+    for (const [key, value] of Object.entries(attrs)) {
+      if (value) {
+        element.setAttribute(key, value);
+      } else {
+        element.removeAttribute(key);
+      }
+    }
   }
 
   async function injectStyles() {

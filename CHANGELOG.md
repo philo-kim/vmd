@@ -28,6 +28,8 @@ This project follows a human-readable changelog style inspired by
 - Preserve-mode Chrome auto-render behavior for high-fidelity HTML/CSS imports.
 - Preserve-mode Chrome auto-render guard that avoids injecting extension CSS
   into preserved documents.
+- Preserve-mode rendering for supported `html` and `body` attributes so
+  imported pages can keep root selectors such as `body.source-page`.
 - Packaged Chrome viewer layered sample for layout/style/raw compatibility
   preview.
 - Playwright visual fidelity checker for semantic and preserve conversion.

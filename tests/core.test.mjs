@@ -52,6 +52,11 @@ assert.match(fullHtml, /Family Platform Strategy/);
 
 const layered = parseVmd(`@doc "Layered" {
   fidelity: preserve
+  html-lang: ko
+  body-class: source-body
+  body-id: source-root
+  body-style: margin: 0;
+  body-data-theme: imported
 }
 
 ::frame[role="preserve"]
@@ -69,6 +74,8 @@ const layered = parseVmd(`@doc "Layered" {
 assert.doesNotMatch(renderVmd(layered, "read"), /class="frame"/);
 assert.match(renderVmd(layered, "read"), /<main class="box">/);
 assert.doesNotMatch(renderFullHtml(layered, "read", { cssHref: null }), /extension\/styles\.css/);
+assert.match(renderFullHtml(layered, "read", { cssHref: null }), /<html lang="ko">/);
+assert.match(renderFullHtml(layered, "read", { cssHref: null }), /<body class="source-body" id="source-root" style="margin: 0" data-theme="imported">/);
 
 const visual = parseVmd(`@doc "Visual" {
   fidelity: visual

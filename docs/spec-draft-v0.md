@@ -33,6 +33,8 @@ The `@doc` block may declare `fidelity`.
 @doc "Imported Design" {
   format: preserved-html
   fidelity: preserve
+  html-lang: en
+  body-class: imported-page
 }
 ```
 
@@ -47,7 +49,19 @@ Current tiers:
 | `interactive` | future scripted documents | reserved; raw JavaScript is parsed but not executed today |
 
 If `fidelity: preserve` is set, the reference read renderer emits preserved raw
-content directly instead of wrapping it in the normal VMD document shell.
+content directly instead of wrapping it in the normal VMD document shell. The
+reference HTML renderer also uses document attributes to restore root-level
+state:
+
+- `html-lang`
+- `html-dir`
+- `body-class`
+- `body-id`
+- `body-style`
+- `body-dir`
+- `body-lang`
+- `body-data-*`
+- `body-aria-*`
 
 ## Document Header
 
@@ -222,10 +236,12 @@ Example:
 ```vmd
 @doc "Preserved Page" {
   fidelity: preserve
+  html-lang: en
+  body-class: imported-page
 }
 
 ::raw.css
-body { margin: 0; }
+body.imported-page { margin: 0; }
 .hero { display: grid; min-height: 100vh; }
 ::
 

@@ -160,7 +160,7 @@ async function renderBenchmarkPage(root) {
       <section class="benchmark-section takeaways">
         <p>Compared with Markdown, VMD is ${benchmark.comparisons.vmdVsMarkdown.sourceBytesDeltaPercent}% larger in this case, but adds ${benchmark.comparisons.vmdVsMarkdown.standardizedSemanticRoleGain} native semantic roles, ${benchmark.comparisons.vmdVsMarkdown.renderModeGain} extra render modes, and validator support.</p>
         <p>Compared with the browser-ready HTML fixture, VMD is ${benchmark.comparisons.vmdVsHtml.sourceBytesReductionPercent}% smaller while preserving the same number of render modes through the renderer.</p>
-        <p>HTML remains the native browser substrate. VMD is the higher-level source for semantic visual documents.</p>
+        <p>HTML remains the native browser substrate. VMD is the higher-level source for layered visual documents with explicit fidelity.</p>
       </section>
     </main>
   </body>

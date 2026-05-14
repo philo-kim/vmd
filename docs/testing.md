@@ -35,9 +35,9 @@ npm run test:chrome
 This test launches a real Chromium instance with the unpacked Chrome extension.
 It serves a `.vmd` file over localhost, opens the URL, waits for automatic VMD
 rendering, switches render mode, verifies preserve-mode rendering without the
-toolbar wrapper, extension stylesheet injection, or VMD body class mutation,
-verifies local `file://` preserve-mode rendering, opens the extension viewer,
-loads the packaged samples, and verifies viewer diagnostics.
+toolbar wrapper, extension stylesheet injection, VMD body classes, or root
+attribute loss, verifies local `file://` preserve-mode rendering, opens the
+extension viewer, loads the packaged samples, and verifies viewer diagnostics.
 
 The test runs headed by default because extension service workers and content
 scripts are more reliable in a real browser window. To try headless mode:

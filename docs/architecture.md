@@ -77,7 +77,7 @@ Is this source structurally readable?
 Validation answers:
 
 ```text
-Is this source useful as a semantic visual document?
+Is this source useful as a layered visual document?
 ```
 
 Current diagnostics cover missing document structure, unknown blocks, incomplete
@@ -141,9 +141,11 @@ layouts, and components. For documents with:
 ```
 
 the read renderer avoids the normal VMD wrapper and emits preserved raw HTML/CSS
-directly. This is necessary because imported CSS can depend on selectors such as
-`body > main` or exact root geometry. Deck and map modes remain semantic views
-and are not meant to be pixel-preserving.
+directly. It also maps document attributes such as `html-lang`, `html-dir`,
+`body-class`, `body-id`, `body-style`, `body-data-*`, and `body-aria-*` back to
+the rendered document. This is necessary because imported CSS can depend on
+selectors such as `body.source`, `body > main`, or exact root geometry. Deck and
+map modes remain semantic views and are not meant to be pixel-preserving.
 
 ## CLI And Static Site
 
@@ -152,7 +154,7 @@ and are not meant to be pixel-preserving.
 It supports:
 
 - `render`: convert `.vmd` to static HTML
-- `ast`: print or write the semantic AST
+- `ast`: print or write the layered AST
 - `validate`: run semantic diagnostics
 - `gallery`: build the public sample gallery and playground
 
@@ -175,8 +177,9 @@ Automatic local file rendering requires Chrome's `Allow access to file URLs`
 setting.
 
 If a document declares `fidelity: preserve`, the automatic renderer skips the
-mode toolbar and renders the preserved document directly. That makes a preserved
-VMD file behave closer to an HTML file opened in the browser.
+mode toolbar, avoids injecting extension CSS, applies preserved `html` and
+`body` attributes, and renders the preserved document directly. That makes a
+preserved VMD file behave closer to an HTML file opened in the browser.
 
 ## VS Code Extension
 
@@ -187,7 +190,8 @@ It contributes:
 - `.vmd` language support
 - syntax highlighting
 - block folding
-- snippet completions for document, frame, semantic, and visual blocks
+- snippet completions for document, frame, semantic, visual, layout, style, raw,
+  and component blocks
 - diagnostics from the shared validator
 - preview commands
 - optional custom preview editor

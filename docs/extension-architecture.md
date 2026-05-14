@@ -88,8 +88,11 @@ For local files and web-served VMD URLs, the extension uses a content script:
 If the AST declares `fidelity: preserve`, the renderer skips the VMD toolbar and
 emits the preserved raw output directly. It also avoids injecting the extension
 stylesheet or adding VMD classes to `body`, because even reset rules and body
-selectors can alter a preserved HTML/CSS page. For semantic documents, it keeps
-the toolbar so users can switch read, deck, and map views.
+selectors can alter a preserved HTML/CSS page. It applies preserved `html` and
+`body` attributes from the document header before replacing the body content, so
+CSS that depends on `body` class, id, style, language, direction, data, or ARIA
+attributes can still match. For semantic documents, it keeps the toolbar so
+users can switch read, deck, and map views.
 
 The script intentionally does nothing on non-`.vmd` URLs.
 

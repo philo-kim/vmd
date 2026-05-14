@@ -1,6 +1,6 @@
 # VMD
 
-VMD is an open draft for a semantic visual document format.
+VMD is an open draft for a layered visual document format.
 
 The web has languages for structure, style, and behavior. VMD explores a missing
 layer: a portable way to describe the role of an idea so the same source can
@@ -103,8 +103,9 @@ Current behavior:
   extension content script
 - the extension popup also includes a manual viewer with upload and drag-and-drop
 - the same source can render as read, deck, and map views
-- `fidelity: preserve` documents render without the extension toolbar so
-  preserved HTML/CSS can match the original page more closely
+- `fidelity: preserve` documents render without the extension toolbar or VMD
+  body classes, and can preserve supported `html`/`body` attributes so imported
+  HTML/CSS can match the original page more closely
 
 ## Repository Contents
 
@@ -115,7 +116,7 @@ Current behavior:
 - `docs/ecosystem-research-and-adoption-plan.md`: lessons from Markdown and adjacent formats
 - `docs/architecture.md`: source, AST, renderer, and extension architecture
 - `docs/cli.md`: command-line rendering, AST, validation, and gallery workflow
-- `docs/ast-schema.md`: draft JSON Schema for the semantic AST
+- `docs/ast-schema.md`: draft JSON Schema for the layered AST
 - `docs/public-site-and-actions.md`: GitHub Pages and reusable render action
 - `docs/language-design.md`: language direction and design principles
 - `docs/spec-draft-v0.md`: first public grammar and AST draft
@@ -259,7 +260,7 @@ dist/family-platform.html
 
 ## CLI
 
-The reference CLI can render HTML, print the semantic AST, validate source, and
+The reference CLI can render HTML, print the layered AST, validate source, and
 build the public gallery.
 
 ```bash
@@ -356,11 +357,11 @@ See `docs/spec-draft-v0.md` for the current draft.
 VMD is pre-standard and experimental. The current goal is to stabilize:
 
 1. the source grammar
-2. the semantic AST
-3. a small vocabulary of semantic and visual blocks
+2. the layered AST
+3. a small vocabulary of semantic, visual, layout, style, raw, and component blocks
 4. interoperable reference renderers
 
-The important boundary is the semantic AST. VMD source should compile into a
+The important boundary is the layered AST. VMD source should compile into a
 structured representation before it becomes HTML, slides, PDF, or any other
 output format.
 

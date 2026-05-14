@@ -39,9 +39,11 @@ If a document declares:
 ```
 
 the automatic renderer skips the normal VMD toolbar and renders the preserved
-HTML/CSS directly. It also avoids injecting the extension stylesheet or adding
-VMD classes to `body`. This mode is intended for files that should behave as
-close as possible to opening an HTML file in the browser.
+HTML/CSS directly. It also avoids injecting the extension stylesheet, avoids
+adding VMD classes to `body`, and applies preserved `html` and `body`
+attributes such as language, direction, class, id, style, data, and ARIA
+attributes. This mode is intended for files that should behave as close as
+possible to opening an HTML file in the browser.
 
 ### Manual Viewer
 
@@ -86,7 +88,7 @@ If VMD becomes widely used, the long-term target is native browser support:
 - default rendering to web-native HTML/CSS
 - explicit handling of semantic, structured, visual, preserve, and interactive
   fidelity tiers
-- inspectable semantic AST
+- inspectable layered AST
 - extension and DevTools hooks
 - accessibility mapping for semantic blocks
 

@@ -375,13 +375,14 @@ function buildSemanticVmd(snapshot, relativePath) {
 function buildPreserveVmd(htmlPath, htmlSource, snapshot, relativePath) {
   const title = sanitizeInline(snapshot.title || path.basename(relativePath, ".html"), 96);
   const sourceAttr = sanitizeInline(relativePath, 120);
-  const { css, html } = extractPreservedHtmlParts(htmlSource, htmlPath);
+  const { css, html, attrs } = extractPreservedHtmlParts(htmlSource, htmlPath);
   const lines = [
     `@doc "${title.replace(/"/g, "'")}" {`,
     "  format: preserved-html;",
     "  conversion: html-preserve;",
     "  fidelity: preserve;",
     `  source: "${sourceAttr.replace(/"/g, "'")}";`,
+    ...Object.entries(attrs).map(([key, value]) => `  ${key}: "${sanitizeDocAttr(value)}";`),
     "}",
     ""
   ];
@@ -405,6 +406,10 @@ function extractPreservedHtmlParts(htmlSource, htmlPath) {
   const baseDir = path.dirname(htmlPath);
   const styles = [];
   const links = [];
+  const htmlOpen = findOpeningTag(htmlSource, "html");
+  const bodyElement = findElementContent(htmlSource, "body");
+  const htmlAttrs = parseTagAttrs(htmlOpen?.attrs || "");
+  const bodyAttrs = parseTagAttrs(bodyElement?.attrs || "");
   const styleRe = /<style\b[^>]*>([\s\S]*?)<\/style>/gi;
   let styleMatch = styleRe.exec(htmlSource);
   while (styleMatch) {
@@ -419,8 +424,7 @@ function extractPreservedHtmlParts(htmlSource, htmlPath) {
     linkMatch = linkRe.exec(htmlSource);
   }
 
-  const bodyMatch = htmlSource.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i);
-  const body = bodyMatch ? bodyMatch[1] : htmlSource
+  const body = bodyElement ? bodyElement.content : htmlSource
     .replace(/<!doctype[^>]*>/i, "")
     .replace(/<html\b[^>]*>/i, "")
     .replace(/<\/html>/i, "")
@@ -428,8 +432,122 @@ function extractPreservedHtmlParts(htmlSource, htmlPath) {
 
   return {
     css: styles.join("\n\n"),
-    html: [...links, rewriteRelativeResourceUrls(body, baseDir)].join("\n").trim()
+    html: [...links, rewriteRelativeResourceUrls(body, baseDir)].join("\n").trim(),
+    attrs: preserveDocumentAttrs(htmlAttrs, bodyAttrs)
   };
+}
+
+function findOpeningTag(source, tagName) {
+  const match = new RegExp(`<${tagName}\\b`, "i").exec(source);
+  if (!match) {
+    return null;
+  }
+
+  let quote = "";
+  for (let index = match.index + match[0].length; index < source.length; index += 1) {
+    const char = source[index];
+    if (quote) {
+      if (char === quote) {
+        quote = "";
+      }
+      continue;
+    }
+    if (char === "\"" || char === "'") {
+      quote = char;
+      continue;
+    }
+    if (char === ">") {
+      return {
+        start: match.index,
+        end: index + 1,
+        attrs: source.slice(match.index + match[0].length, index)
+      };
+    }
+  }
+
+  return null;
+}
+
+function findElementContent(source, tagName) {
+  const open = findOpeningTag(source, tagName);
+  if (!open) {
+    return null;
+  }
+
+  const closeRe = new RegExp(`</${tagName}\\s*>`, "gi");
+  closeRe.lastIndex = open.end;
+  let closeMatch = closeRe.exec(source);
+  let lastCloseMatch = closeMatch;
+  while (closeMatch) {
+    lastCloseMatch = closeMatch;
+    closeMatch = closeRe.exec(source);
+  }
+
+  return {
+    attrs: open.attrs,
+    content: lastCloseMatch
+      ? source.slice(open.end, lastCloseMatch.index)
+      : source.slice(open.end)
+  };
+}
+
+function preserveDocumentAttrs(htmlAttrs, bodyAttrs) {
+  const attrs = {};
+
+  if (htmlAttrs.lang) {
+    attrs["html-lang"] = htmlAttrs.lang;
+  }
+  if (htmlAttrs.dir) {
+    attrs["html-dir"] = htmlAttrs.dir;
+  }
+
+  const bodyAliases = {
+    class: "body-class",
+    id: "body-id",
+    style: "body-style",
+    dir: "body-dir",
+    lang: "body-lang"
+  };
+
+  for (const [sourceKey, targetKey] of Object.entries(bodyAliases)) {
+    if (bodyAttrs[sourceKey]) {
+      attrs[targetKey] = bodyAttrs[sourceKey];
+    }
+  }
+
+  for (const [key, value] of Object.entries(bodyAttrs)) {
+    if (!value || !/^(?:data-|aria-)/.test(key)) {
+      continue;
+    }
+    attrs[`body-${key}`] = value;
+  }
+
+  return attrs;
+}
+
+function parseTagAttrs(source) {
+  const attrs = {};
+  const attrRe = /([a-zA-Z_:][\w:.-]*)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
+  let match = attrRe.exec(source);
+  while (match) {
+    const name = match[1].toLowerCase();
+    if (!isPreservedTagAttr(name)) {
+      match = attrRe.exec(source);
+      continue;
+    }
+    attrs[name] = match[2] ?? match[3] ?? match[4] ?? "";
+    match = attrRe.exec(source);
+  }
+  return attrs;
+}
+
+function isPreservedTagAttr(name) {
+  return ["class", "id", "style", "dir", "lang"].includes(name) ||
+    /^(?:data-|aria-)/.test(name);
+}
+
+function sanitizeDocAttr(value) {
+  return sanitizeInline(value, 4000).replace(/"/g, "'");
 }
 
 function rewriteRelativeResourceUrls(markup, baseDir) {
@@ -666,10 +784,10 @@ function renderMarkdownReport(summary) {
 function interpretationLines(summary) {
   if (summary.conversion === "preserve") {
     return [
-      "Preserve conversion wraps existing browser-native source in raw VMD compatibility blocks.",
+      "Preserve conversion wraps existing browser-native source in raw VMD compatibility blocks and carries supported `html` and `body` attributes through the document header.",
       "This is the right mode when the goal is visual equivalence with an existing HTML/CSS page.",
       "",
-      "Remaining drift usually points to scripts, external assets, relative stylesheet URLs, or raw-block delimiter conflicts rather than semantic VMD rendering."
+      "Remaining drift usually points to scripts, external assets, unsupported root attributes, or raw-block delimiter conflicts rather than semantic VMD rendering."
     ];
   }
 

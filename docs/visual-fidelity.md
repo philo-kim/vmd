@@ -11,8 +11,9 @@ The current VMD renderer now supports both semantic conversion and preserve
 conversion. The important decision is explicit:
 
 - `--conversion semantic` produces a VMD-native interpretation
-- `--conversion preserve` wraps existing HTML/CSS in the compatibility layer and
-  asks the renderer to avoid normal VMD wrappers
+- `--conversion preserve` wraps existing HTML/CSS in the compatibility layer,
+  preserves supported `html` and `body` attributes, and asks the renderer to
+  avoid normal VMD wrappers
 
 ## Why This Boundary Matters
 
@@ -92,6 +93,8 @@ Preserve mode extracts CSS and body HTML into:
 ```vmd
 @doc "Imported Page" {
   fidelity: preserve
+  html-lang: en
+  body-class: source-page
 }
 
 ::raw.css
@@ -104,8 +107,10 @@ Preserve mode extracts CSS and body HTML into:
 ```
 
 The reference read renderer emits preserved content directly, without the normal
-VMD document shell. This is the correct mode when the goal is “open the VMD and
-see the same browser page.”
+VMD document shell. Supported `html` and `body` attributes are carried through
+as `@doc` attributes, so selectors such as `body.source-page` can survive the
+round trip. This is the correct mode when the goal is “open the VMD and see the
+same browser page.”
 
 ### Hybrid Mode
 

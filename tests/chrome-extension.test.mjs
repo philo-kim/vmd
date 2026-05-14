@@ -29,10 +29,15 @@ const fixtureSource = `@doc "Chrome Auto Render Test" {
 const preserveSource = `@doc "Chrome Preserve Test" {
   format: preserved-html
   fidelity: preserve
+  html-lang: ko
+  body-class: source-body
+  body-id: preserve-root
+  body-style: background: rgb(12, 20, 31);
+  body-data-theme: imported
 }
 
 ::raw.css
-body { margin: 0; background: rgb(12, 20, 31); }
+body.source-body { margin: 0; }
 .preserved-fixture {
   display: grid;
   min-height: 100vh;
@@ -113,7 +118,10 @@ try {
   const preservePage = await context.newPage();
   await preservePage.goto(`http://127.0.0.1:${port}/preserve.vmd`);
   await preservePage.waitForSelector(".preserved-fixture", { timeout: 15000 });
-  assert.equal(await preservePage.locator("body").getAttribute("class"), null, "preserve mode should not add VMD classes to body");
+  assert.equal(await preservePage.locator("html").getAttribute("lang"), "ko");
+  assert.equal(await preservePage.locator("body").getAttribute("class"), "source-body", "preserve mode should keep source body class only");
+  assert.equal(await preservePage.locator("body").getAttribute("id"), "preserve-root");
+  assert.equal(await preservePage.locator("body").getAttribute("data-theme"), "imported");
   assert.equal(await preservePage.locator(".auto-banner").count(), 0, "preserve mode should not inject the VMD toolbar");
   assert.equal(await preservePage.locator("head style").count(), 0, "preserve mode should not inject extension stylesheet into head");
   const preservedTextColor = await preservePage.locator(".preserved-fixture").evaluate((element) => getComputedStyle(element).color);
@@ -122,7 +130,8 @@ try {
   const localPreservePage = await context.newPage();
   await localPreservePage.goto(pathToFileURL(preserveFixturePath).href);
   await localPreservePage.waitForSelector(".preserved-fixture", { timeout: 15000 });
-  assert.equal(await localPreservePage.locator("body").getAttribute("class"), null, "local preserve files should not add VMD classes to body");
+  assert.equal(await localPreservePage.locator("html").getAttribute("lang"), "ko");
+  assert.equal(await localPreservePage.locator("body").getAttribute("class"), "source-body", "local preserve files should keep source body class only");
   assert.equal(await localPreservePage.locator(".auto-banner").count(), 0, "local preserve files should not inject the VMD toolbar");
   assert.equal(await localPreservePage.locator("head style").count(), 0, "local preserve files should not inject extension stylesheet into head");
 
