@@ -1,58 +1,50 @@
 # Browser Integration
 
-This repository includes a Chrome extension that renders `.vmd` files with the
-reference parser and renderer.
+Browsers do not currently render `.vmd` natively. This repository provides a
+Chrome extension as a reference polyfill.
 
-## Automatic Local File Rendering
+## Target Behavior
 
-When a local `.vmd` file is opened in Chrome, the content script detects the
-file, parses the source, and replaces the plain-text view with rendered HTML.
+When a user opens a `.vmd` file, the browser integration should:
 
-Chrome requires explicit file access:
+1. read the VMD source
+2. parse the document contract
+3. render the AI source layer for preview and editing
+4. use the replay layer when restoration is required
+5. show diagnostics when a document claims `visual-lossless` but lacks lock,
+   replay, residual, residual-index, or edit-state data
 
-1. Open `chrome://extensions`
-2. Open the VMD extension details page
-3. Enable `Allow access to file URLs`
-4. Open a local `.vmd` file in Chrome
+## Current Chrome Polyfill
 
-If a document declares preserve fidelity:
+The current extension supports:
 
-```vmd
-@doc "Imported Page" {
-  fidelity: preserve
-}
-```
+- automatic rendering of local and hosted `.vmd` files
+- manual upload and drag-and-drop viewer
+- read, deck, and map preview modes
+- diagnostics from the shared validator
+- packaged visual-lossless sample loading
 
-the automatic renderer skips the normal VMD toolbar, avoids injecting the
-extension stylesheet, avoids adding VMD classes to `body`, and applies preserved
-`html` and `body` attributes before replacing the page content.
+The extension is a polyfill, not the standard. The standard is the file contract
+described in `docs/spec-draft-v0.md`.
 
-## Manual Viewer
+## Visual-Lossless Handling
 
-The extension also includes a viewer page where users can upload or drag a
-`.vmd` file. The viewer can render read, deck, and map modes and display
-validator diagnostics.
+For a visual-lossless document, the viewer surfaces:
 
-## Web-Served VMD
+- declared fidelity tier
+- number of frames and components
+- presence of `@lock`, `@replay`, `@residual`, and `@raw`
+- presence of `@residual_index`
+- source/replay freshness from `@edit_state` or `@dirty`
 
-The extension can also render web-served `.vmd` URLs that match the extension's
-host permissions. Web-served files do not require Chrome's local file access
-permission.
+The current reference renderer does not yet implement the final replay codec.
+Until that codec is complete, visual-lossless status must be proven by the
+verification tools, not by extension display alone.
 
-## Static HTML Output
+## Legacy Preserve Handling
 
-The CLI can render `.vmd` source into static HTML:
+The extension still supports `fidelity: preserve` for compatibility. Preserve
+documents bypass the VMD toolbar and normal extension CSS so raw HTML/CSS can be
+shown with minimal interference.
 
-```bash
-node bin/vmd.mjs render samples/source-layer-brief.vmd --out dist/source-layer-brief.html
-```
-
-The gallery builder uses the same renderer to produce the static demo site.
-
-## References
-
-- [Chrome extension match patterns](https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns)
-  support `file:///` local-file matching, but require the user to grant file
-  access.
-- [Chrome extension permissions](https://developer.chrome.com/docs/extensions/develop/concepts/declare-permissions)
-  document the user-controlled `Allow access to file URLs` setting.
+This is a compatibility path. The target format is `fidelity: visual-lossless`.

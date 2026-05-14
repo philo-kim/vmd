@@ -142,9 +142,10 @@ Options:
   --doc-md <file>          Optional docs copy.
 
 The benchmark measures AI-generated HTML artifacts as source material for VMD:
-HTML size, preserve-wrapper overhead, semantic-draft compression, and visual
-surface complexity. It does not claim preserve mode is the final product goal;
-it makes the need for a hybrid AI-native visual document format measurable.
+HTML size, legacy preserve-wrapper overhead, source-layer compression, and
+visual surface complexity. It does not claim the current converter is already
+visual-lossless; it makes the need for source slots plus replay/residual data
+measurable.
 `);
 }
 
@@ -311,7 +312,7 @@ function renderMarkdown(summary) {
     "# AI Artifact Benchmark",
     "",
     "This benchmark uses real AI/agent-generated HTML artifacts as the stress case for VMD.",
-    "The point is not that VMD should merely wrap HTML. Preserve mode proves browser fidelity, while semantic compression shows why a smaller, editable, AI-native visual source is needed.",
+    "The point is not that VMD should merely wrap HTML. The benchmark measures how much smaller the AI-facing source layer can be, while visual-lossless restoration still requires replay/residual verification.",
     "",
     "## Source",
     "",
@@ -323,14 +324,14 @@ function renderMarkdown(summary) {
     "",
     `- HTML source: ${formatBytes(summary.totals.htmlBytes)} (${summary.totals.approxHtmlTokens} approx tokens)`,
     `- Preserve VMD source: ${formatBytes(summary.totals.preserveVmdBytes)} (${summary.totals.approxPreserveTokens} approx tokens)`,
-    `- Semantic draft VMD source: ${formatBytes(summary.totals.semanticVmdBytes)} (${summary.totals.approxSemanticTokens} approx tokens)`,
-    `- Average semantic draft reduction: ${summary.totals.averageSemanticReductionPercent}%`,
+    `- Source-layer VMD draft: ${formatBytes(summary.totals.semanticVmdBytes)} (${summary.totals.approxSemanticTokens} approx tokens)`,
+    `- Average source-layer reduction: ${summary.totals.averageSemanticReductionPercent}%`,
     `- Average preserve source delta: ${summary.totals.averagePreserveSourceDeltaPercent}%`,
     `- Visual surface: ${summary.totals.styleRules} CSS rules, ${summary.totals.inlineStyles} inline styles, ${summary.totals.classAttrs} class attributes`,
     "",
     "## Case Results",
     "",
-    "| Artifact | HTML | Preserve VMD | Semantic Draft VMD | Semantic Reduction | CSS Rules | Inline Styles | Classes |",
+    "| Artifact | HTML | Legacy Preserve VMD | Source-Layer VMD | Source Reduction | CSS Rules | Inline Styles | Classes |",
     "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ...summary.results.map((result) => [
       `| ${escapeMarkdown(result.path)}`,
@@ -346,9 +347,9 @@ function renderMarkdown(summary) {
     "## Interpretation",
     "",
     "- AI-generated HTML is already a useful visual artifact, but it is a large browser implementation surface rather than a compact authoring source.",
-    "- Preserve VMD is a compatibility tier for exact rendering. It should be used when the visual page itself is the artifact of record.",
-    "- Semantic VMD is much smaller and easier for AI to edit, but it intentionally loses bespoke layout and style detail.",
-    "- Hybrid VMD can combine semantic frames, structured layouts, reusable components, theme tokens, and raw compatibility where exact visual fidelity requires it."
+    "- Legacy preserve VMD is a compatibility baseline, not the final product goal.",
+    "- Source-layer VMD is much smaller and easier for AI to edit, but it intentionally loses bespoke layout and style detail unless paired with replay/residual data.",
+    "- Visual-lossless VMD must combine editable slots, renderer recipes, residual index constraints, dirty-state handling, and replay/residual/raw restoration data."
   ];
   return `${lines.join("\n")}\n`;
 }

@@ -1,316 +1,137 @@
-# VMD Language Design
+# Language Design
 
-## Definition
+VMD borrows useful ideas from Markdown, HTML, and CSS, but its purpose is
+different: complete visual restoration with a compact AI-editable source layer.
 
-VMD is a layered visual document language.
+## What VMD Takes From Existing Languages
 
-It lets a person or AI agent write a readable source file while choosing how
-much fidelity the renderer must preserve:
+Markdown contributes:
 
-```text
-semantic meaning -> layout structure -> style tokens -> raw compatibility
-```
+- readable plain text
+- simple headings
+- low authoring friction
 
-The old one-line promise still matters:
+HTML contributes:
 
-```text
-Write like Markdown. Structure like HTML. Render through a theme system like CSS.
-```
+- structured document roles
+- nested elements
+- browser output as the final target
 
-But it is not sufficient for real design documents. A mature VMD file also
-needs a controlled way to preserve existing HTML/CSS when exact browser
-rendering matters.
+CSS contributes:
 
-## Design Position
+- reusable visual systems
+- tokens and cascaded style responsibility
+- separation of content from presentation
 
-VMD should not be a direct replacement for HTML, CSS, or Markdown.
+VMD adds:
 
-It borrows a narrow strength from each:
+- intent and editable slots
+- renderer lock
+- residual index
+- edit state and dirty markers
+- replay and residual layers for complete restoration
 
-- Markdown: readable source text
-- HTML: explicit structure and native browser output
-- CSS: reusable visual rules separated from content
-- modern component systems: repeatable visual primitives
+## Syntax Surfaces
 
-The language should make this stronger promise:
+VMD uses three surface forms.
 
-```text
-If the author marks the intent and required fidelity of a visual document, the
-renderer can choose between semantic rendering and exact preservation.
-```
-
-## Core Layers
-
-### 1. Source Layer
-
-The source must remain readable before rendering.
-
-Good:
+### Document Contract
 
 ```vmd
-::claim
-Generated HTML is useful output.
-It should not always be the editable source.
-::
-```
-
-Avoid:
-
-```html
-<block type="claim" display="hero" weight="high">
-  <content>Generated HTML is useful output.</content>
-</block>
-```
-
-### 2. Semantic Layer
-
-Semantic blocks describe the role of the content.
-
-Initial semantic blocks:
-
-- `frame`: one unit of thought
-- `claim`: primary argument
-- `evidence`: supporting proof or context
-- `insight`: interpretation or discovery
-- `decision`: selected direction
-- `action`: next step
-- `observation`, `counterpoint`, `principle`, `risk`, `question`
-
-These are not CSS classes. They are meaning-bearing document nodes.
-
-### 3. Visual Pattern Layer
-
-Visual blocks describe reusable thinking patterns:
-
-- `visual.compare`: two-sided comparison
-- `visual.loop`: repeated cycle
-- `visual.timeline`: ordered sequence
-- `visual.matrix`: two-axis decision space
-
-### 4. Layout Layer
-
-Layout blocks describe screen structure without forcing authors to write raw
-HTML:
-
-- `layout.stack`
-- `layout.grid`
-- `layout.split`
-- `layout.cluster`
-- `layout.panel`
-- `layout.device`
-- `layout.tabs`
-
-This layer is the missing bridge between semantic VMD and high-fidelity design
-documents. It lets VMD express things like grids, split views, phone mockups,
-tabbed panels, and grouped components.
-
-### 5. Component Layer
-
-Components are named visual primitives:
-
-- `component.card`
-- `component.metric`
-- `component.persona`
-- `component.phone`
-- `component.token-table`
-- `component.browser`
-
-The component layer keeps common design-document objects portable without
-turning every document into raw HTML.
-
-### 6. Style Layer
-
-The preferred style layer is structured tokens:
-
-```vmd
-::style.tokens
-accent: #0e7490 - primary action color
-space-md: 16px - default layout gap
-::
-```
-
-Trusted CSS can be used when a document requires more control:
-
-```vmd
-::style.css
-.hero {
-  display: grid;
+@doc "Title" {
+  spec: vmd@0.1
+  fidelity: visual-lossless
+  intent: dashboard
 }
+```
+
+### Directive Blocks
+
+```vmd
+@lock {
+  renderer: vmd-web@0.3.0
+  browser: chromium
+  viewport: 1440x1200
+}
+```
+
+Directives are renderer or AI contract blocks.
+
+Edit state is also a directive:
+
+```vmd
+@edit_state {
+  source: clean
+  replay: current
+  dirty: none
+}
+```
+
+### Content Blocks
+
+```vmd
+::frame[role="overview"]
+  ::component.card[title="Revenue"]
+  value: $842k
+  ::
 ::
 ```
 
-### 7. Compatibility Layer
+Content blocks are the AI-editable source structure.
 
-Raw blocks preserve browser-native source:
+## Why `@residual_index` Exists
 
-- `raw.html`
-- `raw.css`
-- `raw.svg`
-- `raw.js`
+Lossless replay data can be too large or too low-level for an LLM to read on
+every edit. Hiding it completely is unsafe because the AI may break the replay
+constraints.
 
-The reference renderer renders HTML, CSS, and SVG. It parses but does not
-execute JavaScript. Raw HTML/SVG also has executable script surfaces disabled by
-the reference renderer. This keeps VMD useful for high-fidelity import without
-making script execution the default trust model.
+`@residual_index` gives a compact summary:
+
+```vmd
+@residual_index {
+  affected:
+    - frame.overview.title
+  constraints:
+    frame.overview.title.max-lines: 2
+  ai-note: Edit source slots only.
+}
+```
+
+The model reads the index, not the residual payload.
+
+## Compactness Strategy
+
+VMD should not compress by inventing unreadable abbreviations as the primary
+format. It should compress by moving repeated visual implementation detail into:
+
+- shared renderer dictionaries
+- recipes
+- tokens
+- edit-state dirty markers
+- replay deltas
+- residual streams
+
+The AI-facing source stays readable. The renderer-facing replay can be encoded
+more compactly later without changing the source semantics.
 
 ## Fidelity Tiers
 
-VMD documents should declare their target fidelity.
+The reference vocabulary still contains `semantic`, `structured`, `visual`,
+`preserve`, and `interactive` for compatibility, but the strategic target is:
 
 ```vmd
-@doc "Imported Design" {
-  fidelity: preserve
-  body-class: imported-page
-}
+fidelity: visual-lossless
 ```
 
-| Tier | Target |
-| --- | --- |
-| `semantic` | roles, validation, read/deck/map output |
-| `structured` | semantic roles plus layout and component primitives |
-| `visual` | structured VMD plus tokens, CSS, SVG, and visual primitives |
-| `preserve` | imported HTML/CSS with minimal renderer interference |
-| `interactive` | reserved tier for trusted interaction models |
+That tier means the document has enough source, lock, replay, residual, or raw
+data to restore the visual output.
 
-This solves the core ambiguity: a `.vmd` file can be an editable semantic
-document or a high-fidelity preserved document, but it must say which target it
-is optimizing for.
+## Design Constraint
 
-## Frame As The Base Unit
+If the language is compact but cannot restore the output, it fails.
 
-VMD should keep `frame` as the base unit for semantic documents.
+If it restores the output but forces the AI to read and rewrite full HTML/CSS,
+it also fails.
 
-A frame is not a page, slide, section, or card. It is one unit of thought.
-
-The same frame can render differently:
-
-- Read mode: document section
-- Deck mode: slide
-- Map mode: node
-- Web mode: interactive section
-
-For `fidelity: preserve`, frames become optional containers. The renderer should
-avoid adding wrappers that would break imported CSS selectors.
-
-## MVP Syntax
-
-```vmd
-@doc "Source Layer Brief" {
-  format: deck
-  theme: clean
-  audience: builders
-  fidelity: structured
-}
-
-# A Source Layer For Visual Documents
-
-::frame[role="opening"]
-  ::claim
-  Generated HTML is useful output.
-  It should not always be the editable source.
-  ::
-::
-
-::frame[role="proof"]
-  ::layout.grid[columns="2" gap="medium"]
-    ::component.card[title="HTML-first source"]
-    Implementation details, page-specific CSS, and generated DOM.
-    ::
-
-    ::component.card[title="VMD source"]
-    Declared intent, reusable visual mapping, and document roles.
-    ::
-  ::
-::
-```
-
-## Preserve Syntax
-
-```vmd
-@doc "Imported HTML Page" {
-  format: preserved-html
-  fidelity: preserve
-  html-lang: en
-  body-class: imported-page
-}
-
-::raw.css
-body.imported-page { margin: 0; }
-.page { min-height: 100vh; }
-::
-
-::raw.html
-<main class="page">
-  <h1>Existing browser page</h1>
-</main>
-::
-```
-
-This is intentionally less semantic. It exists because visual formats need a
-lossless escape hatch before they can become practical migration targets.
-Preserve documents can carry supported `html` and `body` attributes in the
-document header so root selectors survive conversion.
-
-## Layered AST
-
-The AST is the real format boundary.
-
-Expected shape:
-
-```json
-{
-  "doc": {
-    "title": "Source Layer Brief",
-    "attrs": {
-      "format": "deck",
-      "theme": "clean",
-      "fidelity": "structured"
-    }
-  },
-  "children": [
-    {
-      "type": "frame",
-      "attrs": {
-        "role": "proof"
-      },
-      "children": [
-        {
-          "type": "layout.grid",
-          "attrs": {
-            "columns": "2",
-            "gap": "medium"
-          },
-          "children": [
-            {
-              "type": "component.card",
-              "attrs": {
-                "title": "HTML-first source"
-              },
-              "lines": [
-                "Implementation details, page-specific CSS, and generated DOM."
-              ]
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
-```
-
-This lets renderers target HTML, PDF, deck, SVG, or interactive web without
-reparsing the source.
-
-## Quality Checks Enabled By Semantics
-
-Once blocks have roles, automated review becomes possible:
-
-- claim exists but evidence is missing
-- contrast exists but decision is missing
-- opening frame does not match the declared audience
-- problem frame has no transition into solution
-- document requests `preserve` but includes executable script
-- imported HTML relies on features not supported by the target renderer
-
-These checks are implemented as validator diagnostics and can be expanded by
-tools that consume the layered AST.
+The design target is the smallest restorable representation that still exposes
+clear intent, slots, tokens, and constraints to the AI.

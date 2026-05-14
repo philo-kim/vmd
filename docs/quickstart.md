@@ -15,18 +15,26 @@ npm install
 Open:
 
 ```text
-samples/source-layer-brief.vmd
+samples/visual-lossless-dashboard.vmd
 ```
 
-The source is plain text. It uses Markdown-style headings and semantic blocks:
+The source is plain text. It declares a visual-lossless contract:
 
 ```vmd
-::frame[role="opening"]
-  ::claim
-  Generated HTML is useful output.
-  It should not always be the editable source.
-  ::
-::
+@doc "Pulse Analytics Overview" {
+  spec: vmd@0.1
+  fidelity: visual-lossless
+}
+
+@lock {
+  renderer: vmd-web@0.3.0
+}
+
+@edit_state {
+  source: clean
+  replay: current
+  dirty: none
+}
 ```
 
 ## 3. Render To Static HTML
@@ -44,17 +52,18 @@ dist/source-layer-brief.html
 You can also use the CLI directly:
 
 ```bash
-node bin/vmd.mjs render samples/source-layer-brief.vmd --out dist/source-layer-brief.html --mode read
+node bin/vmd.mjs render samples/visual-lossless-dashboard.vmd --out dist/visual-lossless-dashboard.html --mode read
 ```
 
 ## 4. Validate The Source
 
 ```bash
-node bin/vmd.mjs validate samples/source-layer-brief.vmd
+node bin/vmd.mjs validate samples/visual-lossless-dashboard.vmd
 ```
 
 Validation reports parse errors, unknown blocks, incomplete visual blocks, and
-semantic authoring warnings such as claims without evidence.
+visual-lossless contract warnings such as missing lock, replay, residual index,
+or edit-state handling.
 
 ## 5. Build The Gallery And Playground
 
@@ -84,7 +93,7 @@ Then:
 4. Select the `extension/` directory
 5. Open the extension details page
 6. Enable `Allow access to file URLs`
-7. Open `samples/source-layer-brief.vmd` in Chrome
+7. Open `samples/visual-lossless-dashboard.vmd` in Chrome
 
 The file should render as a visual document instead of remaining plain text.
 

@@ -4,7 +4,7 @@
   "patterns": [
     {
       "name": "keyword.control.vmd",
-      "match": "^\\s*@(?:doc|theme)\\b"
+      "match": "^\\s*@(?:doc|theme|lock|tokens|recipes|replay|residual|residual_index|raw)\\b"
     },
     {
       "name": "markup.heading.vmd",

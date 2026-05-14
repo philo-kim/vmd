@@ -16,7 +16,8 @@ const {
   LAYOUT_BLOCK_TYPES,
   STYLE_BLOCK_TYPES,
   RAW_BLOCK_TYPES,
-  COMPONENT_BLOCK_TYPES
+  COMPONENT_BLOCK_TYPES,
+  DIRECTIVE_BLOCK_TYPES
 } = require("../core/vmd-core.cjs");
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -35,6 +36,9 @@ assert.ok(LAYOUT_BLOCK_TYPES.includes("layout.grid"));
 assert.ok(STYLE_BLOCK_TYPES.includes("style.tokens"));
 assert.ok(RAW_BLOCK_TYPES.includes("raw.html"));
 assert.ok(COMPONENT_BLOCK_TYPES.includes("component.metric"));
+assert.ok(DIRECTIVE_BLOCK_TYPES.includes("lock"));
+assert.ok(DIRECTIVE_BLOCK_TYPES.includes("edit_state"));
+assert.ok(SEMANTIC_BLOCK_TYPES.includes("intent"));
 
 const readHtml = renderVmd(ast, "read");
 assert.match(readHtml, /A Source Layer For Visual Documents/);
@@ -128,6 +132,73 @@ const visual = parseVmd(`@doc "Visual" {
 assert.match(renderVmd(visual, "read"), /layout-grid/);
 assert.match(renderVmd(visual, "read"), /component-metric/);
 assert.match(renderVmd(visual, "read"), /matrix-block/);
+
+const lossless = parseVmd(`@doc "Lossless" {
+  fidelity: visual-lossless
+  intent: dashboard
+}
+
+@lock {
+  renderer: vmd-web@0.3.0
+  dictionary: dashboard-system@1.0.0
+  browser: chromium
+  viewport: 1440x1200
+}
+
+@edit_state {
+  source: clean
+  replay: current
+  dirty: none
+}
+
+::intent
+audience: growth team
+purpose: inspect revenue and accounts quickly
+::
+
+@tokens {
+  accent: #c96442
+  surface: #ffffff
+}
+
+::frame[role="dashboard-overview"]
+  ::component.metric[label="Revenue" value="$842k"]
+  ::
+::
+
+@residual_index {
+  affected:
+    - frame.dashboard-overview.title
+  constraints:
+    frame.dashboard-overview.title.max-lines: 2
+  ai-note: Edit source slots only.
+}
+
+@replay {
+  encoding: visual-replay@0.1
+  contains: dom-delta css-cascade layout-boxes
+}
+
+@residual {
+  mode: visual-lossless
+  ai: ignore
+}
+`);
+const losslessDiagnostics = validateVmdAst(lossless);
+assert.equal(
+  losslessDiagnostics.filter((diagnostic) => diagnostic.level === "error").length,
+  0,
+  "visual-lossless fixture should not produce errors"
+);
+assert.doesNotMatch(
+  losslessDiagnostics.map((diagnostic) => diagnostic.code).join(" "),
+  /missing-render-lock|missing-replay-layer|missing-residual-index|missing-edit-state|unknown-block/,
+  "visual-lossless fixture should include lock, replay, residual index, edit state, and known intent"
+);
+assert.match(renderVmd(lossless, "read"), /directive-lock/);
+assert.match(renderVmd(lossless, "read"), /directive-edit_state/);
+assert.match(renderVmd(lossless, "read"), /directive-residual_index/);
+assert.match(renderVmd(lossless, "read"), /--accent: #c96442/);
 
 assert.throws(
   () => parseVmd("::claim\nmissing close"),

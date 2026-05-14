@@ -147,6 +147,11 @@ try {
   await viewerPage.waitForSelector(".component-metric", { timeout: 5000 });
   await viewerPage.waitForSelector(".raw-embed-html", { timeout: 5000 });
 
+  await viewerPage.locator("#lossless-sample-button").click();
+  await viewerPage.waitForSelector(".layer-summary.active", { timeout: 5000 });
+  await viewerPage.waitForSelector(".directive-residual_index", { timeout: 5000 });
+  assert.match(await viewerPage.locator(".layer-summary").textContent(), /visual-lossless/);
+
   console.log("chrome extension test passed");
 } finally {
   if (context) {

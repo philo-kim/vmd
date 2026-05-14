@@ -95,7 +95,7 @@ npm run smoke:public
 ```
 
 This opens the canonical public VMD page at `https://philo.kim/vmd/` in
-Chromium and checks that the page renders with the current source-layer framing.
+Chromium and checks that the page renders with the current visual-lossless framing.
 It is intentionally not part of `npm run check` because it depends on the public
 network and the latest site deployment.
 
@@ -125,9 +125,9 @@ npm run benchmark:open-design
 This optional benchmark expects a local checkout of
 `https://github.com/nexu-io/open-design` near the VMD checkout, or an
 `OPEN_DESIGN_DIR` environment variable pointing to that repo. It measures real
-AI/agent-generated HTML examples as source material for VMD: HTML size,
-preserve-source size, semantic draft size, approximate token pressure, CSS rule
-count, inline styles, and class-heavy visual surface area.
+AI/agent-generated HTML examples as source material for VMD: HTML size, AI
+source layer size, full visual-lossless prototype size, token pressure,
+round-trip drift, and the remaining restoration gap.
 
 The committed report is:
 
@@ -143,12 +143,14 @@ npm run verify:visual-fidelity -- --source-dir /path/to/html/folder
 ```
 
 This runs a Playwright-based check against existing HTML pages. It converts each
-page into semantic VMD, renders the converted VMD back to HTML, captures
+page into a VMD candidate, renders the converted VMD back to HTML, captures
 original and converted first-viewport screenshots, then reports pixel drift.
 
 The outputs are written under `dist/visual-fidelity/` by default and are ignored
 by Git. Use this when testing whether an existing HTML document set can be
-represented by the current VMD vocabulary without visible loss.
+represented by the current VMD vocabulary and replay strategy without visible
+loss. After AI edits, the same verification must be rerun after dirty slots are
+refreshed.
 
 See `docs/visual-fidelity.md`.
 

@@ -20,7 +20,7 @@
   "results": [
     {
       "format": "VMD",
-      "scenario": "Semantic visual source rendered by VMD renderer",
+      "scenario": "AI-readable visual source rendered by the VMD renderer",
       "sourceBytes": 1527,
       "sourceLines": 72,
       "approxTokens": 382,
@@ -33,8 +33,8 @@
       "standardizedSemanticRoles": 10,
       "conventionSemanticHints": 0,
       "visualPrimitives": 3,
-      "fidelityTiers": "semantic, structured, visual, preserve",
-      "pixelPreservationPath": "raw compatibility blocks",
+      "fidelityTiers": "semantic, structured, visual, visual-lossless, preserve",
+      "pixelPreservationPath": "visual-lossless replay, residual, or raw fallback",
       "contentValidation": {
         "supported": true,
         "errors": 0,

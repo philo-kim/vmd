@@ -1,90 +1,96 @@
 # Artifact Replacement Scope
 
-VMD should not be judged only as nicer Markdown or shorter HTML.
+VMD should not be judged as a Markdown variant or an HTML shorthand.
 
-The larger target is the editable source layer behind visual artifacts that are
-usually trapped inside one output format:
+The target is the editable source behind visual artifacts that are usually
+trapped inside one output format:
 
 - presentation decks
 - PDF reports
 - design handoff files
 - generated HTML pages
 - visual research maps
-- preserved AI-generated browser artifacts
+- dashboards
 
 The goal is not to remove those outputs. They remain useful delivery surfaces.
-The goal is to stop treating each output file as the only source of truth.
+The goal is to stop treating final output files as the only source of truth.
 
-## Why Existing Artifact Formats Are Hard For AI
+## Replacement Claim
 
-Presentation files, PDFs, design files, and generated HTML all encode a lot of
-visual state. That is useful when the artifact is being displayed, but awkward
-when an AI model needs to revise the underlying document.
+VMD should replace the fragile editable source layer, not every final artifact.
 
-The model often has to infer:
+```text
+VMD source + replay
+  -> browser page
+  -> deck
+  -> PDF
+  -> design handoff
+```
 
-- which sentence is the claim
-- which block is evidence
-- which frame is a decision
-- which visual element is structural
-- which layout decision is reusable
-- which part must preserve exact pixels
+The browser page, deck, and PDF can still exist. The `.vmd` file should contain
+the source and restoration contract that generated them.
 
-VMD makes those roles explicit before rendering.
+## Why Existing Artifacts Are Hard For AI
 
-## Source First, Artifact Second
+Presentation files, PDFs, design files, and generated HTML encode a lot of
+visual state. That is useful for display but awkward for AI revision.
 
-A VMD document should be able to say:
+The model has to infer:
+
+- what can be edited
+- what is locked visual state
+- what text affects measured layout
+- what token changes are safe
+- what component changes require relayout
+- what raw data exists only for restoration
+
+VMD makes those boundaries explicit.
+
+## Visual-Lossless Replacement
+
+A serious VMD artifact should be able to say:
 
 ```vmd
 @doc "Visual Decision Room" {
-  format: product-design-brief
-  fidelity: visual
+  spec: vmd@0.1
+  fidelity: visual-lossless
   surfaces: browser-page deck pdf design-handoff
 }
 ```
 
-That source can then feed several artifact surfaces:
+That means the file must include:
 
-| Surface | VMD role |
-| --- | --- |
-| Browser page | primary visual render target |
-| Presentation deck | frame-by-frame view over the same source |
-| PDF report | fixed export after validation |
-| Design handoff | tokens, components, states, and decisions |
-| Preserve artifact | exact HTML/CSS compatibility when pixels are the record |
+- source slots for AI edits
+- tokens and recipes for reusable visual structure
+- residual index constraints for safe editing
+- lock/replay/residual/raw data for restoration
+- edit state or dirty markers after changes
 
-This is the replacement claim: VMD should replace the fragile editable source,
-not every final artifact.
+## Open Design Benchmark
 
-## The Open Design Benchmark
+AI-generated HTML design artifacts are a useful stress case because they already
+show the target pressure: polished visual output, large implementation surface,
+and difficult repeated AI edits.
 
-Open Design-style AI design artifacts are a useful benchmark because they show
-the pressure clearly: AI can already create polished HTML-based design
-documents, but those documents can become large, brittle authoring targets.
+VMD should handle them by:
 
-VMD needs to support two paths:
-
-- a compact semantic or visual source for new documents
-- a preserve or hybrid source for existing browser-native artifacts
-
-The best case is hybrid: most of the document stays AI-readable and structured,
-while exact HTML/CSS is preserved only where fidelity truly matters.
+- extracting a compact AI source layer
+- mapping repeated patterns into recipes and tokens
+- preserving the remaining details through replay/residual/raw data
+- marking stale replay after source edits
+- rerunning visual verification before claiming lossless status
 
 ## What Good Looks Like
 
-A strong VMD example should feel like a real artifact, not just a syntax sample.
-It should be visually convincing after rendering and still remain readable as
-plain source.
+A strong VMD example should feel like a real visual artifact after rendering and
+still remain readable as source.
 
-The source should be able to carry:
+It should carry:
 
-- semantic roles such as `claim`, `evidence`, `decision`, and `action`
-- visual structures such as `visual.matrix`, `visual.timeline`, and
-  `visual.compare`
-- layout primitives such as `layout.grid`, `layout.split`, and `layout.device`
-- component primitives such as `component.card` and `component.metric`
-- style tokens before raw CSS
-- raw compatibility islands only where exact output is required
-
-See `samples/ai-artifact-stress.vmd` for the current stress sample.
+- intent and editable slots
+- component and layout structure
+- visual patterns
+- editable and locked tokens
+- residual-aware edit constraints
+- replay data for complete restoration
+- dirty-state handling after edits

@@ -112,10 +112,11 @@
   }
 
   function renderShell(ast, escapeHtml) {
+    const fidelity = ast.doc.attrs?.fidelity || "semantic";
     return `
       <header class="auto-banner">
         <div>
-          <p class="eyebrow">VMD</p>
+          <p class="eyebrow">VMD - ${escapeHtml(fidelity)}</p>
           <h1>${escapeHtml(ast.doc.title)}</h1>
         </div>
         <div class="mode-tabs" role="tablist" aria-label="VMD render mode">

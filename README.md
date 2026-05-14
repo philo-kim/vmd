@@ -1,388 +1,319 @@
 # VMD
 
-VMD is an open draft for a layered visual document format.
+VMD is an open draft for **Intent-Readable Visual-Lossless Markup**.
 
-The web has languages for structure, style, and behavior. VMD explores a missing
-layer: a portable way to describe the role of an idea so the same source can
-become a document, deck, map, report, design handoff, or interactive page.
-
-## Purpose
-
-VMD is designed for a world where people and AI agents create visual documents
-together. Instead of forcing every AI-assisted creator to generate complete
-HTML, CSS, and JavaScript for every page, VMD gives them a smaller and more
-portable target: layered visual structure.
-
-The format is not an HTML wrapper. It is a readable source format for visual
-documents, with preservation features available when exact browser output
-matters.
-
-The long-term ambition is broader than a new note format. VMD should become the
-editable source layer for visual artifacts that are often locked inside
-presentations, PDFs, design files, generated HTML, or one-off visual reports.
-
-## Core Idea
+The goal is not to make Markdown prettier. The goal is to make visual documents
+small and safe for AI to read and edit, while still giving the browser enough
+information to restore the original visual output.
 
 ```text
-Write like Markdown.
-Structure like HTML.
-Render through a theme system like CSS.
+HTML/CSS artifact
+  -> visual-lossless VMD
+     -> AI-readable source layer
+     -> renderer-readable replay layer
+  -> restored browser output
 ```
 
-VMD marks the role of an idea instead of its final decoration:
+## Non-Negotiable Rule
 
-```vmd
-::claim
-Generated HTML is useful output.
-It should not always be the editable source.
-::
-```
+A document may call itself `visual-lossless` only if the renderer can restore
+the target visual output under the declared lock.
 
-That semantic block can become a section in read mode, a slide in deck mode, or
-a node in map mode.
+Compression is useful only after that condition is met. If a structured source
+layer is not enough, the VMD file must carry replay, residual, or raw fallback
+data until restoration passes.
 
-For high-fidelity import, VMD also has layout, style, component, and raw
-compatibility layers. That means a `.vmd` file can be either a clean semantic
-document or a preserved browser page:
-
-```vmd
-@doc "Imported Page" {
-  fidelity: preserve
-}
-
-::raw.css
-body { margin: 0; }
-::
-
-::raw.html
-<main>
-  <h1>Preserved browser output</h1>
-</main>
-::
-```
-
-## Why VMD
-
-Markdown made writing portable. HTML made documents linkable and structured.
-CSS made presentation reusable. JavaScript made the web programmable.
-
-VMD focuses on:
+The optimization target is:
 
 ```text
-semantic intent plus explicit visual fidelity
+the smallest complete-restoration format that an LLM can still understand and edit safely
 ```
 
-Most authoring tools store appearance. VMD stores meaning first. A renderer can
-then decide how that meaning should appear in each medium.
+That gives VMD three priorities:
 
-## Why This Matters For AI-Assisted Creation
+1. Complete visual restoration
+2. LLM-readable and LLM-editable structure
+3. Compression of the AI-facing source layer
 
-AI can generate HTML, CSS, and JavaScript, but polished visual documents require
-many low-level layout decisions. VMD gives AI-assisted creators and vibe coders
-a higher-level target:
+## Core Model
 
-```text
-describe the document's semantic structure,
-then let the renderer handle the visual page.
-```
+VMD has two reading paths inside one `.vmd` file.
 
-An author can ask for a `.vmd` document. The browser, extension, app, or renderer
-can turn that semantic source into a web-native visual page.
+### AI Source Layer
 
-## Artifact Replacement Target
+This is the part an AI model should read and edit:
 
-VMD does not need to replace every final file people share. Decks, PDFs, design
-handoffs, and browser pages are still useful output surfaces.
+- `@doc`: document contract and fidelity tier
+- `::intent`: audience, purpose, editable slots, non-editable constraints
+- `@tokens`: design tokens that affect the document
+- `::frame` and component blocks: the editable visible structure
+- `@residual_index`: the replay constraints the AI must respect
+- `@edit_state` or `@dirty`: whether source edits have invalidated replay data
 
-The replacement target is the fragile editable source underneath those outputs.
-A VMD file should be readable enough for AI to revise, structured enough for
-validation, and visual enough to render into artifacts people actually want to
-show.
+### Render Replay Layer
 
-```text
-VMD source -> browser page / deck / PDF report / design handoff / preserve artifact
-```
+This is the part the renderer uses to restore the original browser output:
 
-## Browser Polyfill
+- `@lock`: renderer, dictionary, browser, viewport, source hash, render hash
+- `@recipes`: known component and layout recipes
+- `@replay`: encoded DOM, CSS, layout, asset, and state replay contract
+- `@residual`: lossless data not represented by source slots
+- `@raw`: fallback source when replay cannot be compacted yet
 
-This repository provides a Chrome-based browser polyfill for `.vmd` files.
+AI systems should not edit `@residual` or `@raw` directly. They should edit the
+source slots and respect `@residual_index`.
 
-Current behavior:
-
-- local `.vmd` files opened in Chrome can render automatically through the
-  extension content script
-- the extension popup also includes a manual viewer with upload and drag-and-drop
-- the same source can render as read, deck, and map views
-- `fidelity: preserve` documents render without the extension toolbar or VMD
-  body classes, and can preserve supported `html`/`body` attributes so imported
-  HTML/CSS can match the original page more closely
-
-## Repository Contents
-
-- `docs/quickstart.md`: fastest path from source to rendered output
-- `docs/manifesto.md`: why this format should exist
-- `docs/architecture.md`: source, AST, renderer, and extension architecture
-- `docs/cli.md`: command-line rendering, AST, validation, and gallery workflow
-- `docs/ast-schema.md`: draft JSON Schema for the layered AST
-- `docs/static-gallery-and-actions.md`: local gallery and reusable render action
-- `docs/language-design.md`: language direction and design principles
-- `docs/artifact-replacement.md`: VMD as source for decks, PDFs, design files, and visual reports
-- `docs/spec-draft-v0.md`: first public grammar and AST draft
-- `docs/format-benchmark.md`: VMD vs Markdown vs HTML benchmark results
-- `docs/open-design-ai-artifact-benchmark.md`: Open Design AI artifact benchmark
-- `docs/visual-fidelity.md`: how to verify existing HTML-to-VMD visual drift
-- `docs/ai-authoring-guide.md`: how to use VMD as an AI generation target
-- `docs/browser-integration.md`: Chrome extension rendering behavior
-- `docs/extension-architecture.md`: current extension design
-- `docs/testing.md`: local and integration test workflow
-- `docs/release.md`: release and packaging workflow
-- `samples/source-layer-brief.vmd`: sample VMD source
-- `samples/ai-artifact-stress.vmd`: stress case for a visual decision room across deck, PDF, design, and web surfaces
-- `samples/visual-fidelity-layers.vmd`: layered fidelity and raw compatibility example
-- `extension/`: reference Chrome polyfill and viewer
-- `vscode-extension/`: VS Code authoring and preview extension
-- `core/`: shared parser and renderer runtime
-- `tools/render-html.mjs`: local renderer that converts a VMD file to static HTML
-- `tools/verify-vmd-fidelity.mjs`: Playwright-based visual drift checker for HTML-to-VMD conversion
-- `bin/vmd.mjs`: CLI for rendering, AST output, validation, and gallery builds
-- `schemas/vmd-ast.schema.json`: draft AST JSON Schema
+Visual-lossless restoration is guaranteed for the locked source state, not for
+arbitrary future edits. After an AI changes the source layer, affected replay or
+residual data may be stale. The document must mark the affected slots dirty and
+the renderer must rerender, remeasure, regenerate replay/residual data, and
+update hashes before the edited document can claim visual-lossless status again.
 
 ## Format Preview
 
 ```vmd
-@doc "Document title" {
-  format: deck
-  theme: clean
+@doc "Pulse Analytics Overview" {
+  spec: vmd@0.1
+  fidelity: visual-lossless
+  intent: analytics-dashboard
+  surfaces: browser-page deck pdf
 }
 
-# Main title
+@lock {
+  renderer: vmd-web@0.3.0
+  renderer-hash: sha256:renderer-placeholder
+  dictionary: dashboard-system@1.0.0
+  dictionary-hash: sha256:dictionary-placeholder
+  browser: chromium
+  viewport: 1440x1200
+  dpr: 1
+  font-pack: inter@4.0.0
+  asset-map-hash: sha256:asset-placeholder
+  source-hash: sha256:source-placeholder
+  render-hash: sha256:render-placeholder
+}
 
-::frame[role="opening"]
-  ::claim
-  Core claim text.
+@edit_state {
+  source: clean
+  replay: current
+  dirty: none
+  on-source-edit: mark affected slots stale, rerender, remeasure, update-render-hash
+}
+
+# Pulse Analytics Overview
+
+::intent
+audience: growth team
+purpose: scan revenue, accounts, and recent events quickly
+editable: title, metrics, tables, events, date range
+::
+
+@tokens {
+  accent: #c96442
+  surface: #ffffff
+  border: #e6e4e0
+}
+
+::frame[role="dashboard-overview" recipe="analytics.workspace"]
+  title: Overview - April 2026
+
+  ::component.card[title="Revenue - 30 days"]
+  value: $842k
+  change: +14.6%
   ::
 
-  ::evidence
-  Supporting evidence.
+  ::component.card[title="New accounts"]
+  value: 42
+  change: +8
   ::
 ::
+
+@residual_index {
+  affected:
+    - frame.dashboard-overview.title
+    - frame.dashboard-overview.component.metric-grid
+
+  constraints:
+    frame.dashboard-overview.title.max-lines: 2
+    frame.dashboard-overview.component.metric-grid.items: 2..4
+
+  ai-note: Edit source slots only. Do not edit replay data directly.
+}
+
+@replay {
+  encoding: visual-replay@0.1
+  contains:
+    - dom-delta
+    - css-cascade
+    - layout-boxes
+    - asset-map
+    - state-lock
+}
+
+@residual {
+  mode: visual-lossless
+  ai: ignore
+  payload: omitted in this public sample
+}
 ```
 
-## Reference Browser Polyfill
+## Why Not Just HTML?
 
-The Chrome extension is a reference implementation, not the definition of the
-format.
+HTML and CSS are excellent browser targets. They are not always good AI editing
+targets. A polished generated page often contains a large implementation surface:
+utility classes, nested wrappers, repeated styles, inline layout decisions, and
+component details that obscure the document's intent.
 
-Automatic local file rendering:
+VMD keeps the browser output restorable, but moves routine AI edits to a smaller
+source layer. The renderer and replay layer carry the low-level details.
 
-1. Open `chrome://extensions`
-2. Enable `Developer mode`
-3. Click `Load unpacked`
-4. Select the `extension/` directory
-5. Open the extension details page
-6. Enable `Allow access to file URLs`
-7. Open or drag a local `.vmd` file into Chrome
+## Why Not Just Markdown?
 
-Manual viewer:
+Markdown is compact and readable, but it does not contain enough visual contract
+to restore a complex browser page. VMD keeps Markdown-style readability where it
+helps, then adds frames, components, tokens, constraints, and replay data.
 
-- opening a VMD viewer tab from the extension popup
-- uploading a `.vmd` file
-- dragging and dropping a `.vmd` file
-- rendering read, deck, and map modes from the same source
-- showing validator diagnostics for the loaded source
-- loading packaged semantic and layered sample documents
+## Current Research Baseline
 
-Package the Chrome extension:
+The current Open Design experiment is a prototype, not the finished codec.
+
+- Cases: 102 AI-generated HTML artifacts
+- Original HTML: 3031.8 KB
+- AI source slot layer: 485.7 KB, 84.0% smaller than HTML
+- Full prototype VMD with replay/residual: 1527.3 KB, 49.6% smaller than HTML
+- GPT-4 token estimate: slot source reduced 83.2%; full prototype reduced 39.5%
+- Current prototype round-trip pixel-equivalent cases: 46/102
+
+The result is important but limited: the AI-facing layer is already much smaller,
+but the lossless replay codec is not complete. The public spec therefore treats
+complete restoration as a validity requirement, not as a nice-to-have.
+
+The same benchmark also clarifies the edit rule: a file can be lossless at the
+current source hash and stale after an AI edit. Editability therefore requires
+dirty-state tracking and replay refresh, not only initial decoding.
+
+See `docs/open-design-ai-artifact-benchmark.md` and
+`docs/visual-fidelity.md`.
+
+## Repository Contents
+
+- `core/`: shared parser, validator, and reference renderer
+- `extension/`: Chrome reference polyfill and manual viewer
+- `vscode-extension/`: VS Code authoring and preview extension
+- `samples/visual-lossless-dashboard.vmd`: visual-lossless sample
+- `samples/source-layer-brief.vmd`: compact source-layer sample
+- `docs/spec-draft-v0.md`: current draft grammar and restoration contract
+- `docs/visual-fidelity.md`: visual restoration verification model
+- `docs/open-design-ai-artifact-benchmark.md`: AI artifact compression and fidelity benchmark
+- `docs/ai-authoring-guide.md`: how AI systems should edit VMD
+- `docs/browser-integration.md`: Chrome rendering behavior
+- `docs/extension-architecture.md`: extension design
+- `docs/testing.md`: local verification workflow
+- `tools/verify-vmd-fidelity.mjs`: Playwright visual drift checker
+- `tools/benchmark-ai-artifacts.mjs`: Open Design benchmark script
+- `bin/vmd.mjs`: CLI for validate, AST, render, and gallery builds
+
+## Install And Check
+
+Requires Node.js 18 or newer.
 
 ```bash
-npm run package:chrome
-```
-
-The zip is written to:
-
-```text
-dist/vmd-chrome-extension.zip
-```
-
-## VS Code Extension
-
-The VS Code extension is the authoring-side companion for VMD.
-
-It supports:
-
-- `.vmd` language detection
-- syntax highlighting
-- block folding
-- semantic block snippets
-- validator diagnostics
-- `VMD: Open Preview`
-- `VMD: Open Preview to Side`
-- `Open With... VMD Preview`
-- live preview updates from the active document
-
-Package the extension:
-
-```bash
-npm run package:vscode
-```
-
-The VSIX is written to:
-
-```text
-dist/vmd-vscode.vsix
-```
-
-## Extension Tests
-
-Run the shared checks:
-
-```bash
+npm install
 npm run check
 ```
 
-Run the Chrome extension integration test:
+Run the core renderer tests:
 
 ```bash
-npm run test:chrome
+npm run test:core
 ```
 
-Run the VS Code extension integration test:
-
-```bash
-npm run test:vscode
-```
-
-## Local Static Render
-
-Requires Node.js 18 or newer.
+Render a sample:
 
 ```bash
 npm run render:sample
 ```
 
-The output is written to:
-
-```text
-dist/source-layer-brief.html
-```
-
-## CLI
-
-The reference CLI can render HTML, print the layered AST, validate source, and
-build the public gallery.
+Validate a VMD file:
 
 ```bash
-node bin/vmd.mjs validate samples/source-layer-brief.vmd
-node bin/vmd.mjs validate samples/source-layer-brief.vmd --strict
-node bin/vmd.mjs validate samples/source-layer-brief.vmd --json
-node bin/vmd.mjs ast samples/source-layer-brief.vmd
-node bin/vmd.mjs render samples/source-layer-brief.vmd --out dist/source-layer-brief.html --mode deck
-node bin/vmd.mjs gallery --out dist/site
+node bin/vmd.mjs validate samples/visual-lossless-dashboard.vmd --strict
 ```
 
-See `docs/cli.md`.
+## Chrome Extension
 
-## Public Gallery
+The Chrome extension is a reference polyfill for `.vmd` files.
 
-Production site:
+It supports:
+
+- automatic rendering for local or hosted `.vmd` files
+- a manual viewer with upload and drag-and-drop
+- read, deck, and map preview modes
+- validator diagnostics
+- packaged source-layer, layered, and visual-lossless samples
+
+Install locally:
+
+1. Open `chrome://extensions`
+2. Enable `Developer mode`
+3. Click `Load unpacked`
+4. Select the `extension/` directory
+5. Enable `Allow access to file URLs` in the extension details page
+6. Open a `.vmd` file in Chrome
+
+Package it:
+
+```bash
+npm run package:chrome
+```
+
+## VS Code Extension
+
+The VS Code extension supports:
+
+- `.vmd` language detection
+- syntax highlighting and folding
+- visual-lossless shell snippets
+- directive snippets for `@lock`, `@tokens`, `@residual_index`, `@replay`, and `@residual`
+- validator diagnostics
+- live preview with read, deck, and map modes
+
+Package it:
+
+```bash
+npm run package:vscode
+```
+
+## Public Page
+
+The public project page is:
 
 ```text
 https://philo.kim/vmd/
 ```
 
-Build the static gallery and playground:
+Build the repository gallery:
 
 ```bash
 npm run build:site
 ```
 
-The output is written to:
+## Status
 
-```text
-dist/site/
-```
-
-The repository also includes a reusable local GitHub Action for rendering `.vmd`
-files. The canonical public page lives at `https://philo.kim/vmd/`; this repo's
-gallery build is a reference output, not a standalone homepage.
-
-## Screenshots
-
-![VMD gallery](docs/assets/vmd-gallery.png)
-
-![VMD playground](docs/assets/vmd-playground.png)
-
-## Draft Vocabulary
-
-Semantic blocks:
-
-- `frame`: one unit of thought
-- `claim`: primary argument
-- `evidence`: supporting proof or context
-- `insight`: interpretation or discovery
-- `decision`: selected direction
-- `action`: next step
-
-Visual blocks:
-
-- `visual.compare`
-- `visual.loop`
-- `visual.timeline`
-- `visual.matrix`
-
-Layout blocks:
-
-- `layout.stack`
-- `layout.grid`
-- `layout.split`
-- `layout.cluster`
-- `layout.panel`
-- `layout.device`
-- `layout.tabs`
-
-Component blocks:
-
-- `component.card`
-- `component.metric`
-- `component.persona`
-- `component.phone`
-- `component.token-table`
-- `component.browser`
-
-Compatibility blocks:
-
-- `style.tokens`
-- `style.css`
-- `raw.html`
-- `raw.css`
-- `raw.svg`
-- `raw.js` (parsed but not executed)
-
-See `docs/spec-draft-v0.md` for the current draft.
-
-## Samples
-
-- `samples/source-layer-brief.vmd`: deck example
-- `samples/ai-native-brief.vmd`: AI-native visual document argument
-- `samples/ai-artifact-stress.vmd`: visual decision room using semantic, layout, visual, and raw layers
-- `samples/lesson-outline.vmd`: education/lesson example
-- `samples/visual-fidelity-layers.vmd`: layout, style, component, and raw preservation example
-
-## Current Status
-
-VMD is an experimental draft. The important boundary is the layered AST. VMD
-source should compile into a structured representation before it becomes HTML,
-slides, PDF, or any other output format.
+VMD is an experimental public draft. The current implementation parses and
+renders the final visual-lossless document contract, but the replay codec is
+still a research target. Until the replay codec is complete, a file should only
+claim verified visual-lossless status when its restoration check passes under
+the declared renderer lock.
 
 ## Contributing
 
-The format should stay small, readable, and renderer-independent.
+Useful contributions include:
 
-Good contributions include:
-
-- sample `.vmd` documents
-- proposed semantic block definitions
-- parser and AST improvements
-- renderer experiments
-- theme systems
-- accessibility and portability feedback
+- visual-lossless sample documents
+- HTML-to-VMD conversion experiments
+- replay/residual codec design
+- renderer lock and verification improvements
+- LLM editability benchmarks
+- Chrome and VS Code extension improvements
+- accessibility and browser portability feedback

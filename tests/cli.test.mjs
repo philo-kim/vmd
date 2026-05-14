@@ -61,7 +61,7 @@ try {
   });
   const galleryHtml = await readFile(path.join(siteOut, "index.html"), "utf8");
   const playgroundHtml = await readFile(path.join(siteOut, "playground.html"), "utf8");
-  assert.match(galleryHtml, /Visual Semantic Markdown/);
+  assert.match(galleryHtml, /Intent-Readable Visual-Lossless Markup/);
   assert.match(galleryHtml, /format-card/);
   assert.match(playgroundHtml, /VMD Playground/);
 

@@ -18,13 +18,13 @@ try {
   assertIncludes(h1, "VMD", "hero title");
   assertIncludes(
     bodyText,
-    "One source. Four artifact surfaces.",
-    "source-layer framing"
+    "Intent-readable visual-lossless markup",
+    "visual-lossless framing"
   );
   assertIncludes(
     bodyText,
-    "The example has to feel like a real visual artifact.",
-    "visual artifact example"
+    "visual-lossless only after the locked renderer restores",
+    "restoration requirement"
   );
 
   if (bodyText.includes("lessons of formats") && bodyText.includes("spread")) {
@@ -47,7 +47,7 @@ try {
 }
 
 function assertIncludes(value, expected, label) {
-  if (!String(value || "").includes(expected)) {
+  if (!String(value || "").toLowerCase().includes(String(expected).toLowerCase())) {
     throw new Error(`${label} should include "${expected}"`);
   }
 }

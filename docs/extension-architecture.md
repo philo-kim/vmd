@@ -1,72 +1,82 @@
 # Extension Architecture
 
-The Chrome extension is a reference rendering surface for `.vmd` files. It does
-not define the format; the shared parser, AST, validator, and renderer in
-`core/vmd-core.cjs` define the current runtime behavior.
+VMD has two companion extensions:
 
-## Runtime Flow
+- Chrome polyfill: opens `.vmd` files as rendered browser pages
+- VS Code extension: previews and validates `.vmd` while authoring
 
-For local files and web-served `.vmd` URLs, the extension uses a content script:
+Both use the shared runtime in `core/vmd-core.cjs`.
 
-1. Chrome opens a `.vmd` file or URL as text.
-2. The extension checks that the URL ends with `.vmd`.
-3. It reads the browser's text view.
-4. It parses VMD into an AST.
-5. It replaces the page with rendered HTML.
+## Shared Runtime
 
-The script intentionally does nothing on non-`.vmd` URLs.
+`core/vmd-core.cjs` provides:
 
-## Preserve Mode
+- parser
+- AST renderer
+- validator
+- block vocabulary
+- HTML escaping helpers
 
-If the AST declares `fidelity: preserve`, the renderer skips the VMD toolbar and
-emits the preserved raw output directly. It also avoids injecting the extension
-stylesheet or adding VMD classes to `body`, because reset rules and body
-selectors can alter a preserved HTML/CSS page.
+The runtime is copied into:
 
-The renderer applies supported `html` and `body` attributes from the document
-header before replacing body content, so CSS that depends on root attributes can
-still match.
+- `extension/vmd-core.js`
+- `vscode-extension/vendor/vmd-core.cjs`
 
-## Manual Viewer
-
-The extension viewer supports:
-
-- uploading a `.vmd` file
-- drag-and-drop loading
-- read, deck, and map rendering
-- validator diagnostics
-- packaged sample documents
-
-## Shared Core Copies
-
-The extension uses a synced copy of the core runtime:
-
-```text
-core/vmd-core.cjs
-extension/vmd-core.js
-vscode-extension/vendor/vmd-core.cjs
-```
-
-Run this after changing `core/vmd-core.cjs`:
+Run this after changing the core:
 
 ```bash
 npm run sync:core
 ```
 
-`npm run check` verifies that the runtime copies are synchronized.
+## Chrome Extension
 
-## VS Code Resource Handling
+Files:
 
-VS Code webviews cannot load arbitrary local files directly. The VMD preview
-rewrites local `src`, `href`, `poster`, and CSS `url(...)` references into
-webview-safe resource URIs when the source document is opened from the local
-filesystem.
+- `extension/manifest.json`
+- `extension/auto-render.js`
+- `extension/viewer.html`
+- `extension/viewer.js`
+- `extension/styles.css`
+- `extension/lossless-sample.vmd`
 
-## Design Rules
+The content script detects `.vmd` URLs, reads the browser's text view, parses the
+source, and renders it into the page.
 
-- The extension must not define the format.
-- The parser must remain reusable outside Chrome.
-- The AST is the contract between source and rendering.
-- Semantic rendering should produce accessible HTML.
-- Raw compatibility blocks should be preserved only when the fidelity tier calls
-  for it.
+The manual viewer shows:
+
+- source editor
+- rendered preview
+- diagnostics
+- AI source layer summary
+- replay layer summary
+
+## VS Code Extension
+
+Files:
+
+- `vscode-extension/extension.js`
+- `vscode-extension/syntaxes/vmd.tmLanguage.json`
+- `vscode-extension/media/vmd.css`
+- `vscode-extension/vendor/vmd-core.cjs`
+
+It supports:
+
+- syntax highlighting
+- diagnostics
+- snippets for frames, blocks, and visual-lossless directive shells
+- live preview
+- custom editor preview
+
+## Visual-Lossless Responsibilities
+
+Extensions should not silently certify visual-lossless status. They should:
+
+- display the declared fidelity tier
+- warn when `visual-lossless` lacks `@lock`
+- warn when it lacks replay data
+- warn when it lacks `@residual_index`
+- warn when it lacks `@edit_state` or dirty-state handling
+- keep replay payloads visible as renderer data, not editable intent
+
+The final replay codec and screenshot verification remain renderer/tooling
+responsibilities.

@@ -10,7 +10,7 @@
     <header class="app-header">
       <div>
         <p class="eyebrow">VMD Viewer</p>
-        <h1>Layered visual document renderer</h1>
+        <h1>Visual-lossless document renderer</h1>
       </div>
       <div class="actions">
         <label class="file-button">
@@ -19,6 +19,7 @@
         </label>
         <button id="sample-button" type="button">Load sample</button>
         <button id="layered-sample-button" type="button">Load layered sample</button>
+        <button id="lossless-sample-button" type="button">Load lossless sample</button>
       </div>
     </header>
 
@@ -40,6 +41,7 @@
             <button class="mode-tab" data-mode="map" type="button">Map</button>
           </div>
         </div>
+        <div id="layer-summary" class="layer-summary" aria-live="polite"></div>
         <div id="diagnostics" class="diagnostics" aria-live="polite"></div>
         <div id="drop-zone" class="drop-zone">
           <div id="preview" class="preview empty-state">

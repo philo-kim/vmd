@@ -8,7 +8,9 @@
   const BLOCK_OPEN_RE = /^::([a-zA-Z][\w-]*)(?:\.([a-zA-Z][\w-]*))?(?:\[(.*)\])?\s*$/;
   const HEADING_RE = /^(#{1,6})\s+(.+)$/;
   const DOC_RE = /^@doc\s+"([^"]+)"\s*\{\s*$/;
+  const DIRECTIVE_BLOCK_RE = /^@([a-zA-Z][\w-]*)(?:\[(.*)\])?\s*\{\s*$/;
   const SEMANTIC_BLOCK_TYPES = [
+    "intent",
     "claim",
     "evidence",
     "insight",
@@ -53,13 +55,25 @@
     "component.token-table",
     "component.browser"
   ];
+  const DIRECTIVE_BLOCK_TYPES = [
+    "lock",
+    "tokens",
+    "recipes",
+    "edit_state",
+    "dirty",
+    "replay",
+    "residual",
+    "residual_index",
+    "raw"
+  ];
   const SEMANTIC_BLOCKS = new Set(SEMANTIC_BLOCK_TYPES);
   const VISUAL_BLOCKS = new Set(VISUAL_BLOCK_TYPES);
   const LAYOUT_BLOCKS = new Set(LAYOUT_BLOCK_TYPES);
   const STYLE_BLOCKS = new Set(STYLE_BLOCK_TYPES);
   const RAW_BLOCKS = new Set(RAW_BLOCK_TYPES);
   const COMPONENT_BLOCKS = new Set(COMPONENT_BLOCK_TYPES);
-  const FIDELITY_TIERS = new Set(["semantic", "structured", "visual", "preserve", "interactive"]);
+  const DIRECTIVE_BLOCKS = new Set(DIRECTIVE_BLOCK_TYPES);
+  const FIDELITY_TIERS = new Set(["semantic", "structured", "visual", "visual-lossless", "preserve", "interactive"]);
 
   function parseVmd(source) {
     const lines = source.replace(/\r\n?/g, "\n").split("\n");
@@ -88,6 +102,15 @@
           title: docMatch[1],
           attrs
         };
+        index = endIndex;
+        continue;
+      }
+
+      const directiveMatch = trimmed.match(DIRECTIVE_BLOCK_RE);
+      if (directiveMatch) {
+        const [, rawType, attrSource] = directiveMatch;
+        const { node, endIndex } = parseDirectiveBlock(lines, index + 1, rawType, attrSource || "");
+        appendNode(stack[stack.length - 1], node);
         index = endIndex;
         continue;
       }
@@ -201,8 +224,43 @@
       diagnostics.push({
         level: "warning",
         code: "unknown-fidelity-tier",
-        message: `Unknown fidelity tier "${ast.doc.attrs.fidelity}". Use semantic, structured, visual, preserve, or interactive.`
+        message: `Unknown fidelity tier "${ast.doc.attrs.fidelity}". Use semantic, structured, visual, visual-lossless, preserve, or interactive.`
       });
+    }
+
+    if (fidelity === "visual-lossless") {
+      const hasLock = ast.children.some((node) => node.type === "lock");
+      const hasReplay = ast.children.some((node) => ["replay", "residual", "raw"].includes(node.type));
+      const hasResidualIndex = ast.children.some((node) => node.type === "residual_index");
+      const hasEditState = ast.children.some((node) => node.type === "edit_state" || node.type === "dirty");
+      if (!hasLock) {
+        diagnostics.push({
+          level: "warning",
+          code: "missing-render-lock",
+          message: "visual-lossless documents should include @lock with renderer, dictionary, browser, and viewport."
+        });
+      }
+      if (!hasReplay) {
+        diagnostics.push({
+          level: "warning",
+          code: "missing-replay-layer",
+          message: "visual-lossless documents need @replay, @residual, or @raw data to guarantee restoration."
+        });
+      }
+      if (!hasResidualIndex) {
+        diagnostics.push({
+          level: "warning",
+          code: "missing-residual-index",
+          message: "visual-lossless documents should include @residual_index so AI edits respect replay constraints."
+        });
+      }
+      if (!hasEditState) {
+        diagnostics.push({
+          level: "warning",
+          code: "missing-edit-state",
+          message: "visual-lossless documents should include @edit_state or @dirty so source edits can stale and refresh replay data."
+        });
+      }
     }
 
     if (!frames.length) {
@@ -314,6 +372,9 @@
     }
     if (STYLE_BLOCKS.has(node.type)) {
       return renderStyleBlock(node);
+    }
+    if (DIRECTIVE_BLOCKS.has(node.type)) {
+      return renderDirectiveBlock(node);
     }
     if (RAW_BLOCKS.has(node.type)) {
       return renderRawBlock(node);
@@ -493,6 +554,58 @@
   </section>`;
   }
 
+  function renderDirectiveBlock(node) {
+    if (node.type === "tokens") {
+      return renderTokenDirective(node);
+    }
+
+    const label = directiveLabel(node.type);
+    const isReplay = ["lock", "edit_state", "dirty", "replay", "residual", "residual_index", "raw"].includes(node.type);
+    const fields = parseFlexibleFields(node.lines);
+    const fieldRows = fields.length
+      ? `<dl class="directive-fields">${fields.map((field) => `<div><dt>${escapeHtml(field.key)}</dt><dd>${escapeHtml(field.value)}</dd></div>`).join("")}</dl>`
+      : "";
+    const body = node.lines.length
+      ? `<pre>${escapeHtml(normalizeRawLines(node.lines))}</pre>`
+      : "";
+    return `<section class="block directive-block directive-${escapeClass(node.type)}${isReplay ? " replay-layer" : ""}">
+    <p class="block-label">${escapeHtml(label)}</p>
+    ${fieldRows}
+    ${body}
+    ${node.children.map(renderNode).join("")}
+  </section>`;
+  }
+
+  function renderTokenDirective(node) {
+    const tokens = parseTokens(node.lines);
+    const styleVars = tokens.map((token) => {
+      const value = safeCssValue(token.value);
+      return value ? `--${escapeCssIdentifier(token.name)}: ${value};` : "";
+    }).filter(Boolean).join("\n");
+    const style = styleVars ? `<style data-vmd-style-tokens>\n:root {\n${styleVars}\n}\n</style>` : "";
+    return `${style}<section class="block style-token-block directive-block directive-tokens">
+    <p class="block-label">tokens</p>
+    <div class="token-grid">
+      ${tokens.map(renderToken).join("")}
+    </div>
+  </section>`;
+  }
+
+  function directiveLabel(type) {
+    const labels = {
+      lock: "render lock",
+      tokens: "tokens",
+      recipes: "recipes",
+      edit_state: "edit state",
+      dirty: "dirty slots",
+      replay: "replay contract",
+      residual: "lossless residual",
+      residual_index: "residual index",
+      raw: "raw fallback"
+    };
+    return labels[type] || type;
+  }
+
   function renderRawBlock(node, options = {}) {
     if (node.type === "raw.css" || node.type === "style.css") {
       return renderCssBlock(node);
@@ -593,6 +706,9 @@ ${css}
     if (RAW_BLOCKS.has(node.type) || node.type === "style.css") {
       return renderRawBlock(node, { preserve: true });
     }
+    if (DIRECTIVE_BLOCKS.has(node.type)) {
+      return renderDirectiveBlock(node);
+    }
     if (STYLE_BLOCKS.has(node.type)) {
       return renderStyleBlock(node);
     }
@@ -690,6 +806,49 @@ ${css}
         line: node.line,
         message: `Raw block "${node.type}" should contain preserved source.`
       });
+    }
+
+    if (DIRECTIVE_BLOCKS.has(node.type)) {
+      if (!node.lines.some((line) => line.trim()) && node.type !== "tokens") {
+        diagnostics.push({
+          level: "warning",
+          code: "empty-directive-block",
+          line: node.line,
+          message: `Directive block "@${node.type}" should describe its contract or payload.`
+        });
+      }
+      if (node.type === "residual" && !node.lines.some((line) => /ai\s*:\s*ignore/i.test(line))) {
+        diagnostics.push({
+          level: "warning",
+          code: "residual-ai-policy-missing",
+          line: node.line,
+          message: "@residual should declare ai: ignore so models avoid editing replay data directly."
+        });
+      }
+      if (node.type === "residual_index" && !node.lines.some((line) => /constraint|affected|ai-note/i.test(line))) {
+        diagnostics.push({
+          level: "warning",
+          code: "residual-index-too-thin",
+          line: node.line,
+          message: "@residual_index should list affected slots and edit constraints."
+        });
+      }
+      if (node.type === "edit_state" && !node.lines.some((line) => /source|replay|dirty|stale/i.test(line))) {
+        diagnostics.push({
+          level: "warning",
+          code: "edit-state-too-thin",
+          line: node.line,
+          message: "@edit_state should describe source state, replay state, and dirty/stale behavior."
+        });
+      }
+      if (node.type === "dirty" && !node.lines.some((line) => line.trim())) {
+        diagnostics.push({
+          level: "warning",
+          code: "dirty-slots-empty",
+          line: node.line,
+          message: "@dirty should list slots or hashes invalidated by source edits."
+        });
+      }
     }
 
     if ((node.type === "raw.html" || node.type === "raw.svg") && hasExecutableRawMarkup(node.lines)) {
@@ -800,6 +959,29 @@ ${css}
     }
 
     throw new Error("Unclosed @doc block");
+  }
+
+  function parseDirectiveBlock(lines, startIndex, rawType, attrSource) {
+    const node = {
+      type: rawType,
+      tag: rawType,
+      variant: null,
+      attrs: parseInlineAttrs(attrSource || ""),
+      lines: [],
+      children: [],
+      line: startIndex
+    };
+
+    for (let index = startIndex; index < lines.length; index += 1) {
+      const raw = lines[index];
+      const trimmed = raw.trim();
+      if (trimmed === "}") {
+        return { node, endIndex: index };
+      }
+      node.lines.push(shouldPreserveLineWhitespace(node) ? raw : raw.trim());
+    }
+
+    throw new Error(`Unclosed @${rawType} block opened at line ${startIndex}`);
   }
 
   function parseInlineAttrs(source) {
@@ -964,7 +1146,8 @@ ${css}
       LAYOUT_BLOCKS.has(type) ||
       STYLE_BLOCKS.has(type) ||
       RAW_BLOCKS.has(type) ||
-      COMPONENT_BLOCKS.has(type);
+      COMPONENT_BLOCKS.has(type) ||
+      DIRECTIVE_BLOCKS.has(type);
   }
 
   function isPreserveDocument(ast) {
@@ -972,7 +1155,7 @@ ${css}
   }
 
   function shouldPreserveLineWhitespace(parent) {
-    return Boolean(parent && (RAW_BLOCKS.has(parent.type) || parent.type === "style.css"));
+    return Boolean(parent && (RAW_BLOCKS.has(parent.type) || parent.type === "style.css" || parent.type === "residual" || parent.type === "raw"));
   }
 
   function normalizeRawLines(lines = []) {
@@ -1038,7 +1221,7 @@ ${css}
         };
       }
 
-      const match = cleaned.match(/^([a-zA-Z][\w-]*)\s*:\s*(.+?)(?:\s+-\s+(.+))?$/);
+      const match = cleaned.replace(/[;,]\s*$/, "").match(/^([a-zA-Z][\w-]*)\s*:\s*(.+?)(?:\s+-\s+(.+))?$/);
       if (!match) {
         return {
           name: cleaned,
@@ -1064,6 +1247,21 @@ ${css}
       <code>${escapeHtml(token.value)}</code>
       ${token.note ? `<span>${escapeHtml(token.note)}</span>` : ""}
     </div>`;
+  }
+
+  function parseFlexibleFields(lines = []) {
+    const fields = [];
+    for (const line of lines) {
+      const trimmed = line.trim().replace(/[;,]\s*$/, "");
+      const match = trimmed.match(/^([a-zA-Z][\w.-]*)\s*:\s*(.+)$/);
+      if (match) {
+        fields.push({
+          key: match[1],
+          value: match[2].trim()
+        });
+      }
+    }
+    return fields;
   }
 
   function layoutStyle(attrs = {}) {
@@ -1148,6 +1346,7 @@ ${css}
     STYLE_BLOCK_TYPES,
     RAW_BLOCK_TYPES,
     COMPONENT_BLOCK_TYPES,
+    DIRECTIVE_BLOCK_TYPES,
     FIDELITY_TIERS: Array.from(FIDELITY_TIERS),
     escapeHtml
   };

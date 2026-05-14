@@ -4,7 +4,7 @@ The VMD CLI is the reference command-line surface for the format.
 
 It exists for three reasons:
 
-- give AI-assisted workflows a small target that can be validated immediately
+- give AI-assisted workflows a small source layer that can be validated immediately
 - make `.vmd` files useful before browser-native support exists
 - keep the parser, AST, renderer, and public examples testable in CI
 
@@ -71,6 +71,8 @@ The validator reports:
 - disabled `raw.js`
 - invalid visual blocks, such as empty `visual.compare`, one-step loops, or
   sparse matrices
+- missing `@lock`, replay data, `@residual_index`, or edit-state handling for
+  `fidelity: visual-lossless`
 
 Validation exits with a non-zero code when an error is found. Warnings do not
 fail the command unless `--strict` is used.
@@ -116,9 +118,10 @@ npm run verify:visual-fidelity -- --source-dir /path/to/html/folder --conversion
 ```
 
 Use `--conversion semantic` to measure how much visual drift appears when HTML
-is converted into VMD-native frames and blocks. Use `--conversion preserve` to
-wrap existing HTML/CSS in raw compatibility blocks and check whether the page can
-be preserved with pixel-level fidelity.
+is converted into VMD-native frames and blocks. Use `--conversion preserve` as a
+compatibility baseline. The target `visual-lossless` path must eventually add
+lock, replay, residual, residual index, and edit-state handling, then verify the
+round trip.
 
 ## AI Artifact Benchmark
 
@@ -127,5 +130,6 @@ npm run benchmark:open-design
 ```
 
 This benchmark uses the public `nexu-io/open-design` repository when it is
-available locally. It compares real AI/agent-generated HTML examples against
-preserve VMD and semantic draft VMD source sizes.
+available locally. It measures real AI/agent-generated HTML examples against
+the visual-lossless target: AI source layer size, full replay/residual prototype
+size, round-trip drift, and the remaining restoration gap.

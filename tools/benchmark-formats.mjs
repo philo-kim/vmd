@@ -54,15 +54,15 @@ function buildBenchmark(input) {
   const results = [
     {
       format: "VMD",
-      scenario: "Semantic visual source rendered by VMD renderer",
+      scenario: "AI-readable visual source rendered by the VMD renderer",
       ...sourceMetrics(input.vmd, vmdVisible),
       browserNativeToday: false,
       renderModesFromOneSource: 3,
       standardizedSemanticRoles: countVmdSemanticRoles(vmdAst),
       conventionSemanticHints: 0,
       visualPrimitives: countNodes(vmdAst, (node) => VISUAL_BLOCK_TYPES.includes(node.type)),
-      fidelityTiers: "semantic, structured, visual, preserve",
-      pixelPreservationPath: "raw compatibility blocks",
+      fidelityTiers: "semantic, structured, visual, visual-lossless, preserve",
+      pixelPreservationPath: "visual-lossless replay, residual, or raw fallback",
       contentValidation: {
         supported: true,
         errors: vmdDiagnostics.filter((diagnostic) => diagnostic.level === "error").length,
@@ -279,12 +279,13 @@ It is not a universal performance benchmark. It is a reproducible authoring and
 portability benchmark for one representative visual sample document.
 
 It measures source size, authoring overhead, semantic portability, available
-render modes, and validation support. It does not measure browser engine speed
-or final page load performance.
+render modes, and validation support. It does not prove visual-lossless
+restoration. Visual restoration is measured separately in
+\`docs/open-design-ai-artifact-benchmark.md\`.
 
 ## Method
 
-- VMD source: semantic source rendered by the repository's VMD renderer.
+- VMD source: AI-readable source rendered by the repository's VMD renderer.
 - Markdown source: Markdown-only document with human-readable role labels.
 - HTML source: browser-ready HTML that manually implements read, deck, and map
   views with CSS and JavaScript.
@@ -327,8 +328,8 @@ the same source can be checked and rendered as read, deck, and map views.
 HTML is the strongest deployment target because browsers open it natively today.
 The tradeoff is authoring burden: matching VMD's three output modes in raw HTML
 requires duplicated content, CSS, JavaScript, and custom class conventions. VMD
-keeps new documents smaller and layered, while the preserve tier gives existing
-HTML/CSS pages a compatibility path when pixel fidelity matters.
+keeps the AI editing surface smaller, while the visual-lossless path adds replay
+or residual data when complete browser restoration matters.
 
 ## Pros, Cons, And Effects
 
@@ -336,7 +337,7 @@ HTML/CSS pages a compatibility path when pixel fidelity matters.
 | --- | --- | --- | --- |
 | Markdown | Linear notes, READMEs, essays, simple docs | Lowest writing friction and strong plain-text readability | Semantic roles and visual structure remain conventions |
 | HTML | Final browser-native pages and custom web apps | Opens directly in browsers with full layout and interaction control | High authoring overhead when content, style, and interaction are hand-written together |
-| VMD | Layered visual reports, decks, maps, AI-authored visual documents, and preserved HTML/CSS imports | One source can carry meaning, validation, render modes, and explicit fidelity tier | Needs a renderer, extension, or converter until browsers support it natively |
+| VMD | Restorable visual reports, decks, maps, AI-authored visual documents, and HTML/CSS imports | One file can carry AI-readable slots plus renderer-readable replay data | Needs a renderer, extension, or converter until browsers support it natively |
 
 The practical effect is not that VMD should replace Markdown or HTML everywhere.
 It creates a middle source layer for documents that are too visual and structured
@@ -348,7 +349,7 @@ VMD is not a replacement for Markdown when the document is mostly linear prose.
 Markdown remains better for simple notes, READMEs, and long-form writing.
 
 VMD is useful when the document needs semantic roles, multiple visual modes,
-validation, AI-generated visual structure, or an explicit preserve path for
+validation, AI-generated visual structure, or a visual-lossless path for
 existing browser pages.
 
 HTML remains the final native browser substrate. VMD's current value is as a

@@ -52,7 +52,7 @@ export async function buildSite({ root, samplesDir, outDir }) {
 }
 
 function renderIndex(samples) {
-  const heroSample = samples.find((sample) => sample.file === "ai-native-brief.vmd") || samples[0];
+  const heroSample = samples.find((sample) => sample.file === "visual-lossless-dashboard.vmd") || samples[0];
   const codePreview = heroSample ? truncateSource(heroSample.source, 620) : "";
   const renderedPreview = heroSample?.views?.deck || "";
 
@@ -61,8 +61,8 @@ function renderIndex(samples) {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>VMD · Visual Semantic Markdown</title>
-    <meta name="description" content="VMD is an open draft for AI-native visual documents that compile readable source into semantic, structured, visual, and preserved browser output.">
+    <title>VMD · Intent-Readable Visual-Lossless Markup</title>
+    <meta name="description" content="VMD is an open draft for visual-lossless documents with a compact AI-readable source layer and a renderer-readable replay layer.">
     <link rel="stylesheet" href="assets/vmd.css">
     <style>
       :root {
@@ -355,7 +355,7 @@ function renderIndex(samples) {
   </head>
   <body>
     <nav class="site-nav" aria-label="Primary navigation">
-      <a class="brand" href="index.html"><span class="brand-mark">VMD</span><span>Visual Semantic Markdown</span></a>
+      <a class="brand" href="index.html"><span class="brand-mark">VMD</span><span>Visual-Lossless Markup</span></a>
       <div class="nav-links">
         <a href="playground.html">Playground</a>
         <a href="benchmark.html">Benchmark</a>
@@ -369,7 +369,7 @@ function renderIndex(samples) {
         <div class="hero-inner">
           <p class="eyebrow">Open draft · .vmd</p>
           <h1>VMD</h1>
-          <p class="hero-copy">A readable source format for AI-native visual documents: semantic like Markdown, structured like HTML, rendered through reusable visual systems.</p>
+          <p class="hero-copy">An intent-readable visual-lossless format: AI edits the compact source layer, while the renderer uses the replay layer to restore the browser output.</p>
           <div class="hero-actions">
             <a class="primary" href="playground.html">Try the playground</a>
             <a href="https://github.com/philo-kim/vmd">View source</a>
@@ -379,18 +379,18 @@ function renderIndex(samples) {
       </section>
 
       <section class="proof-strip" aria-label="VMD proof points">
-        <div class="proof-item"><strong>3 modes</strong><span>Read, deck, and map from the same source.</span></div>
-        <div class="proof-item"><strong>4 layers</strong><span>Semantic, structured, visual, and preserve fidelity.</span></div>
-        <div class="proof-item"><strong>92.9%</strong><span>Average semantic draft reduction in the AI artifact benchmark.</span></div>
-        <div class="proof-item"><strong>0 build lock-in</strong><span>Static HTML, Chrome polyfill, VS Code preview, and CLI.</span></div>
+        <div class="proof-item"><strong>2 paths</strong><span>AI source layer plus renderer replay layer.</span></div>
+        <div class="proof-item"><strong>100%</strong><span>Complete restoration is required before claiming visual-lossless.</span></div>
+        <div class="proof-item"><strong>84.0%</strong><span>Slot source reduction in the Open Design experiment.</span></div>
+        <div class="proof-item"><strong>Tools</strong><span>CLI, Chrome polyfill, VS Code preview, and static renderer.</span></div>
       </section>
 
       <section class="section">
         <div class="section-inner">
           <div class="section-head">
             <p class="eyebrow">Live shape</p>
-            <h2>Write the role of the idea. Let the renderer choose the surface.</h2>
-            <p>VMD treats the source as the durable artifact. HTML and CSS remain the browser output layer, while the VMD file keeps intent, structure, visual meaning, and fidelity choices inspectable.</p>
+            <h2>Edit the slots. Restore the visual output.</h2>
+            <p>VMD treats the source as the editable AI surface and replay as the browser restoration contract. HTML and CSS remain the output layer, not the only authoring layer.</p>
           </div>
           <div class="split-demo">
             <section class="code-window" aria-label="VMD source example">
@@ -409,52 +409,52 @@ function renderIndex(samples) {
         <div class="section-inner">
           <div class="section-head">
             <p class="eyebrow">Source principles</p>
-            <h2>The web needs a visual source format that AI can reason about.</h2>
-            <p>The browser already renders. The missing layer is a compact source that can say what an idea is, what visual structure it needs, and when exact HTML/CSS preservation matters.</p>
+            <h2>The web needs a visual source format that AI can edit without losing fidelity.</h2>
+            <p>The browser already renders. The missing layer is a compact source that exposes intent and slots while replay data preserves exact output.</p>
           </div>
           <div class="format-grid">
             <article class="format-card">
-              <small>Meaning</small>
-              <h3>Thought has roles.</h3>
-              <p>A block can be a claim, evidence, contrast, decision, or action instead of only styled prose.</p>
+              <small>Restoration</small>
+              <h3>Lossless is a contract.</h3>
+              <p>A VMD file can claim visual-lossless only after the renderer restores the locked visual output.</p>
             </article>
             <article class="format-card">
-              <small>Visual structure</small>
-              <h3>Visuals carry reasoning.</h3>
-              <p>Matrices, loops, timelines, and comparisons are part of the document argument.</p>
+              <small>Source</small>
+              <h3>AI edits slots.</h3>
+              <p>Intent, tokens, frames, and components keep the editable surface smaller than generated HTML.</p>
             </article>
             <article class="format-card">
-              <small>Fidelity</small>
-              <h3>Preservation is explicit.</h3>
-              <p>Semantic documents stay compact; exact HTML/CSS artifacts use preserve mode.</p>
+              <small>Replay</small>
+              <h3>Renderers carry detail.</h3>
+              <p>Lock, recipes, replay, residual, and raw fallback preserve what slots cannot express.</p>
             </article>
             <article class="format-card">
               <small>Renderer</small>
               <h3>The browser remains the target.</h3>
-              <p>The reference renderer produces browser-native HTML/CSS from the same source contract.</p>
+              <p>The reference renderer produces browser-native HTML/CSS from a locked source and replay contract.</p>
             </article>
             <article class="format-card">
-              <small>Inspection</small>
-              <h3>The source must be reviewable.</h3>
-              <p>A VMD file should stay readable in git and small enough for AI to edit safely.</p>
+              <small>Constraints</small>
+              <h3>Residuals stay indexed.</h3>
+              <p>AI can ignore residual payloads while still respecting the slots and limits they affect.</p>
             </article>
           </div>
-          <p class="research-note">VMD is not another page builder. It is the source layer before browser output.</p>
+          <p class="research-note">VMD is not a styled Markdown dialect. It is a restorable visual document container with an AI-readable editing path.</p>
         </div>
       </section>
 
       <section class="section">
         <div class="section-inner">
           <div class="section-head">
-            <p class="eyebrow">Fidelity ladder</p>
-            <h2>VMD separates content, structure, style, and compatibility.</h2>
-            <p>That separation is the point: new documents stay small and semantic, while existing HTML/CSS artifacts still have a preservation path.</p>
+            <p class="eyebrow">Visual-lossless anatomy</p>
+            <h2>VMD separates editable source from restoration data.</h2>
+            <p>That separation is the point: the AI edits intent and slots, while the renderer uses replay data to recover browser-level detail.</p>
           </div>
           <div class="tier-grid">
-            <article class="tier-card"><small>01</small><h3>Semantic</h3><p>Frames, claims, evidence, insight, decisions, and actions that validators can inspect.</p></article>
-            <article class="tier-card"><small>02</small><h3>Structured</h3><p>Layout and component primitives for grids, panels, metrics, devices, and tabs.</p></article>
-            <article class="tier-card"><small>03</small><h3>Visual</h3><p>Theme tokens, trusted CSS, SVG, matrices, timelines, loops, and comparisons.</p></article>
-            <article class="tier-card"><small>04</small><h3>Preserve</h3><p>Raw compatibility blocks for imported HTML/CSS when pixel-level browser output matters.</p></article>
+            <article class="tier-card"><small>01</small><h3>Intent</h3><p>Audience, purpose, editable slots, and constraints for AI editing.</p></article>
+            <article class="tier-card"><small>02</small><h3>Slots</h3><p>Frames, components, tables, metrics, and visual patterns that map to renderer recipes.</p></article>
+            <article class="tier-card"><small>03</small><h3>Tokens</h3><p>Controlled style values that can be edited without rewriting the page.</p></article>
+            <article class="tier-card"><small>04</small><h3>Replay</h3><p>Lock, residual, and fallback data used to restore the original visual output.</p></article>
           </div>
         </div>
       </section>

@@ -1,6 +1,7 @@
 # AST Schema
 
-VMD source is the authoring syntax. The layered AST is the renderer contract.
+VMD source is the authoring syntax. The AST is the shared contract between the
+AI-readable source layer and the renderer-readable replay layer.
 
 The draft JSON Schema lives at:
 
@@ -28,12 +29,11 @@ shape without freezing every additional block type.
 {
   "type": "document",
   "doc": {
-    "title": "Source Layer Brief",
+    "title": "Pulse Analytics Overview",
     "attrs": {
-      "format": "deck",
-      "theme": "clean",
-      "audience": "investor",
-      "fidelity": "semantic"
+      "spec": "vmd@0.1",
+      "fidelity": "visual-lossless",
+      "intent": "analytics-dashboard"
     }
   },
   "children": []
@@ -44,8 +44,9 @@ shape without freezing every additional block type.
 
 Every block node can carry:
 
-- `type`: semantic, visual, layout, style, raw, or component type, such as
-  `frame`, `claim`, `visual.compare`, or `layout.grid`
+- `type`: directive, semantic, visual, layout, style, raw, or component type,
+  such as `lock`, `edit_state`, `frame`, `intent`, `visual.compare`, or
+  `layout.grid`
 - `tag`: source tag before variant expansion
 - `variant`: optional variant after the dot
 - `attrs`: quoted inline attributes
@@ -74,5 +75,7 @@ Examples:
 - schema: `doc.title` should be a string
 - validator: a `frame` should include a role
 - validator: `visual.loop` should include at least two steps
+- validator: `visual-lossless` should include lock, replay, residual index, and
+  edit-state handling
 
 This split keeps the schema stable while allowing the authoring rules to evolve.

@@ -1,0 +1,106 @@
+@doc "Pulse Analytics Overview" {
+  spec: vmd@0.1
+  fidelity: visual-lossless
+  intent: analytics-dashboard
+  surfaces: browser-page deck pdf
+}
+
+@lock {
+  renderer: vmd-web@0.3.0
+  renderer-hash: sha256:renderer-placeholder
+  dictionary: dashboard-system@1.0.0
+  dictionary-hash: sha256:dictionary-placeholder
+  browser: chromium
+  viewport: 1440x1200
+  dpr: 1
+  font-pack: inter@4.0.0
+  asset-map-hash: sha256:asset-placeholder
+  source-hash: sha256:source-placeholder
+  render-hash: sha256:render-placeholder
+}
+
+@edit_state {
+  source: clean
+  replay: current
+  dirty: none
+  on-source-edit: mark affected slots stale, rerender, remeasure, update-render-hash
+}
+
+# Pulse Analytics Overview
+
+::intent
+audience: growth team
+purpose: scan revenue, accounts, and recent events quickly
+editable: title, metrics, tables, events, date range
+::
+
+@tokens {
+  accent: #c96442
+  surface: #ffffff
+  border: #e6e4e0
+  positive: #2f7d4a
+  negative: #b53a2a
+}
+
+@recipes {
+  workspace: analytics.workspace
+  metric-grid: analytics.metric-grid
+  account-table: analytics.table.compact
+}
+
+::frame[role="dashboard-overview" recipe="analytics.workspace"]
+  title: Overview - April 2026
+
+  ::component.card[title="Revenue - 30 days"]
+  value: $842k
+  change: +14.6%
+  ::
+
+  ::component.card[title="New accounts"]
+  value: 42
+  change: +8
+  ::
+
+  ::component.token-table
+  Account: Linear - Team plan, active
+  Account: Cursor - Pro plan
+  Account: Notion - Trial
+  Account: Vercel - Enterprise
+  ::
+
+  ::visual.timeline
+  - 2:14 pm - Acme Co upgraded to Team
+  - 1:48 pm - Northwind connected GitHub
+  - 1:32 pm - Globex cancelled subscription
+  ::
+::
+
+@residual_index {
+  affected:
+    - frame.dashboard-overview.title
+    - frame.dashboard-overview.component.metric-grid
+    - frame.dashboard-overview.table.accounts
+
+  constraints:
+    frame.dashboard-overview.title.max-lines: 2
+    frame.dashboard-overview.component.metric-grid.items: 2..4
+    frame.dashboard-overview.table.accounts.rows: 1..6
+
+  ai-note: Edit source slots only. Do not edit replay data directly.
+}
+
+@replay {
+  encoding: visual-replay@0.1
+  contains:
+    - dom-delta
+    - css-cascade
+    - layout-boxes
+    - asset-map
+    - state-lock
+}
+
+@residual {
+  mode: visual-lossless
+  ai: ignore
+  payload: omitted in this public sample
+}

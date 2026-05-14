@@ -1,30 +1,82 @@
-# Visual Fidelity Verification
+# Visual Fidelity And Restoration
 
-VMD has two different conversion goals:
+VMD's final target is complete visual restoration with a smaller AI-readable
+editing surface.
 
-- semantic equivalence: keep the content roles and document structure so the
-  renderer can produce a VMD-native visual document
-- pixel equivalence: preserve the exact browser rendering of an existing
-  HTML/CSS/JavaScript page
+That means visual fidelity is not an optional publishing feature. It is the
+condition that allows a file to claim:
 
-The current VMD renderer now supports both semantic conversion and preserve
-conversion. The important decision is explicit:
+```vmd
+fidelity: visual-lossless
+```
 
-- `--conversion semantic` produces a VMD-native interpretation
-- `--conversion preserve` wraps existing HTML/CSS in the compatibility layer,
-  preserves supported `html` and `body` attributes, and asks the renderer to
-  avoid normal VMD wrappers
+## What Complete Restoration Means
 
-## Why This Boundary Matters
+Complete restoration means the renderer can reproduce the target browser output
+under the declared lock.
 
-VMD is useful because authors and AI agents can write a smaller semantic source
-instead of hand-authoring complete HTML, CSS, and JavaScript. That advantage
-depends on keeping VMD above the browser's low-level styling surface.
+The lock must include at least:
 
-An existing HTML page may already be a final artifact. If it contains custom
-CSS grids, handcrafted cards, phone mockups, tables, inline styles, and scripts,
-a semantic VMD conversion should not be expected to look identical. It should be
-expected to produce a readable VMD-native interpretation of the same document.
+- renderer version
+- dictionary or recipe package version
+- browser engine
+- viewport
+- source and render hashes where available
+- required asset map or embedded assets
+
+If the restored output drifts, the VMD file is not visual-lossless yet. The
+converter must add or expand `@replay`, `@residual`, or `@raw` until the check
+passes.
+
+## Edit-Time Staleness
+
+Visual-lossless status is tied to the current source hash. If an AI changes the
+source layer, the old replay and residual data may no longer match.
+
+```text
+before edit:
+  source + replay = restored output
+
+after edit:
+  source changed
+  replay/residual may be stale
+
+after renderer refresh:
+  source + updated replay = restored edited output
+```
+
+The file should record that transition:
+
+```vmd
+@edit_state {
+  source: modified
+  replay: partially-stale
+  affected:
+    - frame.dashboard-overview.title
+  required:
+    - rerender
+    - remeasure
+    - update-render-hash
+}
+```
+
+Until the affected replay/residual/hash data is regenerated and verification
+passes again, the edited file is not a refreshed visual-lossless artifact.
+
+## Why Compression Still Works
+
+The AI does not need to read all replay bytes during normal editing.
+
+```text
+AI reads:
+  @doc, ::intent, @tokens, frames, components, @residual_index
+
+Renderer reads:
+  @lock, @recipes, @replay, @residual, @raw
+```
+
+The full file may include enough data to restore the page, while the AI-facing
+source layer remains much smaller than the original HTML/CSS.
 
 ## Verification Tool
 
@@ -44,81 +96,74 @@ npm run verify:visual-fidelity -- \
   --conversion preserve
 ```
 
-The tool:
+The current tool:
 
 - collects HTML files under the source folder
-- converts each page into semantic or preserve-mode VMD
-- renders the converted VMD back to HTML
+- converts each page into a VMD candidate
+- renders the candidate back to HTML
 - captures original and converted first-viewport screenshots with Playwright
-- computes pixel drift in the browser
-- writes `summary.json`, `summary.md`, generated VMD, generated HTML, and local
-  screenshots under the output folder
+- computes changed pixels and mean pixel delta
+- writes `summary.json`, `summary.md`, generated VMD, generated HTML, and screenshots
 
-Keep generated artifacts under `dist/` when the source pages are private.
+Keep generated artifacts under `dist/` when source pages are private.
 
-## Interpreting Results
+## Current Equivalence Threshold
 
-The checker treats a page as pixel-equivalent only when both are true:
+The reference checker treats a page as pixel-equivalent only when both are true:
 
 - changed pixels are at or below 2%
 - mean pixel delta is at or below 3
 
-These thresholds are intentionally strict. They are for checking whether a
-conversion visually preserves an existing page, not whether the converted VMD is
-usable.
+These thresholds are intentionally strict. They are not a statement that humans
+would notice every small difference. They are a gate for whether a conversion
+can claim visual-lossless status.
 
-High drift usually means the source page relies on one or more surfaces that the
-selected conversion mode does not represent:
+## Current Conversion Modes
 
-- custom CSS rules
-- inline style attributes
+### Semantic
+
+Semantic conversion extracts visible text and headings, then rebuilds the page
+as VMD-native frames and blocks.
+
+Use this for understanding and source-layer experiments. Do not claim complete
+visual restoration from semantic conversion alone.
+
+### Preserve
+
+Preserve conversion wraps CSS and body HTML so the current reference renderer
+can show the same browser page with minimal interference.
+
+This is useful as a compatibility baseline, but it is not the final standard.
+It proves that restoration is possible when enough source is carried, while the
+visual-lossless target is to compress that replay data and expose a better AI
+source layer.
+
+### Visual-Lossless
+
+Visual-lossless conversion should produce:
+
+- source slots for AI edits
+- component and token recipes where possible
+- replay or residual data for exact restoration
+- a residual index that tells AI which edits are constrained
+- edit state or dirty markers that identify stale replay after AI edits
+- a verification result proving the round trip
+
+This is the target mode for VMD v1.
+
+## Interpreting Drift
+
+High drift usually means the candidate lacks one or more of these:
+
+- CSS cascade details
+- inline styles
 - layout-specific class systems
-- SVG illustration or icon systems
-- data tables
-- scripted interaction or animation
-- custom component geometry such as device mockups
+- SVG or icon systems
+- exact asset dimensions
+- font and line-height locks
+- scroll and viewport state
+- scripted initial DOM state
+- component geometry such as device mockups
 
-## Conversion Modes
-
-### Semantic Mode
-
-Semantic mode extracts visible text and headings, then rebuilds the page as VMD
-frames and blocks. This is useful for AI-editable documents, but it should not
-be expected to match arbitrary HTML/CSS pixels.
-
-### Preserve Mode
-
-Preserve mode extracts CSS and body HTML into:
-
-```vmd
-@doc "Imported Page" {
-  fidelity: preserve
-  html-lang: en
-  body-class: source-page
-}
-
-::raw.css
-...
-::
-
-::raw.html
-...
-::
-```
-
-The reference read renderer emits preserved content directly, without the normal
-VMD document shell. Supported `html` and `body` attributes are carried through
-as `@doc` attributes, so selectors such as `body.source-page` can survive the
-round trip. This is the correct mode when the goal is “open the VMD and see the
-same browser page.”
-
-### Hybrid Mode
-
-Hybrid conversion is the next target. It should keep semantic structure where
-possible, then use layout/component/style/raw blocks only where the source page
-requires visual precision.
-
-The browser-native ambition should not collapse VMD into another spelling of
-HTML. The practical path is to make the fidelity mode explicit so authors know
-whether they are asking for editable semantic structure, structured visual
-authoring, or exact page preservation.
+The correct response is not to loosen the definition of lossless. The converter
+must preserve more replay information or fall back to raw data.

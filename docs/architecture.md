@@ -1,217 +1,117 @@
 # Architecture
 
-VMD is organized around one boundary:
+VMD is a file format plus a rendering contract.
 
 ```text
-source -> layered AST -> renderer
+.vmd source
+  -> parser
+  -> AST
+  -> validator
+  -> renderer
+  -> browser HTML/CSS output
+  -> visual restoration check
 ```
 
-The source syntax stays readable, but the AST now carries multiple layers:
-semantic roles, visual patterns, layout primitives, style input, raw
-compatibility blocks, and reusable components. The AST is the stable contract.
-Renderers can then target browser pages, editor previews, static HTML, PDFs, or
-decks.
+## File Layers
 
-## Repository Layers
+VMD keeps editable source and restoration data in the same file.
 
 ```text
-core/
-  vmd-core.cjs
+AI Source Layer
+  @doc
+  ::intent
+  @tokens
+  ::frame
+  ::component.*
+  ::visual.*
+  @residual_index
+  @edit_state / @dirty
 
-extension/
-  Chrome extension polyfill and viewer
-
-vscode-extension/
-  VS Code authoring and preview extension
-
-tools/
-  render helpers and static gallery builder
-
-bin/
-  reference CLI
-
-tests/
-  Core and extension integration tests
-
-docs/
-  Format, usage, and integration documents
+Render Replay Layer
+  @lock
+  @recipes
+  @replay
+  @residual
+  @raw
 ```
 
-## Core Runtime
+The source layer should be compact enough for AI to inspect and patch. The
+replay layer can be larger because normal editing does not require the AI to
+read it.
 
-`core/vmd-core.cjs` contains the current parser and HTML renderer.
+## Parser
 
-It exports:
+The parser accepts:
 
-- `parseVmd(source)`
-- `renderVmd(ast, mode)`
-- `renderFullHtml(ast, mode, options)`
-- `validateVmdAst(ast)`
-- `validateVmdSource(source)`
-- `SEMANTIC_BLOCK_TYPES`
-- `VISUAL_BLOCK_TYPES`
-- `LAYOUT_BLOCK_TYPES`
-- `STYLE_BLOCK_TYPES`
-- `RAW_BLOCK_TYPES`
-- `COMPONENT_BLOCK_TYPES`
-- `FIDELITY_TIERS`
-- `escapeHtml(value)`
+- Markdown-style headings
+- `@doc` document contracts
+- directive blocks such as `@lock`, `@tokens`, `@replay`, `@residual_index`
+- double-colon blocks such as `::frame`, `::intent`, `::component.card`
 
-The core is CommonJS plus a browser global wrapper so it can run in:
+The output is a plain AST so renderers, validators, and tooling can share the
+same representation.
 
-- Node CLI tools
-- Chrome extension pages
-- Chrome content scripts
-- VS Code extension host
+## Validator
 
-## Validation
+The validator checks:
 
-The runtime validator is intentionally separate from parsing.
+- missing document title
+- unknown fidelity tier
+- missing frames
+- unknown blocks
+- visual block completeness
+- raw executable surfaces
+- visual-lossless documents missing `@lock`
+- visual-lossless documents missing replay data
+- visual-lossless documents missing `@residual_index`
+- residual blocks that do not declare `ai: ignore`
+- visual-lossless documents missing edit state or dirty markers
 
-Parsing answers:
+Validation does not prove visual restoration. Restoration requires screenshot or
+render-signature verification under the declared `@lock`.
+
+## Renderer
+
+The current renderer produces HTML for:
+
+- read mode
+- deck mode
+- map mode
+
+It can render visual-lossless directives for inspection, but the final replay
+codec is still a research target. A production visual-lossless renderer must
+apply `@replay`, `@residual`, and `@raw` data to restore the locked output.
+
+## Complete Restoration Loop
+
+A converter should run this loop:
 
 ```text
-Is this source structurally readable?
+1. Parse source HTML/CSS artifact.
+2. Extract AI source slots.
+3. Map known patterns to recipes and tokens.
+4. Encode remaining differences into replay/residual/raw.
+5. Render VMD back to browser output.
+6. Compare against the original under @lock.
+7. If drift remains, expand replay/residual/raw and repeat.
 ```
 
-Validation answers:
+Only the passing result should claim `fidelity: visual-lossless`.
 
-```text
-Is this source useful as a layered visual document?
-```
+After an AI edit, the loop starts again from the changed slots. The old replay
+data may be stale, so the document must mark affected slots through
+`@edit_state` or `@dirty`, then regenerate replay/residual/hash data before
+visual-lossless status is restored.
 
-Current diagnostics cover missing document structure, unknown blocks, incomplete
-frames, weak claim/evidence pairing, invalid visual blocks, empty layout/raw
-blocks, sparse matrices, and disabled raw JavaScript.
+## Why This Architecture
 
-The validator is used by:
+HTML is the deployment target. Markdown is a good writing surface. CSS is a
+reusable styling system. VMD combines the useful parts by separating:
 
-- `node bin/vmd.mjs validate`
-- VS Code diagnostics
-- playground diagnostics
-- core tests
+- intent from implementation
+- editable slots from replay bytes
+- style tokens from raw CSS
+- AI constraints from renderer payloads
 
-## Runtime Copies
-
-The Chrome and VS Code extensions keep local runtime copies:
-
-```text
-extension/vmd-core.js
-vscode-extension/vendor/vmd-core.cjs
-```
-
-They are generated from:
-
-```text
-core/vmd-core.cjs
-```
-
-Sync them with:
-
-```bash
-npm run sync:core
-```
-
-This keeps the extensions loadable without a build step while preserving a
-single source of truth for parser and renderer behavior.
-
-## Rendering Modes
-
-The current renderer supports:
-
-- `read`: document-like reading mode
-- `deck`: frame-by-frame slide mode
-- `map`: frame map mode
-
-These modes are intentionally early. The format should not assume that every
-renderer has to look the same. The shared rule is that semantic blocks keep
-their meaning across output modes.
-
-## Fidelity Behavior
-
-The renderer now distinguishes semantic rendering from preservation rendering.
-
-For ordinary documents, `read` mode emits the VMD document shell, frames, blocks,
-layouts, and components. For documents with:
-
-```vmd
-@doc "Imported Page" {
-  fidelity: preserve
-}
-```
-
-the read renderer avoids the normal VMD wrapper and emits preserved raw HTML/CSS
-directly. It also maps document attributes such as `html-lang`, `html-dir`,
-`body-class`, `body-id`, `body-style`, `body-data-*`, and `body-aria-*` back to
-the rendered document. This is necessary because imported CSS can depend on
-selectors such as `body.source`, `body > main`, or exact root geometry. Deck and
-map modes remain semantic views and are not meant to be pixel-preserving.
-
-## CLI And Static Site
-
-`bin/vmd.mjs` is the reference CLI.
-
-It supports:
-
-- `render`: convert `.vmd` to static HTML
-- `ast`: print or write the layered AST
-- `validate`: run semantic diagnostics
-- `gallery`: build the public sample gallery and playground
-
-Validation supports strict mode for CI and JSON output for tools or AI agents.
-
-`tools/site-builder.mjs` builds the local static gallery used for samples,
-playground checks, and embeddable reference output.
-
-## Chrome Extension
-
-The Chrome extension is a browser polyfill.
-
-It handles two flows:
-
-- automatic render for `.vmd` URLs
-- manual viewer for upload, drag-and-drop, preview, and diagnostics
-
-Automatic local file rendering requires Chrome's `Allow access to file URLs`
-setting.
-
-If a document declares `fidelity: preserve`, the automatic renderer skips the
-mode toolbar, avoids injecting extension CSS, applies preserved `html` and
-`body` attributes, and renders the preserved document directly. That makes a
-preserved VMD file behave closer to an HTML file opened in the browser.
-
-## VS Code Extension
-
-The VS Code extension is the authoring companion.
-
-It contributes:
-
-- `.vmd` language support
-- syntax highlighting
-- block folding
-- snippet completions for document, frame, semantic, visual, layout, style, raw,
-  and component blocks
-- diagnostics from the shared validator
-- preview commands
-- optional custom preview editor
-
-The preview uses a VS Code webview and the same core renderer.
-
-The VS Code preview allows inline style output from trusted VMD source so
-`style.css` and `raw.css` can be inspected while authoring. The reference
-renderer still disables `raw.js` and executable script surfaces inside raw
-HTML/SVG.
-
-## Build Philosophy
-
-VMD should stay usable without a complex build chain.
-
-The repository currently favors:
-
-- plain JavaScript
-- plain CSS
-- simple file copies for extension runtimes
-- direct integration tests for Chrome and VS Code
-
-This is deliberate. The format should be easy for implementers to inspect and
-port.
+That separation is what lets VMD reduce token cost without pretending arbitrary
+HTML/CSS can be losslessly replaced by semantic blocks alone.

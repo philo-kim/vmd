@@ -1,7 +1,7 @@
 {
   "name": "vmd-format",
   "version": "0.1.0",
-  "description": "Open draft for a browser-native layered visual document format.",
+  "description": "Open draft for intent-readable visual-lossless documents.",
   "type": "module",
   "main": "core/vmd-core.cjs",
   "bin": {
@@ -65,6 +65,8 @@
     "browser-extension",
     "file-format",
     "html-preservation",
+    "visual-lossless",
+    "lossless-documents",
     "layered-documents",
     "markdown",
     "semantic-documents",

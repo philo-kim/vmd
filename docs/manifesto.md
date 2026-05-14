@@ -2,119 +2,101 @@
 
 ## The Missing Layer
 
-The internet has strong primitives for publishing and interaction:
+The web already has strong primitives:
 
-- HTML describes document structure.
-- CSS describes visual presentation.
-- JavaScript describes behavior.
-- Markdown made writing plain-text documents easier.
+- HTML for browser structure
+- CSS for presentation
+- JavaScript for behavior
+- Markdown for readable writing
 
-But modern visual documents still have two missing primitives.
+What is missing is a visual document source that is both AI-editable and
+restorable.
 
-They can describe what something looks like, but they usually do not describe
-what role an idea plays. They also rarely say whether the document should be
-editable semantic structure or exact visual preservation.
+Generated HTML can look good in a browser, but it mixes content, structure,
+style, state, layout, and exceptions into one implementation surface. That is
+too noisy for repeated AI editing.
 
-Is this paragraph a claim? Evidence? A decision? A contrast? A next action? A
-turning point in the argument?
+Markdown is easy to read, but it cannot restore a complex visual page.
 
-Most tools cannot know.
-
-VMD exists to make both the role and the fidelity target explicit.
-
-## Meaning Before Appearance
-
-VMD starts from a simple rule:
+VMD exists between those two constraints.
 
 ```text
-Mark the role of the idea before choosing its visual treatment.
+AI edits intent and slots.
+Renderer restores browser output from replay data.
 ```
 
-For example:
+## The Core Claim
+
+VMD is not shorter HTML and it is not prettier Markdown.
+
+VMD is a visual document container with two paths:
+
+- an AI-readable source layer
+- a renderer-readable replay layer
+
+The source layer contains intent, tokens, frames, components, and constraints.
+The replay layer contains lock, recipes, residual, raw fallback, and hashes.
+
+## Lossless Means Locked
+
+`fidelity: visual-lossless` is a strict claim. It means the renderer can restore
+the target browser output under fixed conditions:
+
+- renderer version
+- dictionary version
+- browser engine
+- viewport
+- device pixel ratio
+- fonts
+- assets
+- source hash
+- render hash
+
+If those conditions are not fixed, lossless is not a meaningful claim.
+
+## Editing Changes The Contract
+
+Visual-lossless restoration is true for the current source state. After an AI
+edits the source layer, replay and residual data may become stale.
+
+That is why VMD needs edit-state tracking:
 
 ```vmd
-::claim
-The product is not a tracker.
-It is a behavior-change loop.
-::
-```
-
-This is not just a styled box. It is a semantic claim.
-
-Once that meaning is known, different renderers can decide how to show it:
-
-- as a section in an article
-- as a slide in a deck
-- as a node in a map
-- as a highlighted block in a report
-- as an interactive frame on the web
-
-When exact visual preservation matters, VMD should say that too:
-
-```vmd
-@doc "Imported Page" {
-  fidelity: preserve
+@edit_state {
+  source: modified
+  replay: partially-stale
+  affected:
+    - frame.dashboard-overview.title
+  required:
+    - rerender
+    - remeasure
+    - update-render-hash
 }
 ```
 
-That tells the renderer not to reinterpret the page as a normal semantic
-document.
+The edited document becomes visual-lossless again only after the renderer
+refreshes replay/residual/hash data and verification passes.
 
-## A Portable Format For Visual Thinking
+## Why This Matters For AI
 
-Visual documents are often locked inside specific tools. Decks, documents,
-whiteboards, and reports each have their own editing model.
+The economic value of VMD is not only full file compression. The real gain is
+AI-facing context compression.
 
-VMD proposes a portable source format for the thinking underneath those outputs.
+The model should not need to read every CSS rule, wrapper, computed layout box,
+and fallback payload to change a title or update a metric. It should read the
+source layer and the residual index, then let the renderer refresh the replay
+layer.
 
-The same `.vmd` file should be able to move across tools, renderers, and media
-without losing its declared intent. For semantic documents, that means meaning.
-For preserve documents, that means visual fidelity.
+## What VMD Is For
 
-The long-term replacement target is the editable source behind artifacts that
-are currently split across decks, PDFs, design files, generated HTML, and
-one-off visual reports. Those outputs can remain useful delivery surfaces, but
-the source should be smaller, more explicit, and easier for AI to revise.
+VMD targets visual artifacts that are currently trapped in one-off outputs:
 
-```text
-VMD source -> browser page / presentation deck / PDF report / design handoff
-```
+- generated HTML pages
+- presentation decks
+- PDF reports
+- design handoff files
+- visual research maps
+- dashboards and briefings
 
-## A Better Target For AI
-
-AI-assisted creation is changing how people make software and documents.
-
-But asking an AI model to generate complete visual HTML is often an awkward
-target. It forces the model to decide content, structure, layout, styling, and
-interaction at the same time.
-
-VMD separates that work.
-
-An AI model can produce semantic source, structured layout, or a preserve-mode
-container for existing HTML/CSS. A renderer can produce the visual page.
-
-This makes visual document creation more accessible to people who can describe
-what they want but do not want to hand-author HTML, CSS, and JavaScript for
-every page.
-
-## What VMD Is Not
-
-VMD is not a replacement for HTML.
-
-VMD is not a replacement for CSS.
-
-VMD is not a replacement for Markdown.
-
-VMD is a layer above them: a layered source format for visual documents.
-
-## Format Requirements
-
-The format should be:
-
-- readable as plain text
-- parseable into a stable AST
-- renderer-independent
-- friendly to web output
-- useful for documents, decks, reports, maps, and design handoff surfaces
-- explicit about fidelity tiers
-- simple enough for people to write directly
+Those outputs can remain delivery surfaces. VMD should become the durable source
+that AI and renderers can both understand.

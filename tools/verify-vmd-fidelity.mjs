@@ -787,7 +787,7 @@ function interpretationLines(summary) {
       "Preserve conversion wraps existing browser-native source in raw VMD compatibility blocks and carries supported `html` and `body` attributes through the document header.",
       "This is the right mode when the goal is visual equivalence with an existing HTML/CSS page.",
       "",
-      "Remaining drift usually points to scripts, external assets, unsupported root attributes, or raw-block delimiter conflicts rather than semantic VMD rendering."
+      "Remaining drift usually points to scripts, external assets, unsupported root attributes, or replay/residual gaps rather than a valid visual-lossless conversion."
     ];
   }
 

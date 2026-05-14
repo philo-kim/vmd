@@ -1,126 +1,127 @@
 # AI Authoring Guide
 
-VMD is designed to be a better target for AI-assisted visual documents than raw
-HTML and CSS.
+VMD is designed so an AI model edits the small source layer, not the full
+browser implementation layer.
 
-For new documents, the model should describe semantic structure first and let
-the renderer handle the page. For imported design documents, the model should
-choose an explicit fidelity tier instead of pretending semantic blocks can
-preserve arbitrary HTML/CSS pixels.
+## Editing Rule
 
-The strongest VMD examples should not feel like syntax demonstrations. They
-should feel like real visual artifacts that could otherwise have been a
-presentation deck, PDF report, design handoff, or generated HTML page.
+For `fidelity: visual-lossless`, AI should edit only:
 
-## Prompt Pattern
+- `::intent`
+- `@tokens`
+- `::frame`
+- component, layout, visual, and semantic blocks
 
-Use prompts that ask for VMD source, not final HTML, and state the fidelity
-target.
+AI should read but not edit:
+
+- `@residual_index`
+- `@edit_state`
+- `@dirty`
+
+AI should not directly edit:
+
+- `@lock`
+- `@replay`
+- `@residual`
+- `@raw`
+
+Those replay blocks are renderer-owned. If an edit changes the visual structure,
+the converter or renderer must regenerate replay data and run restoration
+verification.
+
+## Required Mental Model
 
 ```text
-Create a VMD document for a 6-frame structured brief.
-Use fidelity: structured.
-Use frames, claims, evidence, insights, decisions, actions, and visual.compare
-where useful.
-Keep the source readable as plain text.
-Use layout and component blocks if the document needs visual structure.
-Include the intended surfaces, such as browser-page, deck, pdf, or design-handoff.
-Do not use raw HTML/CSS unless exact preservation is required.
+Source slots are editable.
+Replay data restores pixels.
+Residual index tells the model which edits are safe.
+Edit state tells the model whether replay is current or stale.
 ```
 
-## Good Output Shape
+Do not treat VMD as shorter HTML. Treat it as a document contract with an
+editable source layer and a lossless replay layer.
+
+## Recommended Prompt Shape
+
+When asking an AI to edit VMD, provide:
+
+```text
+You are editing VMD.
+Only edit AI source layer fields: intent, tokens, frames, components, visible text.
+Do not edit @lock, @replay, @residual, or @raw.
+Read @residual_index and @edit_state. Respect every affected slot constraint.
+If you change a constrained slot, mark it dirty or leave replay as stale.
+Preserve complete visual restoration as a requirement.
+Return the edited VMD source only.
+```
+
+## Common Edits
+
+### Text Edit
+
+Safe when the replacement respects length, line, and slot constraints.
+If the edited slot appears in `@residual_index`, mark it dirty unless the
+renderer is regenerating replay immediately.
+
+### Metric Or Table Edit
+
+Safe when the new item count stays inside `@residual_index` constraints.
+
+### Token Edit
+
+Safe when the user intends a style change. After editing tokens, rerun visual
+verification because color, contrast, line breaking, and overflow may change.
+
+### Layout Edit
+
+Higher risk. If a frame recipe, component count, or table shape changes, replay
+must be regenerated.
+
+## Dirty State After Edits
+
+When the model changes a source slot that can affect replay, it should not
+pretend the existing `render-hash` still proves the document.
+
+Use `@edit_state`:
 
 ```vmd
-@doc "AI-Native Visual Documents" {
-  format: deck
-  theme: clean
-  audience: builders
+@edit_state {
+  source: modified
+  replay: partially-stale
+  affected:
+    - frame.dashboard-overview.title
+  required:
+    - rerender
+    - remeasure
+    - update-render-hash
 }
-
-# AI needs a better visual document target
-
-::frame[role="problem"]
-  ::claim
-  Raw HTML is too low-level for most AI-assisted visual documents.
-  ::
-
-  ::evidence
-  The model must decide content, structure, spacing, hierarchy, responsive
-  behavior, and visual polish at the same time.
-  ::
-::
 ```
 
-## Authoring Rules For AI
-
-- Prefer `frame` as the top-level unit.
-- Use `claim` for the main point of a frame.
-- Use `evidence` for support, proof, or context.
-- Use `insight` only when the text changes interpretation.
-- Use `decision` for an explicit chosen direction.
-- Use `action` for next steps.
-- Use `visual.compare` for opposing or before/after structures.
-- Use `visual.loop` for repeated cycles.
-- Use `visual.timeline` for ordered sequences.
-- Use `layout.grid`, `layout.split`, and `component.card` when the output needs
-  real visual structure.
-- Use `style.tokens` before `style.css`.
-- Use `raw.html` and `raw.css` only for preserve-mode imports or small
-  compatibility islands.
-- Do not use `raw.js`; the reference renderer will not execute it.
-- Keep source readable before rendering.
-
-## Review Checklist
-
-Before accepting AI-generated VMD, check:
-
-- Does every frame have a clear role?
-- Does every major claim have support?
-- Are visual blocks used for structure rather than decoration?
-- Is the declared `fidelity` tier honest?
-- Are layout/component blocks enough, or is preserve mode required?
-- Are raw blocks limited to compatibility needs?
-- Is the document understandable as plain text?
-- Could the same source render as read, deck, and map views?
-- Could the same source plausibly feed a deck, PDF, design handoff, or browser
-  page without rewriting the document?
-
-Then run:
-
-```bash
-node bin/vmd.mjs validate path/to/document.vmd
-node bin/vmd.mjs validate path/to/document.vmd --strict
-node bin/vmd.mjs validate path/to/document.vmd --json
-```
-
-For AI workflows, validation should be treated as the first feedback loop. The
-model can revise the source until parse errors are gone and semantic warnings
-are intentional.
-
-## Example Request
-
-```text
-Turn this rough outline into VMD:
-
-- AI-generated HTML is too fragile
-- Vibe coders need easier visual documents
-- VMD stores semantic intent
-- Browser polyfill renders it as a page
-- Long-term target is browser-native support
-```
-
-Expected shape:
+Or use short dirty markers:
 
 ```vmd
-::frame[role="problem"]
-  ::claim
-  AI-generated HTML is often too fragile for reusable visual documents.
-  ::
-::
+@dirty {
+  frame.dashboard-overview.title
+  render-hash
+}
+```
 
-::frame[role="shift"]
-  ::insight
-  The better target is semantic visual structure, not final layout code.
-  ::
-::
+The renderer must clear the dirty state only after regenerating replay/residual
+data and passing visual restoration verification.
+
+## LLM Evaluation
+
+VMD should be evaluated by:
+
+- whether the model understands the document purpose
+- whether it identifies editable slots
+- whether it respects residual constraints
+- whether it avoids replay payload edits
+- whether it marks stale replay after edits
+- whether the post-edit renderer can regenerate a passing visual-lossless file
+
+The metric is not only source size. The metric is:
+
+```text
+minimum token cost per correct, restorable visual edit
 ```

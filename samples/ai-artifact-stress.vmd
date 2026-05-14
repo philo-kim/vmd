@@ -86,7 +86,7 @@
   ::
 
   ::visual.timeline
-  - AI drafts semantic VMD
+  - AI drafts editable VMD source slots
   - Renderer creates a polished visual artifact
   - Reviewer edits the VMD source, not scattered output objects
   - Exporters produce web, deck, PDF, and design-handoff surfaces

@@ -23,8 +23,11 @@ This project follows a human-readable changelog style inspired by
 - Reproducible VMD vs Markdown vs HTML format benchmark.
 - Open Design AI artifact benchmark for measuring generated HTML as VMD source
   material.
-- Layered VMD fidelity tiers covering semantic, structured, visual, preserve,
-  and future interactive documents.
+- Visual-lossless document contract with `@lock`, `@replay`, `@residual`,
+  `@residual_index`, and `@edit_state`/`@dirty` directives.
+- Sample visual-lossless dashboard document.
+- VMD fidelity tiers covering semantic, structured, visual, visual-lossless,
+  preserve, and future interactive documents.
 - Layout, style, raw compatibility, component, and matrix visual blocks.
 - Preserve-mode Chrome auto-render behavior for high-fidelity HTML/CSS imports.
 - Preserve-mode Chrome auto-render guard that avoids injecting extension CSS

@@ -1,6 +1,6 @@
 # Contributing
 
-VMD is an open draft for a browser-native semantic visual document format.
+VMD is an open draft for intent-readable visual-lossless documents.
 
 The most valuable contributions right now are those that improve the format's
 clarity, portability, and usefulness for AI-assisted visual documents.
@@ -9,7 +9,7 @@ clarity, portability, and usefulness for AI-assisted visual documents.
 
 - Add sample `.vmd` documents.
 - Improve wording in the public docs.
-- Propose semantic block definitions.
+- Propose source-slot, replay, residual, and edit-state improvements.
 - Add renderer test cases.
 - Improve CLI, validator, or gallery behavior.
 - Improve accessibility mappings.
@@ -18,7 +18,8 @@ clarity, portability, and usefulness for AI-assisted visual documents.
 ## Design Rules
 
 - Keep VMD readable as plain text.
-- Treat semantic blocks as meaning, not fixed visual components.
+- Treat visual-lossless as a strict restoration claim under a fixed render lock.
+- Treat AI-editable slots and renderer replay payloads as separate responsibilities.
 - Keep parser and renderer behavior shared through `core/vmd-core.cjs`.
 - Avoid adding a build system unless the complexity is clearly justified.
 - Prefer small, testable changes.
@@ -71,6 +72,8 @@ A syntax proposal should include:
 - example `.vmd` source
 - expected AST shape
 - expected rendering behavior across read, deck, and map modes
+- expected restoration or dirty-state behavior when the proposal affects
+  `fidelity: visual-lossless`
 - why the meaning cannot be expressed with existing blocks
 
 Avoid adding new blocks for decoration-only use cases.
