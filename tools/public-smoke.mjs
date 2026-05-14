@@ -1,33 +1,38 @@
 import { chromium } from "playwright";
 
-const baseUrl = process.argv[2] || "https://philo-kim.github.io/vmd/";
+const baseUrl = process.argv[2] || "https://philo.kim/vmd/";
 
 let browser;
 try {
   browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage();
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 
   await page.goto(baseUrl, { waitUntil: "networkidle" });
-  await page.waitForSelector(".format-card", { timeout: 15000 });
-  const title = await page.locator("h1").first().textContent();
-  assertIncludes(title, "VMD", "home title");
+  await page.waitForSelector("h1", { timeout: 15000 });
 
-  await page.goto(new URL("family-platform.html", baseUrl).toString(), { waitUntil: "networkidle" });
-  await page.waitForSelector(".block-claim", { timeout: 15000 });
-  await page.locator('button[data-mode="deck"]').click();
-  await page.waitForSelector(".deck-view .slide", { timeout: 15000 });
-  await page.locator('button[data-mode="map"]').click();
-  await page.waitForSelector(".map-view .map-node", { timeout: 15000 });
+  const title = await page.title();
+  const h1 = await page.locator("h1").first().textContent();
+  const bodyText = await page.locator("body").innerText();
 
-  await page.goto(new URL("benchmark.html", baseUrl).toString(), { waitUntil: "networkidle" });
-  await page.waitForSelector("table", { timeout: 15000 });
-  const benchmarkTitle = await page.locator("h1").first().textContent();
-  assertIncludes(benchmarkTitle, "VMD vs Markdown", "benchmark title");
+  assertIncludes(title, "VMD", "page title");
+  assertIncludes(h1, "VMD", "hero title");
+  assertIncludes(
+    bodyText,
+    "The web needs a visual source format that AI can reason about.",
+    "source-layer framing"
+  );
 
-  await page.goto(new URL("playground.html", baseUrl).toString(), { waitUntil: "networkidle" });
-  await page.waitForFunction(() => document.querySelector("#source")?.value.includes("@doc"));
-  await page.locator('button[data-mode="deck"]').click();
-  await page.waitForSelector(".deck-view", { timeout: 15000 });
+  if (bodyText.includes("lessons of formats") && bodyText.includes("spread")) {
+    throw new Error("public site still contains removed format adoption copy");
+  }
+
+  const overflow = await page.evaluate(() => ({
+    width: window.innerWidth,
+    scrollWidth: document.documentElement.scrollWidth
+  }));
+  if (overflow.scrollWidth > overflow.width + 1) {
+    throw new Error(`public site has horizontal overflow: ${JSON.stringify(overflow)}`);
+  }
 
   console.log(`public smoke test passed: ${baseUrl}`);
 } finally {

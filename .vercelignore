@@ -1,9 +1,0 @@
-node_modules/
-dist/
-.git/
-.github/
-.vscode-test/
-.vercel/
-internal-strategy/
-*.log
-.DS_Store

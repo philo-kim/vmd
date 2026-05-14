@@ -4,7 +4,7 @@ VMD currently has five distributable surfaces:
 
 - source repository
 - CLI and static renderer
-- GitHub Pages gallery
+- local static gallery
 - Chrome extension zip
 - VS Code VSIX
 
@@ -33,7 +33,7 @@ Expected artifacts:
 ```text
 dist/vmd-chrome-extension.zip
 dist/vmd-vscode.vsix
-dist/family-platform.html
+dist/source-layer-brief.html
 dist/site/index.html
 docs/assets/vmd-gallery.png
 docs/assets/vmd-playground.png
@@ -44,13 +44,13 @@ Package artifacts and `dist/` output are generated locally and are not committed
 to Git by default. Screenshot assets are committed because they are part of the
 public README.
 
-After Pages deploys, run:
+After the canonical site deploys, run:
 
 ```bash
 npm run smoke:public
 ```
 
-This checks the published gallery, sample page, and playground in Chromium.
+This checks the public `https://philo.kim/vmd/` page in Chromium.
 
 ## Versioning
 
@@ -84,16 +84,11 @@ npm run package:vscode
 
 The VSIX can be installed manually.
 
-## GitHub Pages Release
+## Static Gallery Release
 
-The Pages workflow builds `dist/site` from sample `.vmd` files and publishes the
-gallery and playground.
-
-Before relying on Pages as the public demo surface:
-
-- verify the repository Pages setting is enabled
-- confirm the latest Pages workflow has deployed successfully
-- open the published gallery URL and check a sample page plus playground
+The static gallery build writes `dist/site` from sample `.vmd` files. It is a
+local reference output and can be embedded by another site, but this repository
+does not publish it as a separate canonical homepage.
 
 The generated site is not committed to Git.
 

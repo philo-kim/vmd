@@ -36,7 +36,7 @@
   "engines": {
     "node": ">=18"
   },
-  "homepage": "https://vmd-sandy.vercel.app/",
+  "homepage": "https://philo.kim/vmd/",
   "bugs": {
     "url": "https://github.com/philo-kim/vmd/issues"
   },

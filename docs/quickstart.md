@@ -15,7 +15,7 @@ npm install
 Open:
 
 ```text
-samples/family-platform.vmd
+samples/source-layer-brief.vmd
 ```
 
 The source is plain text. It uses Markdown-style headings and semantic blocks:
@@ -23,8 +23,8 @@ The source is plain text. It uses Markdown-style headings and semantic blocks:
 ```vmd
 ::frame[role="opening"]
   ::claim
-  Allowance management is not the end point.
-  It is the starting point for self-directed behavior inside the family.
+  Generated HTML is useful output.
+  It should not always be the editable source.
   ::
 ::
 ```
@@ -38,19 +38,19 @@ npm run render:sample
 The rendered file is written to:
 
 ```text
-dist/family-platform.html
+dist/source-layer-brief.html
 ```
 
 You can also use the CLI directly:
 
 ```bash
-node bin/vmd.mjs render samples/family-platform.vmd --out dist/family-platform.html --mode read
+node bin/vmd.mjs render samples/source-layer-brief.vmd --out dist/source-layer-brief.html --mode read
 ```
 
 ## 4. Validate The Source
 
 ```bash
-node bin/vmd.mjs validate samples/family-platform.vmd
+node bin/vmd.mjs validate samples/source-layer-brief.vmd
 ```
 
 Validation reports parse errors, unknown blocks, incomplete visual blocks, and
@@ -84,7 +84,7 @@ Then:
 4. Select the `extension/` directory
 5. Open the extension details page
 6. Enable `Allow access to file URLs`
-7. Open `samples/family-platform.vmd` in Chrome
+7. Open `samples/source-layer-brief.vmd` in Chrome
 
 The file should render as a visual document instead of remaining plain text.
 

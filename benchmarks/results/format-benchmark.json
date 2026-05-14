@@ -1,11 +1,11 @@
 {
   "benchmarkVersion": 1,
   "case": {
-    "name": "Family Platform Brief",
+    "name": "Source Layer Brief",
     "files": {
-      "vmd": "benchmarks/cases/family-platform.vmd",
-      "markdown": "benchmarks/cases/family-platform.md",
-      "html": "benchmarks/cases/family-platform.html"
+      "vmd": "benchmarks/cases/source-layer-brief.vmd",
+      "markdown": "benchmarks/cases/source-layer-brief.md",
+      "html": "benchmarks/cases/source-layer-brief.html"
     },
     "note": "The HTML case intentionally implements read, deck, and map views directly so it can match VMD's multi-view output without a VMD renderer."
   },
@@ -21,13 +21,13 @@
     {
       "format": "VMD",
       "scenario": "Semantic visual source rendered by VMD renderer",
-      "sourceBytes": 1503,
-      "sourceLines": 70,
-      "approxTokens": 376,
-      "visibleWords": 178,
-      "authoringOverheadBytes": 275,
+      "sourceBytes": 1527,
+      "sourceLines": 72,
+      "approxTokens": 382,
+      "visibleWords": 185,
+      "authoringOverheadBytes": 279,
       "authoringOverheadPercent": 18.3,
-      "bytesPerRenderMode": 501,
+      "bytesPerRenderMode": 509,
       "browserNativeToday": false,
       "renderModesFromOneSource": 3,
       "standardizedSemanticRoles": 10,
@@ -45,13 +45,13 @@
     {
       "format": "Markdown",
       "scenario": "Markdown-only source with human-readable role labels",
-      "sourceBytes": 1316,
+      "sourceBytes": 1336,
       "sourceLines": 52,
-      "approxTokens": 329,
-      "visibleWords": 160,
-      "authoringOverheadBytes": 195,
-      "authoringOverheadPercent": 14.8,
-      "bytesPerRenderMode": 1316,
+      "approxTokens": 334,
+      "visibleWords": 167,
+      "authoringOverheadBytes": 192,
+      "authoringOverheadPercent": 14.4,
+      "bytesPerRenderMode": 1336,
       "browserNativeToday": false,
       "renderModesFromOneSource": 1,
       "standardizedSemanticRoles": 0,
@@ -69,13 +69,13 @@
     {
       "format": "HTML",
       "scenario": "Browser-ready HTML implementing read, deck, and map views manually",
-      "sourceBytes": 6718,
+      "sourceBytes": 6749,
       "sourceLines": 98,
-      "approxTokens": 1680,
-      "visibleWords": 280,
+      "approxTokens": 1688,
+      "visibleWords": 292,
       "authoringOverheadBytes": 4793,
-      "authoringOverheadPercent": 71.3,
-      "bytesPerRenderMode": 2239.3,
+      "authoringOverheadPercent": 71,
+      "bytesPerRenderMode": 2249.7,
       "browserNativeToday": true,
       "renderModesFromOneSource": 3,
       "standardizedSemanticRoles": 0,
@@ -93,14 +93,14 @@
   ],
   "comparisons": {
     "vmdVsMarkdown": {
-      "sourceBytesDeltaPercent": 14.2,
+      "sourceBytesDeltaPercent": 14.3,
       "renderModeGain": 2,
       "standardizedSemanticRoleGain": 10,
       "validatorGain": 1
     },
     "vmdVsHtml": {
-      "sourceBytesDeltaPercent": -77.6,
-      "sourceBytesReductionPercent": 77.6,
+      "sourceBytesDeltaPercent": -77.4,
+      "sourceBytesReductionPercent": 77.4,
       "renderModeGain": 0,
       "standardizedSemanticRoleGain": 10,
       "browserNativeTradeoff": "HTML opens natively today; VMD needs a renderer or extension until native support exists."

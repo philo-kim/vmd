@@ -49,8 +49,8 @@ Good:
 
 ```vmd
 ::claim
-The real market is not allowance management.
-It is behavior change inside the family.
+Generated HTML is useful output.
+It should not always be the editable source.
 ::
 ```
 
@@ -58,7 +58,7 @@ Avoid:
 
 ```html
 <block type="claim" display="hero" weight="high">
-  <content>The real market is not allowance management.</content>
+  <content>Generated HTML is useful output.</content>
 </block>
 ```
 
@@ -195,30 +195,30 @@ avoid adding wrappers that would break imported CSS selectors.
 ## MVP Syntax
 
 ```vmd
-@doc "Family Platform" {
+@doc "Source Layer Brief" {
   format: deck
   theme: clean
-  audience: investor
+  audience: builders
   fidelity: structured
 }
 
-# A Family Platform For Behavior Change
+# A Source Layer For Visual Documents
 
 ::frame[role="opening"]
   ::claim
-  Allowance management is not the end point.
-  It is the starting point for self-directed behavior.
+  Generated HTML is useful output.
+  It should not always be the editable source.
   ::
 ::
 
 ::frame[role="proof"]
   ::layout.grid[columns="2" gap="medium"]
-    ::component.card[title="Existing apps"]
-    Money flow, records, and parent control.
+    ::component.card[title="HTML-first source"]
+    Implementation details, page-specific CSS, and generated DOM.
     ::
 
-    ::component.card[title="New category"]
-    Behavior loops, missions, trust, and growth.
+    ::component.card[title="VMD source"]
+    Declared intent, reusable visual mapping, and document roles.
     ::
   ::
 ::
@@ -253,14 +253,14 @@ document header so root selectors survive conversion.
 
 ## Layered AST
 
-The AST is the real product boundary.
+The AST is the real format boundary.
 
 Expected shape:
 
 ```json
 {
   "doc": {
-    "title": "Family Platform",
+    "title": "Source Layer Brief",
     "attrs": {
       "format": "deck",
       "theme": "clean",
@@ -284,10 +284,10 @@ Expected shape:
             {
               "type": "component.card",
               "attrs": {
-                "title": "Existing apps"
+                "title": "HTML-first source"
               },
               "lines": [
-                "Money flow, records, and parent control."
+                "Implementation details, page-specific CSS, and generated DOM."
               ]
             }
           ]

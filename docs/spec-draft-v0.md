@@ -68,7 +68,7 @@ state:
 A VMD document may start with an `@doc` block.
 
 ```vmd
-@doc "Family Platform Brief" {
+@doc "Source Layer Brief" {
   format: deck
   theme: clean
   audience: investor
@@ -340,7 +340,7 @@ Error examples:
 The CLI exits with a non-zero code only for errors unless `--strict` is used:
 
 ```bash
-node bin/vmd.mjs validate samples/family-platform.vmd
+node bin/vmd.mjs validate samples/source-layer-brief.vmd
 ```
 
 ## Renderer Rule

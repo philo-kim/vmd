@@ -28,7 +28,7 @@ sampleButton.addEventListener("click", async () => {
   const response = await fetch(chrome.runtime.getURL("sample.vmd"));
   const source = await response.text();
   sourceInput.value = source;
-  fileName.textContent = "family-platform.vmd";
+  fileName.textContent = "source-layer-brief.vmd";
   render();
 });
 

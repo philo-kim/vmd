@@ -29,8 +29,8 @@ VMD marks the role of an idea instead of its final decoration:
 
 ```vmd
 ::claim
-This product is not an allowance tracker.
-It is a family behavior-change system.
+Generated HTML is useful output.
+It should not always be the editable source.
 ::
 ```
 
@@ -106,7 +106,7 @@ Current behavior:
 - `docs/architecture.md`: source, AST, renderer, and extension architecture
 - `docs/cli.md`: command-line rendering, AST, validation, and gallery workflow
 - `docs/ast-schema.md`: draft JSON Schema for the layered AST
-- `docs/public-site-and-actions.md`: GitHub Pages and reusable render action
+- `docs/static-gallery-and-actions.md`: local gallery and reusable render action
 - `docs/language-design.md`: language direction and design principles
 - `docs/spec-draft-v0.md`: first public grammar and AST draft
 - `docs/format-benchmark.md`: VMD vs Markdown vs HTML benchmark results
@@ -117,7 +117,7 @@ Current behavior:
 - `docs/extension-architecture.md`: current extension design
 - `docs/testing.md`: local and integration test workflow
 - `docs/release.md`: release and packaging workflow
-- `samples/family-platform.vmd`: sample VMD source
+- `samples/source-layer-brief.vmd`: sample VMD source
 - `samples/visual-fidelity-layers.vmd`: layered fidelity and raw compatibility example
 - `extension/`: reference Chrome polyfill and viewer
 - `vscode-extension/`: VS Code authoring and preview extension
@@ -243,7 +243,7 @@ npm run render:sample
 The output is written to:
 
 ```text
-dist/family-platform.html
+dist/source-layer-brief.html
 ```
 
 ## CLI
@@ -252,11 +252,11 @@ The reference CLI can render HTML, print the layered AST, validate source, and
 build the public gallery.
 
 ```bash
-node bin/vmd.mjs validate samples/family-platform.vmd
-node bin/vmd.mjs validate samples/family-platform.vmd --strict
-node bin/vmd.mjs validate samples/family-platform.vmd --json
-node bin/vmd.mjs ast samples/family-platform.vmd
-node bin/vmd.mjs render samples/family-platform.vmd --out dist/family-platform.html --mode deck
+node bin/vmd.mjs validate samples/source-layer-brief.vmd
+node bin/vmd.mjs validate samples/source-layer-brief.vmd --strict
+node bin/vmd.mjs validate samples/source-layer-brief.vmd --json
+node bin/vmd.mjs ast samples/source-layer-brief.vmd
+node bin/vmd.mjs render samples/source-layer-brief.vmd --out dist/source-layer-brief.html --mode deck
 node bin/vmd.mjs gallery --out dist/site
 ```
 
@@ -267,7 +267,7 @@ See `docs/cli.md`.
 Production site:
 
 ```text
-https://vmd-sandy.vercel.app/
+https://philo.kim/vmd/
 ```
 
 Build the static gallery and playground:
@@ -282,8 +282,9 @@ The output is written to:
 dist/site/
 ```
 
-The repository also includes Vercel configuration, a GitHub Pages workflow, and
-a reusable local GitHub Action for rendering `.vmd` files.
+The repository also includes a reusable local GitHub Action for rendering `.vmd`
+files. The canonical public page lives at `https://philo.kim/vmd/`; this repo's
+gallery build is a reference output, not a standalone homepage.
 
 ## Screenshots
 
@@ -341,7 +342,7 @@ See `docs/spec-draft-v0.md` for the current draft.
 
 ## Samples
 
-- `samples/family-platform.vmd`: deck example
+- `samples/source-layer-brief.vmd`: deck example
 - `samples/ai-native-brief.vmd`: AI-native visual document argument
 - `samples/lesson-outline.vmd`: education/lesson example
 - `samples/visual-fidelity-layers.vmd`: layout, style, component, and raw preservation example

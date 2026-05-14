@@ -11,7 +11,7 @@ async function run() {
   assert.ok(commands.includes("vmd.preview.open"), "preview command should be registered");
   assert.ok(commands.includes("vmd.preview.openToSide"), "preview-to-side command should be registered");
 
-  const fixture = path.resolve(__dirname, "../../../samples/family-platform.vmd");
+  const fixture = path.resolve(__dirname, "../../../samples/source-layer-brief.vmd");
   const document = await vscode.workspace.openTextDocument(vscode.Uri.file(fixture));
   assert.strictEqual(document.languageId, "vmd");
 

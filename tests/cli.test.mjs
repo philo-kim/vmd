@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 const execFileAsync = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const cli = path.join(root, "bin", "vmd.mjs");
-const sample = path.join(root, "samples", "family-platform.vmd");
+const sample = path.join(root, "samples", "source-layer-brief.vmd");
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), "vmd-cli-test-"));
 
 try {
@@ -19,25 +19,25 @@ try {
   });
   const html = await readFile(renderOut, "utf8");
   assert.match(html, /deck-view/);
-  assert.match(html, /Family Platform Brief/);
+  assert.match(html, /Source Layer Brief/);
 
   const astOut = path.join(tempRoot, "ast.json");
   await execFileAsync("node", [cli, "ast", sample, "--out", astOut], {
     cwd: root
   });
   const ast = JSON.parse(await readFile(astOut, "utf8"));
-  assert.equal(ast.doc.title, "Family Platform Brief");
+  assert.equal(ast.doc.title, "Source Layer Brief");
 
   const validateResult = await execFileAsync("node", [
     cli,
     "validate",
     path.join(root, "samples", "ai-native-brief.vmd"),
-    path.join(root, "samples", "family-platform.vmd"),
+    path.join(root, "samples", "source-layer-brief.vmd"),
     path.join(root, "samples", "lesson-outline.vmd")
   ], {
     cwd: root
   });
-  assert.match(validateResult.stdout, /family-platform\.vmd/);
+  assert.match(validateResult.stdout, /source-layer-brief\.vmd/);
 
   const jsonValidation = await execFileAsync("node", [cli, "validate", sample, "--json"], {
     cwd: root

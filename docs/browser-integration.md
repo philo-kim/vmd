@@ -44,7 +44,7 @@ permission.
 The CLI can render `.vmd` source into static HTML:
 
 ```bash
-node bin/vmd.mjs render samples/family-platform.vmd --out dist/family-platform.html
+node bin/vmd.mjs render samples/source-layer-brief.vmd --out dist/source-layer-brief.html
 ```
 
 The gallery builder uses the same renderer to produce the static demo site.

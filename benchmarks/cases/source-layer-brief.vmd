@@ -12,6 +12,11 @@
   It should not always be the editable source.
   ::
 
+  ::evidence
+  When HTML becomes the source of record, every edit must carry content,
+  structure, styling, and responsive behavior at once.
+  ::
+
   ::visual.loop
   Intent -> Structure -> Render -> Verify
   ::

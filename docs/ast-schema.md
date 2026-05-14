@@ -28,7 +28,7 @@ shape without freezing every additional block type.
 {
   "type": "document",
   "doc": {
-    "title": "Family Platform Brief",
+    "title": "Source Layer Brief",
     "attrs": {
       "format": "deck",
       "theme": "clean",

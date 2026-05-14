@@ -160,7 +160,8 @@ It supports:
 
 Validation supports strict mode for CI and JSON output for tools or AI agents.
 
-`tools/site-builder.mjs` builds the static site used by GitHub Pages.
+`tools/site-builder.mjs` builds the local static gallery used for samples,
+playground checks, and embeddable reference output.
 
 ## Chrome Extension
 

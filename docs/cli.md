@@ -29,15 +29,15 @@ vmd
 ## Render HTML
 
 ```bash
-node bin/vmd.mjs render samples/family-platform.vmd --out dist/family-platform.html
+node bin/vmd.mjs render samples/source-layer-brief.vmd --out dist/source-layer-brief.html
 ```
 
 Render modes:
 
 ```bash
-node bin/vmd.mjs render samples/family-platform.vmd --mode read
-node bin/vmd.mjs render samples/family-platform.vmd --mode deck
-node bin/vmd.mjs render samples/family-platform.vmd --mode map
+node bin/vmd.mjs render samples/source-layer-brief.vmd --mode read
+node bin/vmd.mjs render samples/source-layer-brief.vmd --mode deck
+node bin/vmd.mjs render samples/source-layer-brief.vmd --mode map
 ```
 
 The renderer writes static HTML and links the reference stylesheet by default.
@@ -45,8 +45,8 @@ The renderer writes static HTML and links the reference stylesheet by default.
 ## Print Or Write AST
 
 ```bash
-node bin/vmd.mjs ast samples/family-platform.vmd
-node bin/vmd.mjs ast samples/family-platform.vmd --out dist/family-platform.ast.json
+node bin/vmd.mjs ast samples/source-layer-brief.vmd
+node bin/vmd.mjs ast samples/source-layer-brief.vmd --out dist/source-layer-brief.ast.json
 ```
 
 The layered AST is the interoperability boundary. Renderers and validators
@@ -55,9 +55,9 @@ should depend on the AST, not on source-string scraping.
 ## Validate
 
 ```bash
-node bin/vmd.mjs validate samples/family-platform.vmd
-node bin/vmd.mjs validate samples/family-platform.vmd --strict
-node bin/vmd.mjs validate samples/family-platform.vmd --json
+node bin/vmd.mjs validate samples/source-layer-brief.vmd
+node bin/vmd.mjs validate samples/source-layer-brief.vmd --strict
+node bin/vmd.mjs validate samples/source-layer-brief.vmd --json
 ```
 
 The validator reports:
@@ -81,7 +81,7 @@ programmatically.
 CLI options can be passed either as separate arguments or with equals syntax:
 
 ```bash
-node bin/vmd.mjs render samples/family-platform.vmd --mode=deck --out=dist/family-platform.html
+node bin/vmd.mjs render samples/source-layer-brief.vmd --mode=deck --out=dist/source-layer-brief.html
 ```
 
 ## Build Gallery And Playground
@@ -102,7 +102,8 @@ This builds:
 - `dist/site/playground.html`: browser playground with live rendering
 - rendered pages for every `.vmd` file in `samples/`
 
-The gallery is designed to be published through GitHub Pages.
+The gallery is designed for local inspection or embedding in another site. The
+canonical public VMD page is `https://philo.kim/vmd/`.
 
 ## Visual Fidelity Verification
 

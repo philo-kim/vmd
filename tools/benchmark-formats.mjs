@@ -13,7 +13,7 @@ const {
 } = require("../core/vmd-core.cjs");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const caseName = "family-platform";
+const caseName = "source-layer-brief";
 const caseDir = path.join(root, "benchmarks", "cases");
 const resultsDir = path.join(root, "benchmarks", "results");
 const jsonPath = path.join(resultsDir, "format-benchmark.json");
@@ -111,11 +111,11 @@ function buildBenchmark(input) {
   return {
     benchmarkVersion: 1,
     case: {
-      name: "Family Platform Brief",
+      name: "Source Layer Brief",
       files: {
-        vmd: "benchmarks/cases/family-platform.vmd",
-        markdown: "benchmarks/cases/family-platform.md",
-        html: "benchmarks/cases/family-platform.html"
+        vmd: "benchmarks/cases/source-layer-brief.vmd",
+        markdown: "benchmarks/cases/source-layer-brief.md",
+        html: "benchmarks/cases/source-layer-brief.html"
       },
       note: "The HTML case intentionally implements read, deck, and map views directly so it can match VMD's multi-view output without a VMD renderer."
     },

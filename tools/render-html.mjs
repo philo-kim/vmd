@@ -7,8 +7,8 @@ const require = createRequire(import.meta.url);
 const { parseVmd, renderFullHtml } = require("../core/vmd-core.cjs");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const input = process.argv[2] || path.join(root, "samples", "family-platform.vmd");
-const output = process.argv[3] || path.join(root, "dist", "family-platform.html");
+const input = process.argv[2] || path.join(root, "samples", "source-layer-brief.vmd");
+const output = process.argv[3] || path.join(root, "dist", "source-layer-brief.html");
 
 const source = await readFile(input, "utf8");
 const ast = parseVmd(source);

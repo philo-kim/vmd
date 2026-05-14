@@ -390,7 +390,7 @@ function renderIndex(samples) {
           <div class="section-head">
             <p class="eyebrow">Live shape</p>
             <h2>Write the role of the idea. Let the renderer choose the surface.</h2>
-            <p>Formats that spread well make the source readable, the output immediate, and the toolchain easy to trust. VMD keeps those rules and adds visual fidelity tiers for AI-generated documents.</p>
+            <p>VMD treats the source as the durable artifact. HTML and CSS remain the browser output layer, while the VMD file keeps intent, structure, visual meaning, and fidelity choices inspectable.</p>
           </div>
           <div class="split-demo">
             <section class="code-window" aria-label="VMD source example">
@@ -405,41 +405,41 @@ function renderIndex(samples) {
         </div>
       </section>
 
-      <section class="section" id="patterns">
+      <section class="section" id="principles">
         <div class="section-inner">
           <div class="section-head">
-            <p class="eyebrow">Ecosystem pattern</p>
-            <h2>The homepage has to teach the format before it markets the tool.</h2>
-            <p>Common successful formats show the same public contract: a crisp promise, visible syntax, immediate rendering, specification path, examples, and routes for implementers.</p>
+            <p class="eyebrow">Source principles</p>
+            <h2>The web needs a visual source format that AI can reason about.</h2>
+            <p>The browser already renders. The missing layer is a compact source that can say what an idea is, what visual structure it needs, and when exact HTML/CSS preservation matters.</p>
           </div>
           <div class="format-grid">
             <article class="format-card">
-              <small>Markdown / CommonMark</small>
-              <h3>Readable source travels farther.</h3>
-              <p>VMD keeps plain-text authoring as the first constraint, then adds explicit idea roles.</p>
+              <small>Meaning</small>
+              <h3>Thought has roles.</h3>
+              <p>A block can be a claim, evidence, contrast, decision, or action instead of only styled prose.</p>
             </article>
             <article class="format-card">
-              <small>MDX / Markdoc</small>
-              <h3>Markdown needs controlled extension points.</h3>
-              <p>VMD uses semantic, visual, layout, component, style, and raw blocks instead of arbitrary page code.</p>
+              <small>Visual structure</small>
+              <h3>Visuals carry reasoning.</h3>
+              <p>Matrices, loops, timelines, and comparisons are part of the document argument.</p>
             </article>
             <article class="format-card">
-              <small>Quarto / Jupyter Book</small>
-              <h3>One source should target many outputs.</h3>
-              <p>VMD frames can become document sections, slides, map nodes, or browser pages.</p>
+              <small>Fidelity</small>
+              <h3>Preservation is explicit.</h3>
+              <p>Semantic documents stay compact; exact HTML/CSS artifacts use preserve mode.</p>
             </article>
             <article class="format-card">
-              <small>Mermaid / Typst</small>
-              <h3>Text-to-visual has to feel instant.</h3>
-              <p>The playground and browser polyfill make <code>.vmd</code> visible without asking authors to hand-write full HTML.</p>
+              <small>Renderer</small>
+              <h3>The browser remains the target.</h3>
+              <p>The reference renderer produces browser-native HTML/CSS from the same source contract.</p>
             </article>
             <article class="format-card">
-              <small>Observable / Docusaurus</small>
-              <h3>The web output must be practical today.</h3>
-              <p>The reference renderer produces static pages, docs, samples, and extension previews from the shared core.</p>
+              <small>Inspection</small>
+              <h3>The source must be reviewable.</h3>
+              <p>A VMD file should stay readable in git and small enough for AI to edit safely.</p>
             </article>
           </div>
-          <p class="research-note">The public positioning is not “another Markdown dialect.” It is a visual document source layer where AI can target meaning first and preserve exact browser output only when needed.</p>
+          <p class="research-note">VMD is not another page builder. It is the source layer before browser output.</p>
         </div>
       </section>
 
@@ -485,8 +485,8 @@ function renderIndex(samples) {
               <h3>CLI and static HTML</h3>
               <p>The npm package is named <code>vmd-format</code>; the installed binary is <code>vmd</code>.</p>
               <pre><code>npm install
-node bin/vmd.mjs validate samples/family-platform.vmd
-node bin/vmd.mjs render samples/family-platform.vmd --out dist/family-platform.html
+node bin/vmd.mjs validate samples/source-layer-brief.vmd
+node bin/vmd.mjs render samples/source-layer-brief.vmd --out dist/source-layer-brief.html
 node bin/vmd.mjs gallery --out dist/site</code></pre>
             </article>
             <article class="install-panel">

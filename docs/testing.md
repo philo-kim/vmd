@@ -88,15 +88,16 @@ dist/vmd-vscode.vsix
 
 The `dist/` directory is ignored by Git.
 
-## Public Pages Smoke Test
+## Canonical Site Smoke Test
 
 ```bash
 npm run smoke:public
 ```
 
-This opens the deployed GitHub Pages gallery, a rendered sample page, and the
-playground in Chromium. It is intentionally not part of `npm run check` because
-it depends on the public network and the latest Pages deployment.
+This opens the canonical public VMD page at `https://philo.kim/vmd/` in
+Chromium and checks that the page renders with the current source-layer framing.
+It is intentionally not part of `npm run check` because it depends on the public
+network and the latest site deployment.
 
 ## Format Benchmark
 

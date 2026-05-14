@@ -16,9 +16,9 @@ or final page load performance.
 - Markdown source: Markdown-only document with human-readable role labels.
 - HTML source: browser-ready HTML that manually implements read, deck, and map
   views with CSS and JavaScript.
-- Case: Family Platform Brief
-- Fixtures: `benchmarks/cases/family-platform.vmd`, `benchmarks/cases/family-platform.md`,
-  and `benchmarks/cases/family-platform.html`.
+- Case: Source Layer Brief
+- Fixtures: `benchmarks/cases/source-layer-brief.vmd`, `benchmarks/cases/source-layer-brief.md`,
+  and `benchmarks/cases/source-layer-brief.html`.
 
 The HTML case intentionally implements read, deck, and map views directly so it can match VMD's multi-view output without a VMD renderer.
 
@@ -32,13 +32,13 @@ npm run benchmark:formats
 
 | Format | Source bytes | Lines | Approx tokens | Authoring overhead | Native semantic roles | Convention hints | Visual primitives | Render modes | Pixel preservation path | Browser-native today | Content validation |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
-| VMD | 1503 | 70 | 376 | 275 (18.3%) | 10 | 0 | 3 | 3 | raw compatibility blocks | no | yes (0 errors, 0 warnings) |
-| Markdown | 1316 | 52 | 329 | 195 (14.8%) | 0 | 9 | 3 | 1 | not supported | no | no |
-| HTML | 6718 | 98 | 1680 | 4793 (71.3%) | 0 | 6 | 4 | 3 | native HTML/CSS rendering | yes | no |
+| VMD | 1527 | 72 | 382 | 279 (18.3%) | 10 | 0 | 3 | 3 | raw compatibility blocks | no | yes (0 errors, 0 warnings) |
+| Markdown | 1336 | 52 | 334 | 192 (14.4%) | 0 | 9 | 3 | 1 | not supported | no | no |
+| HTML | 6749 | 98 | 1688 | 4793 (71%) | 0 | 6 | 4 | 3 | native HTML/CSS rendering | yes | no |
 
 ## VMD Compared With Markdown
 
-- VMD source bytes delta: 14.2%.
+- VMD source bytes delta: 14.3%.
 - VMD render mode gain: 2.
 - VMD native semantic role gain: 10.
 - VMD validator gain: 1.
@@ -50,7 +50,7 @@ the same source can be checked and rendered as read, deck, and map views.
 
 ## VMD Compared With HTML
 
-- VMD source is 77.6% smaller than this browser-ready HTML fixture.
+- VMD source is 77.4% smaller than this browser-ready HTML fixture.
 - VMD render mode gain: 0.
 - VMD native semantic role gain: 10.
 
