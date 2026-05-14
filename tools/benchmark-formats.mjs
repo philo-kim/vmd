@@ -61,6 +61,8 @@ function buildBenchmark(input) {
       standardizedSemanticRoles: countVmdSemanticRoles(vmdAst),
       conventionSemanticHints: 0,
       visualPrimitives: countNodes(vmdAst, (node) => VISUAL_BLOCK_TYPES.includes(node.type)),
+      fidelityTiers: "semantic, structured, visual, preserve",
+      pixelPreservationPath: "raw compatibility blocks",
       contentValidation: {
         supported: true,
         errors: vmdDiagnostics.filter((diagnostic) => diagnostic.level === "error").length,
@@ -77,6 +79,8 @@ function buildBenchmark(input) {
       standardizedSemanticRoles: 0,
       conventionSemanticHints: countMarkdownRoleLabels(input.markdown),
       visualPrimitives: countMarkdownVisualLabels(input.markdown),
+      fidelityTiers: "none",
+      pixelPreservationPath: "not supported",
       contentValidation: {
         supported: false,
         errors: null,
@@ -93,6 +97,8 @@ function buildBenchmark(input) {
       standardizedSemanticRoles: 0,
       conventionSemanticHints: countHtmlRoleHints(input.html),
       visualPrimitives: countHtmlVisualWidgets(input.html),
+      fidelityTiers: "native browser page",
+      pixelPreservationPath: "native HTML/CSS rendering",
       contentValidation: {
         supported: false,
         errors: null,
@@ -259,6 +265,7 @@ function renderBenchmarkMarkdown(benchmark) {
     String(result.conventionSemanticHints),
     String(result.visualPrimitives),
     String(result.renderModesFromOneSource),
+    result.pixelPreservationPath,
     result.browserNativeToday ? "yes" : "no",
     result.contentValidation.supported ? `yes (${result.contentValidation.errors} errors, ${result.contentValidation.warnings} warnings)` : "no"
   ]);
@@ -295,8 +302,8 @@ npm run benchmark:formats
 
 ## Results
 
-| Format | Source bytes | Lines | Approx tokens | Authoring overhead | Native semantic roles | Convention hints | Visual primitives | Render modes | Browser-native today | Content validation |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| Format | Source bytes | Lines | Approx tokens | Authoring overhead | Native semantic roles | Convention hints | Visual primitives | Render modes | Pixel preservation path | Browser-native today | Content validation |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
 ${rows.map((row) => `| ${row.join(" | ")} |`).join("\n")}
 
 ## VMD Compared With Markdown
@@ -320,8 +327,8 @@ the same source can be checked and rendered as read, deck, and map views.
 HTML is the strongest deployment target because browsers open it natively today.
 The tradeoff is authoring burden: matching VMD's three output modes in raw HTML
 requires duplicated content, CSS, JavaScript, and custom class conventions. VMD
-keeps the source smaller and semantic, then moves rendering complexity into the
-renderer.
+keeps new documents smaller and semantic, while the new preserve tier gives
+existing HTML/CSS pages a compatibility path when pixel fidelity matters.
 
 ## Pros, Cons, And Effects
 
@@ -329,7 +336,7 @@ renderer.
 | --- | --- | --- | --- |
 | Markdown | Linear notes, READMEs, essays, simple docs | Lowest writing friction and strong plain-text readability | Semantic roles and visual structure remain conventions |
 | HTML | Final browser-native pages and custom web apps | Opens directly in browsers with full layout and interaction control | High authoring overhead when content, style, and interaction are hand-written together |
-| VMD | Semantic visual reports, decks, maps, AI-authored visual documents | One source carries meaning, validation, and multiple render modes | Needs a renderer, extension, or converter until browsers support it natively |
+| VMD | Semantic visual reports, decks, maps, AI-authored visual documents, and preserved HTML/CSS imports | One source can carry meaning, validation, render modes, and explicit fidelity tier | Needs a renderer, extension, or converter until browsers support it natively |
 
 The practical effect is not that VMD should replace Markdown or HTML everywhere.
 It creates a middle source layer for documents that are too visual and structured
@@ -341,7 +348,8 @@ VMD is not a replacement for Markdown when the document is mostly linear prose.
 Markdown remains better for simple notes, READMEs, and long-form writing.
 
 VMD is useful when the document needs semantic roles, multiple visual modes,
-validation, or AI-generated visual structure.
+validation, AI-generated visual structure, or an explicit preserve path for
+existing browser pages.
 
 HTML remains the final native browser substrate. VMD's current value is as a
 higher-level source that can compile to HTML and become easier for AI-assisted

@@ -30,11 +30,11 @@ npm run benchmark:formats
 
 ## Results
 
-| Format | Source bytes | Lines | Approx tokens | Authoring overhead | Native semantic roles | Convention hints | Visual primitives | Render modes | Browser-native today | Content validation |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |
-| VMD | 1487 | 70 | 372 | 275 (18.5%) | 10 | 0 | 3 | 3 | no | yes (0 errors, 0 warnings) |
-| Markdown | 1300 | 52 | 325 | 198 (15.2%) | 0 | 9 | 3 | 1 | no | no |
-| HTML | 6703 | 98 | 1676 | 4793 (71.5%) | 0 | 6 | 4 | 3 | yes | no |
+| Format | Source bytes | Lines | Approx tokens | Authoring overhead | Native semantic roles | Convention hints | Visual primitives | Render modes | Pixel preservation path | Browser-native today | Content validation |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- | --- |
+| VMD | 1487 | 70 | 372 | 275 (18.5%) | 10 | 0 | 3 | 3 | raw compatibility blocks | no | yes (0 errors, 0 warnings) |
+| Markdown | 1300 | 52 | 325 | 198 (15.2%) | 0 | 9 | 3 | 1 | not supported | no | no |
+| HTML | 6703 | 98 | 1676 | 4793 (71.5%) | 0 | 6 | 4 | 3 | native HTML/CSS rendering | yes | no |
 
 ## VMD Compared With Markdown
 
@@ -57,8 +57,8 @@ the same source can be checked and rendered as read, deck, and map views.
 HTML is the strongest deployment target because browsers open it natively today.
 The tradeoff is authoring burden: matching VMD's three output modes in raw HTML
 requires duplicated content, CSS, JavaScript, and custom class conventions. VMD
-keeps the source smaller and semantic, then moves rendering complexity into the
-renderer.
+keeps new documents smaller and semantic, while the new preserve tier gives
+existing HTML/CSS pages a compatibility path when pixel fidelity matters.
 
 ## Pros, Cons, And Effects
 
@@ -66,7 +66,7 @@ renderer.
 | --- | --- | --- | --- |
 | Markdown | Linear notes, READMEs, essays, simple docs | Lowest writing friction and strong plain-text readability | Semantic roles and visual structure remain conventions |
 | HTML | Final browser-native pages and custom web apps | Opens directly in browsers with full layout and interaction control | High authoring overhead when content, style, and interaction are hand-written together |
-| VMD | Semantic visual reports, decks, maps, AI-authored visual documents | One source carries meaning, validation, and multiple render modes | Needs a renderer, extension, or converter until browsers support it natively |
+| VMD | Semantic visual reports, decks, maps, AI-authored visual documents, and preserved HTML/CSS imports | One source can carry meaning, validation, render modes, and explicit fidelity tier | Needs a renderer, extension, or converter until browsers support it natively |
 
 The practical effect is not that VMD should replace Markdown or HTML everywhere.
 It creates a middle source layer for documents that are too visual and structured
@@ -78,7 +78,8 @@ VMD is not a replacement for Markdown when the document is mostly linear prose.
 Markdown remains better for simple notes, READMEs, and long-form writing.
 
 VMD is useful when the document needs semantic roles, multiple visual modes,
-validation, or AI-generated visual structure.
+validation, AI-generated visual structure, or an explicit preserve path for
+existing browser pages.
 
 HTML remains the final native browser substrate. VMD's current value is as a
 higher-level source that can compile to HTML and become easier for AI-assisted

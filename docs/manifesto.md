@@ -9,17 +9,18 @@ The internet has strong primitives for publishing and interaction:
 - JavaScript describes behavior.
 - Markdown made writing plain-text documents easier.
 
-But modern visual documents still have a missing primitive.
+But modern visual documents still have two missing primitives.
 
 They can describe what something looks like, but they usually do not describe
-what role an idea plays.
+what role an idea plays. They also rarely say whether the document should be
+editable semantic structure or exact visual preservation.
 
 Is this paragraph a claim? Evidence? A decision? A contrast? A next action? A
 turning point in the argument?
 
 Most tools cannot know.
 
-VMD exists to make that role explicit.
+VMD exists to make both the role and the fidelity target explicit.
 
 ## Meaning Before Appearance
 
@@ -48,6 +49,17 @@ Once that meaning is known, different renderers can decide how to show it:
 - as a highlighted block in a report
 - as an interactive frame on the web
 
+When exact visual preservation matters, VMD should say that too:
+
+```vmd
+@doc "Imported Page" {
+  fidelity: preserve
+}
+```
+
+That tells the renderer not to reinterpret the page as a normal semantic
+document.
+
 ## A Portable Format For Visual Thinking
 
 Visual documents are often locked inside specific tools. Decks, documents,
@@ -56,7 +68,8 @@ whiteboards, and reports each have their own editing model.
 VMD proposes a portable source format for the thinking underneath those outputs.
 
 The same `.vmd` file should be able to move across tools, renderers, and media
-without losing its semantic structure.
+without losing its declared intent. For semantic documents, that means meaning.
+For preserve documents, that means visual fidelity.
 
 ## A Better Target For AI
 
@@ -68,8 +81,8 @@ interaction at the same time.
 
 VMD separates that work.
 
-An AI model can produce the semantic source. A renderer can produce the visual
-page.
+An AI model can produce semantic source, structured layout, or a preserve-mode
+container for existing HTML/CSS. A renderer can produce the visual page.
 
 This makes visual document creation more accessible to people who can describe
 what they want but do not want to hand-author HTML, CSS, and JavaScript for
@@ -83,7 +96,7 @@ VMD is not a replacement for CSS.
 
 VMD is not a replacement for Markdown.
 
-VMD is a layer above them: a semantic source format for visual documents.
+VMD is a layer above them: a layered source format for visual documents.
 
 ## Standard Direction
 
@@ -96,6 +109,8 @@ The format should be:
 - renderer-independent
 - friendly to web output
 - useful for documents, decks, reports, and maps
+- explicit about fidelity tiers
 - simple enough for people to write directly
 
-The long-term ambition is a common language for structured visual thinking.
+The long-term ambition is a common language for structured visual thinking and
+portable visual-document preservation.

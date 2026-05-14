@@ -4,7 +4,7 @@ The extension should be designed as a browser polyfill for a future native VMD
 runtime.
 
 It should not be treated as the product boundary. The product boundary is the
-format and its semantic AST.
+format and its layered AST.
 
 ## Extension Family
 
@@ -17,6 +17,7 @@ Purpose:
 - render local `.vmd` files opened in the browser
 - render uploaded or dropped `.vmd` files
 - support read, deck, map, and future modes
+- render `fidelity: preserve` files without adding a toolbar wrapper
 
 This is the current reference extension.
 
@@ -24,9 +25,10 @@ This is the current reference extension.
 
 Purpose:
 
-- show the parsed semantic AST
+- show the parsed layered AST
 - identify invalid blocks
 - warn when claims lack evidence
+- flag raw compatibility and disabled script blocks
 - inspect frame roles and render decisions
 
 The first slice now exists as shared validator diagnostics in the CLI, Chrome
@@ -64,7 +66,7 @@ The extension runtime should eventually be split into reusable packages:
 ```text
 vmd-source
   -> parser
-  -> semantic AST
+  -> layered AST
   -> validator
   -> renderer adapters
   -> browser extension / CLI / PWA / native integrations
@@ -83,6 +85,10 @@ For local files and web-served VMD URLs, the extension uses a content script:
 4. It parses VMD into an AST.
 5. It replaces the page with rendered HTML.
 
+If the AST declares `fidelity: preserve`, the renderer skips the VMD toolbar and
+emits the preserved raw output directly. For semantic documents, it keeps the
+toolbar so users can switch read, deck, and map views.
+
 The script intentionally does nothing on non-`.vmd` URLs.
 
 For `file://` URLs, Chrome still requires the user to grant file URL access in
@@ -95,6 +101,7 @@ file permission, but the extension still needs normal host access for matched
 - The extension must not define the format.
 - The parser must remain reusable outside Chrome.
 - The AST must be the stable contract between source and rendering.
-- Renderers should map semantic roles to accessible HTML.
+- Renderers should map semantic roles to accessible HTML and preserve raw
+  compatibility blocks only when the fidelity tier calls for it.
 - Browser integration should be progressive: extension first, PWA file handler
   second, native browser support only after adoption.

@@ -1,0 +1,100 @@
+@doc "Visual Fidelity Layers" {
+  format: report
+  theme: clean
+  audience: implementer
+  fidelity: visual
+}
+
+# VMD Needs More Than Semantics
+
+::frame[role="thesis"]
+  ::claim
+  A visual document format has to separate meaning, layout, style, and
+  compatibility instead of choosing only one layer.
+  ::
+
+  ::evidence
+  Semantic blocks make VMD easy to author, but existing HTML design documents
+  also rely on grids, component geometry, CSS tokens, SVG, tables, and preserved
+  browser behavior.
+  ::
+::
+
+::frame[role="fidelity-tiers"]
+  ## Fidelity Tiers
+
+  ::visual.matrix[x="editable semantics -> pixel preservation" y="low control -> high control"]
+  top-left: structured VMD
+  top-right: preserved HTML/CSS
+  bottom-left: Markdown-style prose
+  bottom-right: hand-authored HTML
+  ::
+
+  ::layout.grid[columns="4" gap="medium"]
+    ::component.metric[label="Level 1" value="Semantic" detail="Roles, frames, validation"]
+    ::
+
+    ::component.metric[label="Level 2" value="Structured" detail="Layout and components"]
+    ::
+
+    ::component.metric[label="Level 3" value="Visual" detail="Tokens, CSS, SVG, tables"]
+    ::
+
+    ::component.metric[label="Level 4" value="Preserve" detail="Raw HTML/CSS compatibility"]
+    ::
+  ::
+::
+
+::frame[role="layout-components"]
+  ## Layout And Components
+
+  ::layout.split[gap="large"]
+    ::component.card[title="Semantic side"]
+    Authors mark the role of the idea: claim, evidence, decision, action.
+    ::
+
+    ::component.card[title="Visual side"]
+    Renderers map those roles into grids, panels, metrics, devices, and
+    component-specific layouts.
+    ::
+  ::
+::
+
+::frame[role="style-tokens"]
+  ## Style Tokens Are Still Source
+
+  ::style.tokens
+  accent: #0e7490 - primary action and focus color
+  success: #166534 - positive state
+  surface: #fffdfa - default document surface
+  space-md: 16px - default layout gap
+  ::
+::
+
+::frame[role="compatibility"]
+  ## Compatibility Layer
+
+  ::raw.css
+  .preserved-demo {
+    display: grid;
+    gap: 10px;
+    border: 1px solid #b8c2cc;
+    border-radius: 18px;
+    padding: 16px;
+    background: linear-gradient(135deg, #f8fafc, #dcfce7);
+  }
+
+  .preserved-demo strong {
+    font-size: 22px;
+  }
+  ::
+
+  ::layout.device[kind="phone" width="360px"]
+    ::raw.html
+    <div class="preserved-demo">
+      <strong>Raw HTML/CSS can be preserved.</strong>
+      <span>This is not as semantic, but it is necessary for high-fidelity import.</span>
+    </div>
+    ::
+  ::
+::

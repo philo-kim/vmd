@@ -21,7 +21,7 @@ The browser renders it as a visual document.
 VMD is designed for a world where people and AI agents create visual documents
 together. Instead of forcing every AI-assisted creator to generate complete
 HTML, CSS, and JavaScript for every page, VMD gives them a smaller and more
-portable target: semantic visual structure.
+portable target: layered visual structure.
 
 ## Core Idea
 
@@ -43,6 +43,26 @@ It is a family behavior-change system.
 That semantic block can become a section in read mode, a slide in deck mode, or
 a node in map mode.
 
+For high-fidelity import, VMD also has layout, style, component, and raw
+compatibility layers. That means a `.vmd` file can be either a clean semantic
+document or a preserved browser page:
+
+```vmd
+@doc "Imported Page" {
+  fidelity: preserve
+}
+
+::raw.css
+body { margin: 0; }
+::
+
+::raw.html
+<main>
+  <h1>Preserved browser output</h1>
+</main>
+::
+```
+
 ## Why VMD
 
 Markdown made writing portable. HTML made documents linkable and structured.
@@ -51,7 +71,7 @@ CSS made presentation reusable. JavaScript made the web programmable.
 VMD is a proposal for the next missing primitive:
 
 ```text
-semantic intent for visual documents
+semantic intent plus explicit visual fidelity
 ```
 
 Most authoring tools store appearance. VMD stores meaning first. A renderer can
@@ -83,6 +103,8 @@ Current behavior:
   extension content script
 - the extension popup also includes a manual viewer with upload and drag-and-drop
 - the same source can render as read, deck, and map views
+- `fidelity: preserve` documents render without the extension toolbar so
+  preserved HTML/CSS can match the original page more closely
 
 ## Repository Contents
 
@@ -100,16 +122,19 @@ Current behavior:
 - `docs/project-readiness.md`: current readiness and known limitations
 - `docs/project-audit.md`: end-to-end implementation and release audit
 - `docs/format-benchmark.md`: VMD vs Markdown vs HTML benchmark results
+- `docs/visual-fidelity.md`: how to verify existing HTML-to-VMD visual drift
 - `docs/ai-authoring-guide.md`: how to use VMD as an AI generation target
 - `docs/browser-integration.md`: path from extension polyfill to browser-native support
 - `docs/extension-architecture.md`: extension family design
 - `docs/testing.md`: local and integration test workflow
 - `docs/release.md`: release and packaging workflow
 - `samples/family-platform.vmd`: sample VMD source
+- `samples/visual-fidelity-layers.vmd`: layered fidelity and raw compatibility example
 - `extension/`: reference Chrome polyfill and viewer
 - `vscode-extension/`: VS Code authoring and preview extension
 - `core/`: shared parser and renderer runtime
 - `tools/render-html.mjs`: local renderer that converts a VMD file to static HTML
+- `tools/verify-vmd-fidelity.mjs`: Playwright-based visual drift checker for HTML-to-VMD conversion
 - `bin/vmd.mjs`: CLI for rendering, AST output, validation, and gallery builds
 - `schemas/vmd-ast.schema.json`: draft AST JSON Schema
 
@@ -287,6 +312,35 @@ Visual blocks:
 - `visual.compare`
 - `visual.loop`
 - `visual.timeline`
+- `visual.matrix`
+
+Layout blocks:
+
+- `layout.stack`
+- `layout.grid`
+- `layout.split`
+- `layout.cluster`
+- `layout.panel`
+- `layout.device`
+- `layout.tabs`
+
+Component blocks:
+
+- `component.card`
+- `component.metric`
+- `component.persona`
+- `component.phone`
+- `component.token-table`
+- `component.browser`
+
+Compatibility blocks:
+
+- `style.tokens`
+- `style.css`
+- `raw.html`
+- `raw.css`
+- `raw.svg`
+- `raw.js` (parsed but not executed)
 
 See `docs/spec-draft-v0.md` for the current draft.
 
@@ -295,6 +349,7 @@ See `docs/spec-draft-v0.md` for the current draft.
 - `samples/family-platform.vmd`: strategy/deck example
 - `samples/ai-native-brief.vmd`: AI-native visual document argument
 - `samples/lesson-outline.vmd`: education/lesson example
+- `samples/visual-fidelity-layers.vmd`: layout, style, component, and raw preservation example
 
 ## Current Status
 

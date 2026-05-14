@@ -34,8 +34,9 @@ npm run test:chrome
 
 This test launches a real Chromium instance with the unpacked Chrome extension.
 It serves a `.vmd` file over localhost, opens the URL, waits for automatic VMD
-rendering, switches render mode, opens the extension viewer, loads the packaged
-sample, and verifies viewer diagnostics.
+rendering, switches render mode, verifies preserve-mode rendering without the
+toolbar wrapper, opens the extension viewer, loads the packaged sample, and
+verifies viewer diagnostics.
 
 The test runs headed by default because extension service workers and content
 scripts are more reliable in a real browser window. To try headless mode:
@@ -112,6 +113,22 @@ docs/format-benchmark.md
 ```
 
 `npm run check` verifies these generated files are current.
+
+## Visual Fidelity Verification
+
+```bash
+npm run verify:visual-fidelity -- --source-dir /path/to/html/folder
+```
+
+This runs a Playwright-based check against existing HTML pages. It converts each
+page into semantic VMD, renders the converted VMD back to HTML, captures
+original and converted first-viewport screenshots, then reports pixel drift.
+
+The outputs are written under `dist/visual-fidelity/` by default and are ignored
+by Git. Use this when testing whether an existing HTML document set can be
+represented by the current VMD vocabulary without visible loss.
+
+See `docs/visual-fidelity.md`.
 
 ## Screenshot Capture
 

@@ -1,13 +1,53 @@
 # VMD Draft Spec v0
 
-This is an unstable public draft. It documents the current grammar and semantic
-model used by the reference parser.
+This is an unstable public draft. It documents the reference grammar, layered
+AST model, and the current block vocabulary.
 
 ## File Extension
 
 ```text
 .vmd
 ```
+
+## Design Goal
+
+VMD is no longer only a semantic document notation. It is a layered visual
+document container:
+
+```text
+source -> layered AST -> renderer -> browser-native output
+```
+
+The format has to support two valid authoring goals:
+
+- write an AI-friendly semantic document that can render into multiple modes
+- preserve an existing HTML/CSS visual document with minimal or no visible drift
+
+Those goals require different fidelity tiers.
+
+## Fidelity Tiers
+
+The `@doc` block may declare `fidelity`.
+
+```vmd
+@doc "Imported Design" {
+  format: preserved-html
+  fidelity: preserve
+}
+```
+
+Current tiers:
+
+| Tier | Use | Expected Output |
+| --- | --- | --- |
+| `semantic` | prose, reports, decks, strategy docs | semantic roles and multi-mode rendering |
+| `structured` | visual docs with known layouts | layout blocks and components render predictably |
+| `visual` | design-heavy docs | tokens, CSS, SVG, tables, and components are preserved where needed |
+| `preserve` | existing HTML/CSS import | reference renderer avoids VMD wrappers and emits raw preserved output |
+| `interactive` | future scripted documents | reserved; raw JavaScript is parsed but not executed today |
+
+If `fidelity: preserve` is set, the reference read renderer emits preserved raw
+content directly instead of wrapping it in the normal VMD document shell.
 
 ## Document Header
 
@@ -18,6 +58,7 @@ A VMD document may start with an `@doc` block.
   format: deck
   theme: clean
   audience: investor
+  fidelity: semantic
 }
 ```
 
@@ -35,7 +76,7 @@ VMD supports Markdown-style headings.
 
 ## Block Syntax
 
-Semantic and visual blocks use double-colon fences.
+Blocks use double-colon fences.
 
 ```vmd
 ::claim
@@ -53,124 +94,154 @@ Blocks can nest.
 ::
 ```
 
-## Attributes
-
-Block attributes use bracket syntax.
+Block attributes use bracket syntax with quoted values.
 
 ```vmd
-::frame[role="problem"]
+::layout.grid[columns="2" gap="medium"]
 ...
 ::
 ```
 
-The current parser supports quoted string attributes.
+## Layered Block Model
 
-## Semantic Blocks
+### Semantic Layer
 
-### `frame`
+Semantic blocks describe the role of the content.
 
-One unit of thought. A frame can become a section, slide, map node, or
-interactive region.
+- `frame`: one unit of thought
+- `claim`: primary argument or assertion
+- `evidence`: supporting proof, observation, or context
+- `insight`: interpretation that changes how the reader sees the topic
+- `decision`: chosen direction or conclusion
+- `action`: next step
+- `observation`: neutral finding
+- `counterpoint`: objection or alternate reading
+- `principle`: durable rule
+- `risk`: known risk
+- `question`: open question
+
+### Visual Pattern Layer
+
+Visual blocks declare thinking patterns without requiring hand-written layout.
+
+- `visual.compare`
+- `visual.loop`
+- `visual.timeline`
+- `visual.matrix`
+
+Example:
 
 ```vmd
-::frame[role="opening"]
-...
+::visual.matrix[x="low control -> high control" y="low fidelity -> high fidelity"]
+top-left: structured VMD
+top-right: preserved HTML/CSS
+bottom-left: Markdown-style prose
+bottom-right: hand-authored HTML
 ::
 ```
 
-### `claim`
+### Layout Layer
 
-Primary argument or assertion.
+Layout blocks give the renderer enough structure to preserve visual intent
+without falling all the way down to raw HTML.
+
+- `layout.stack`
+- `layout.grid`
+- `layout.split`
+- `layout.cluster`
+- `layout.panel`
+- `layout.device`
+- `layout.tabs`
+
+Example:
 
 ```vmd
-::claim
-The product should be understood as behavior infrastructure.
+::layout.grid[columns="3" gap="medium"]
+  ::component.metric[label="Level 1" value="Semantic"]
+  ::
+
+  ::component.metric[label="Level 2" value="Structured"]
+  ::
 ::
 ```
 
-### `evidence`
+### Component Layer
 
-Supporting proof, observation, or context.
+Components represent common visual document objects that are too specific for
+plain semantics but too common to require raw HTML.
+
+- `component.card`
+- `component.metric`
+- `component.persona`
+- `component.phone`
+- `component.token-table`
+- `component.browser`
+
+Example:
 
 ```vmd
-::evidence
-Users do not only need records. They need confidence in what to do next.
+::component.card[title="Preservation Layer"]
+Raw HTML/CSS is allowed when a document has to preserve an existing browser
+rendering.
 ::
 ```
 
-### `insight`
+### Style Layer
 
-Interpretation that changes how the reader sees the topic.
+Style blocks carry design tokens or trusted CSS.
+
+- `style.tokens`
+- `style.css`
+
+Example:
 
 ```vmd
-::insight
-The stronger market frame is not productivity. It is decision quality.
+::style.tokens
+accent: #0e7490 - primary action color
+space-md: 16px - default layout gap
 ::
 ```
 
-### `decision`
+`style.tokens` remains structured and renderer-friendly. `style.css` is a
+compatibility escape hatch.
 
-Chosen direction or conclusion.
+### Compatibility Layer
+
+Raw blocks preserve existing browser-native source.
+
+- `raw.html`
+- `raw.css`
+- `raw.svg`
+- `raw.js`
+
+`raw.html`, `raw.css`, and `raw.svg` are rendered by the reference renderer.
+`raw.js` is parsed and displayed as disabled source; it is not executed.
+
+Example:
 
 ```vmd
-::decision
-Position the product as a decision system.
+@doc "Preserved Page" {
+  fidelity: preserve
+}
+
+::raw.css
+body { margin: 0; }
+.hero { display: grid; min-height: 100vh; }
+::
+
+::raw.html
+<main class="hero">
+  <h1>Preserved HTML</h1>
+</main>
 ::
 ```
 
-### `action`
-
-Next step.
-
-```vmd
-::action
-Test this framing with three real user documents.
-::
-```
-
-## Visual Blocks
-
-Visual blocks declare a visual structure without hard-coding styling.
-
-### `visual.compare`
-
-Two-sided comparison.
-
-```vmd
-::visual.compare
-left: Existing tools
-right: VMD
-
-- appearance first vs meaning first
-- static output vs multi-mode rendering
-::
-```
-
-### `visual.loop`
-
-Repeated cycle.
-
-```vmd
-::visual.loop
-Goal -> Action -> Feedback -> Improvement
-::
-```
-
-### `visual.timeline`
-
-Ordered sequence.
-
-```vmd
-::visual.timeline
-- Define the grammar
-- Stabilize the AST
-- Build reference renderers
-::
-```
+This compatibility layer is necessary for high-fidelity import, but it is not
+the preferred authoring layer for new VMD-native documents.
 
 ## AST Shape
 
-Renderers should consume a semantic AST rather than raw source text.
+Renderers should consume a layered AST rather than raw source text.
 
 Example:
 
@@ -178,23 +249,33 @@ Example:
 {
   "type": "document",
   "doc": {
-    "title": "Family Platform Strategy",
+    "title": "Visual Fidelity Layers",
     "attrs": {
-      "format": "deck",
-      "theme": "clean"
+      "format": "report",
+      "fidelity": "visual"
     }
   },
   "children": [
     {
       "type": "frame",
       "attrs": {
-        "role": "opening"
+        "role": "fidelity-tiers"
       },
       "children": [
         {
-          "type": "claim",
-          "lines": [
-            "Allowance management is not the end point."
+          "type": "layout.grid",
+          "attrs": {
+            "columns": "4",
+            "gap": "medium"
+          },
+          "children": [
+            {
+              "type": "component.metric",
+              "attrs": {
+                "label": "Level 1",
+                "value": "Semantic"
+              }
+            }
           ]
         }
       ]
@@ -215,22 +296,24 @@ The schema describes the AST shape. It does not freeze the final vocabulary.
 
 The reference validator reports diagnostics after parsing.
 
-Current warning examples:
+Warning examples:
 
 - missing `@doc` title
 - document without frames
-- frame without a `role` attribute
-- frame without semantic child blocks
+- frame without content
 - claim without evidence in the same frame
 - unknown block type
+- empty layout or raw block
+- `raw.js` parsed but disabled
+- sparse `visual.matrix`
 
-Current error examples:
+Error examples:
 
 - parse failure
 - `visual.compare` without comparison rows
 - `visual.loop` with fewer than two steps
 
-The CLI exits with a non-zero code only for errors:
+The CLI exits with a non-zero code only for errors unless `--strict` is used:
 
 ```bash
 node bin/vmd.mjs validate samples/family-platform.vmd
@@ -238,14 +321,12 @@ node bin/vmd.mjs validate samples/family-platform.vmd
 
 ## Renderer Rule
 
-Renderers should treat semantic blocks as meaning, not fixed visual components.
+Renderers should treat semantic blocks as meaning, layout blocks as structure,
+style blocks as presentation input, and raw blocks as compatibility source.
 
-For example, `claim` may become:
-
-- a large statement in deck mode
-- a highlighted paragraph in read mode
-- a node label in map mode
-- a callout in report mode
+The strongest renderer is allowed to preserve pixels when `fidelity: preserve`
+is requested. A semantic renderer is allowed to ignore raw fidelity features if
+its output target cannot support them, but it should surface diagnostics.
 
 ## Compatibility Goals
 
@@ -255,4 +336,5 @@ VMD should remain:
 - easy to diff in Git
 - parseable without a browser
 - renderable to web-native output
-- small enough for humans to write directly
+- small enough for humans and AI agents to write directly
+- capable of preserving existing browser-native visual documents when needed

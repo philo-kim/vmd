@@ -22,6 +22,11 @@ This project follows a human-readable changelog style inspired by
 - Public Pages smoke test script.
 - End-to-end project audit document.
 - Reproducible VMD vs Markdown vs HTML format benchmark.
+- Layered VMD fidelity tiers covering semantic, structured, visual, preserve,
+  and future interactive documents.
+- Layout, style, raw compatibility, component, and matrix visual blocks.
+- Preserve-mode Chrome auto-render behavior for high-fidelity HTML/CSS imports.
+- Playwright visual fidelity checker for semantic and preserve conversion.
 - Static HTML sample rendering.
 - CLI test coverage.
 - Integration tests for Chrome and VS Code extensions.

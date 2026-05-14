@@ -16,6 +16,13 @@
     document.documentElement.lang = "en";
     document.title = ast.doc.title;
     document.body.className = "vmd-auto-page";
+
+    if (String(ast.doc.attrs?.fidelity || "").toLowerCase() === "preserve") {
+      document.body.className = "vmd-auto-page vmd-preserve-page";
+      document.body.innerHTML = renderVmd(ast, "read");
+      return;
+    }
+
     document.body.innerHTML = renderShell(ast, escapeHtml);
 
     const preview = document.getElementById("vmd-auto-preview");

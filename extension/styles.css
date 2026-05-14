@@ -29,6 +29,10 @@ body.vmd-auto-page {
   background: var(--bg);
 }
 
+body.vmd-preserve-page {
+  background: initial;
+}
+
 button,
 textarea {
   font: inherit;
@@ -419,6 +423,274 @@ h3 {
   color: #fff;
   font-size: 12px;
   font-weight: 700;
+}
+
+.matrix-block {
+  display: grid;
+  gap: 10px;
+}
+
+.matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.matrix-cell {
+  min-height: 92px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: var(--surface);
+}
+
+.matrix-cell span,
+.matrix-axis,
+.layout-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.matrix-cell strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 17px;
+  line-height: 1.25;
+}
+
+.layout {
+  margin-top: 14px;
+}
+
+.layout-stack {
+  display: grid;
+  gap: var(--vmd-gap, 14px);
+  max-width: var(--vmd-width, none);
+  align-items: var(--vmd-align, stretch);
+}
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: var(--vmd-columns, repeat(auto-fit, minmax(220px, 1fr)));
+  gap: var(--vmd-gap, 16px);
+}
+
+.layout-split {
+  display: grid;
+  grid-template-columns: var(--vmd-columns, minmax(0, 1fr) minmax(0, 1fr));
+  gap: var(--vmd-gap, 18px);
+  align-items: var(--vmd-align, stretch);
+}
+
+.layout-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--vmd-gap, 10px);
+  align-items: var(--vmd-align, center);
+}
+
+.layout-panel,
+.component {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--surface);
+}
+
+.layout-device {
+  display: grid;
+  place-items: center;
+}
+
+.device-shell {
+  width: min(100%, var(--vmd-width, 390px));
+  border: 1px solid #b8c2cc;
+  border-radius: 30px;
+  padding: 12px;
+  background: #101820;
+  box-shadow: var(--shadow);
+}
+
+.device-bar {
+  width: 74px;
+  height: 6px;
+  margin: 0 auto 10px;
+  border-radius: 999px;
+  background: #3c4856;
+}
+
+.device-screen {
+  min-height: 520px;
+  overflow: hidden;
+  border-radius: 22px;
+  padding: 18px;
+  background: #fbfcfd;
+  color: #18212f;
+}
+
+.layout-tabs {
+  display: grid;
+  gap: 12px;
+}
+
+.tab-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tab-pill {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tab-panels {
+  display: grid;
+  gap: 10px;
+}
+
+.tab-panel > .frame {
+  margin: 0;
+}
+
+.component {
+  display: grid;
+  gap: 8px;
+}
+
+.component-card h3,
+.component-persona h3 {
+  font-size: 18px;
+}
+
+.component-metric {
+  align-content: start;
+}
+
+.component-metric p,
+.component-metric span,
+.persona-role {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.component-metric strong {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.component-persona {
+  grid-template-columns: 46px 1fr;
+  align-items: start;
+}
+
+.persona-avatar {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #14532d;
+  font-weight: 800;
+}
+
+.component-browser {
+  padding: 0;
+  overflow: hidden;
+}
+
+.browser-bar {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  padding: 10px 12px;
+  background: #eef2f6;
+}
+
+.browser-bar span {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #94a3b8;
+}
+
+.browser-canvas {
+  padding: 16px;
+}
+
+.component-token-table {
+  overflow-x: auto;
+}
+
+.component-token-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.component-token-table th,
+.component-token-table td {
+  border-bottom: 1px solid var(--line);
+  padding: 8px;
+  text-align: left;
+}
+
+.style-token-block .token-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.token-item {
+  display: grid;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--surface);
+}
+
+.token-item code {
+  color: var(--accent-strong);
+  white-space: normal;
+}
+
+.token-item span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.token-swatch {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.raw-embed {
+  display: contents;
+}
+
+.raw-disabled pre {
+  max-height: 260px;
+  overflow: auto;
+  border-radius: 8px;
+  padding: 12px;
+  background: #111827;
+  color: #e5e7eb;
+}
+
+.preserve-view {
+  min-height: 100vh;
 }
 
 .deck-view {

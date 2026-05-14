@@ -3,12 +3,14 @@
 VMD is organized around one boundary:
 
 ```text
-source -> semantic AST -> renderer
+source -> layered AST -> renderer
 ```
 
-The source syntax is intentionally small. The AST is the stable contract.
-Renderers can then target browser pages, editor previews, static HTML, PDFs, or
-future native browser rendering.
+The source syntax stays readable, but the AST now carries multiple layers:
+semantic roles, visual patterns, layout primitives, style input, raw
+compatibility blocks, and reusable components. The AST is the stable contract.
+Renderers can then target browser pages, editor previews, static HTML, PDFs,
+decks, or future native browser rendering.
 
 ## Repository Layers
 
@@ -48,6 +50,11 @@ It exports:
 - `validateVmdSource(source)`
 - `SEMANTIC_BLOCK_TYPES`
 - `VISUAL_BLOCK_TYPES`
+- `LAYOUT_BLOCK_TYPES`
+- `STYLE_BLOCK_TYPES`
+- `RAW_BLOCK_TYPES`
+- `COMPONENT_BLOCK_TYPES`
+- `FIDELITY_TIERS`
 - `escapeHtml(value)`
 
 The core is CommonJS plus a browser global wrapper so it can run in:
@@ -74,7 +81,8 @@ Is this source useful as a semantic visual document?
 ```
 
 Current diagnostics cover missing document structure, unknown blocks, incomplete
-frames, weak claim/evidence pairing, and invalid visual blocks.
+frames, weak claim/evidence pairing, invalid visual blocks, empty layout/raw
+blocks, sparse matrices, and disabled raw JavaScript.
 
 The validator is used by:
 
@@ -119,6 +127,24 @@ These modes are intentionally early. The format should not assume that every
 renderer has to look the same. The shared rule is that semantic blocks keep
 their meaning across output modes.
 
+## Fidelity Behavior
+
+The renderer now distinguishes semantic rendering from preservation rendering.
+
+For ordinary documents, `read` mode emits the VMD document shell, frames, blocks,
+layouts, and components. For documents with:
+
+```vmd
+@doc "Imported Page" {
+  fidelity: preserve
+}
+```
+
+the read renderer avoids the normal VMD wrapper and emits preserved raw HTML/CSS
+directly. This is necessary because imported CSS can depend on selectors such as
+`body > main` or exact root geometry. Deck and map modes remain semantic views
+and are not meant to be pixel-preserving.
+
 ## CLI And Static Site
 
 `bin/vmd.mjs` is the reference CLI.
@@ -148,6 +174,10 @@ It handles two flows:
 Automatic local file rendering requires Chrome's `Allow access to file URLs`
 setting.
 
+If a document declares `fidelity: preserve`, the automatic renderer skips the
+mode toolbar and renders the preserved document directly. That makes a preserved
+VMD file behave closer to an HTML file opened in the browser.
+
 ## VS Code Extension
 
 The VS Code extension is the authoring companion.
@@ -163,6 +193,10 @@ It contributes:
 - optional custom preview editor
 
 The preview uses a VS Code webview and the same core renderer.
+
+The VS Code preview allows inline style output from trusted VMD source so
+`style.css` and `raw.css` can be inspected while authoring. The reference
+renderer still disables `raw.js`.
 
 ## Build Philosophy
 

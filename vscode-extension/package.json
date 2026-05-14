@@ -1,7 +1,7 @@
 {
   "name": "vmd-vscode",
   "displayName": "VMD",
-  "description": "Author and preview semantic visual documents.",
+  "description": "Author and preview layered visual documents.",
   "version": "0.1.0",
   "publisher": "vmd",
   "license": "MIT",

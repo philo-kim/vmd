@@ -23,10 +23,43 @@
   const VISUAL_BLOCK_TYPES = [
     "visual.compare",
     "visual.loop",
-    "visual.timeline"
+    "visual.timeline",
+    "visual.matrix"
+  ];
+  const LAYOUT_BLOCK_TYPES = [
+    "layout.stack",
+    "layout.grid",
+    "layout.split",
+    "layout.cluster",
+    "layout.panel",
+    "layout.device",
+    "layout.tabs"
+  ];
+  const STYLE_BLOCK_TYPES = [
+    "style.tokens",
+    "style.css"
+  ];
+  const RAW_BLOCK_TYPES = [
+    "raw.html",
+    "raw.css",
+    "raw.svg",
+    "raw.js"
+  ];
+  const COMPONENT_BLOCK_TYPES = [
+    "component.card",
+    "component.metric",
+    "component.persona",
+    "component.phone",
+    "component.token-table",
+    "component.browser"
   ];
   const SEMANTIC_BLOCKS = new Set(SEMANTIC_BLOCK_TYPES);
   const VISUAL_BLOCKS = new Set(VISUAL_BLOCK_TYPES);
+  const LAYOUT_BLOCKS = new Set(LAYOUT_BLOCK_TYPES);
+  const STYLE_BLOCKS = new Set(STYLE_BLOCK_TYPES);
+  const RAW_BLOCKS = new Set(RAW_BLOCK_TYPES);
+  const COMPONENT_BLOCKS = new Set(COMPONENT_BLOCK_TYPES);
+  const FIDELITY_TIERS = new Set(["semantic", "structured", "visual", "preserve", "interactive"]);
 
   function parseVmd(source) {
     const lines = source.replace(/\r\n?/g, "\n").split("\n");
@@ -117,14 +150,19 @@
   }
 
   function renderFullHtml(ast, mode = "read", options = {}) {
-    const cssHref = options.cssHref || "../extension/styles.css";
+    const cssHref = Object.prototype.hasOwnProperty.call(options, "cssHref")
+      ? options.cssHref
+      : "../extension/styles.css";
+    const stylesheet = cssHref
+      ? `<link rel="stylesheet" href="${escapeHtml(cssHref)}">`
+      : "";
     return `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>${escapeHtml(ast.doc.title)}</title>
-    <link rel="stylesheet" href="${escapeHtml(cssHref)}">
+    ${stylesheet}
   </head>
   <body>
     ${renderVmd(ast, mode)}
@@ -176,7 +214,7 @@
         return;
       }
 
-      if (SEMANTIC_BLOCKS.has(node.type) || VISUAL_BLOCKS.has(node.type)) {
+      if (isKnownBlock(node.type)) {
         validateKnownBlock(node, diagnostics);
         return;
       }
@@ -193,6 +231,10 @@
   }
 
   function renderRead(ast) {
+    if (isPreserveDocument(ast)) {
+      return ast.children.map(renderPreserveNode).join("");
+    }
+
     return `<article class="doc-view">
     ${renderDocHeader(ast)}
     ${ast.children.map(renderNode).join("")}
@@ -254,6 +296,21 @@
     }
     if (node.type === "visual.timeline") {
       return renderTimeline(node);
+    }
+    if (node.type === "visual.matrix") {
+      return renderMatrix(node);
+    }
+    if (LAYOUT_BLOCKS.has(node.type)) {
+      return renderLayout(node);
+    }
+    if (STYLE_BLOCKS.has(node.type)) {
+      return renderStyleBlock(node);
+    }
+    if (RAW_BLOCKS.has(node.type)) {
+      return renderRawBlock(node);
+    }
+    if (COMPONENT_BLOCKS.has(node.type)) {
+      return renderComponent(node);
     }
     if (SEMANTIC_BLOCKS.has(node.type)) {
       return renderSemanticBlock(node);
@@ -337,6 +394,205 @@
   </section>`;
   }
 
+  function renderMatrix(node) {
+    const fields = parseFields(node.lines);
+    const cells = [
+      ["top-left", fields["top-left"] || "Top left"],
+      ["top-right", fields["top-right"] || "Top right"],
+      ["bottom-left", fields["bottom-left"] || "Bottom left"],
+      ["bottom-right", fields["bottom-right"] || "Bottom right"]
+    ];
+    const x = node.attrs.x || fields.x || "Low -> High";
+    const y = node.attrs.y || fields.y || "Low -> High";
+
+    return `<section class="block">
+    <p class="block-label">matrix</p>
+    <div class="matrix-block" aria-label="${escapeHtml(`${x}, ${y}`)}">
+      <p class="matrix-axis matrix-axis-y">${escapeHtml(y)}</p>
+      <div class="matrix-grid">
+        ${cells.map(([key, value]) => `<div class="matrix-cell matrix-${escapeClass(key)}"><span>${escapeHtml(key.replace("-", " "))}</span><strong>${escapeHtml(value)}</strong></div>`).join("")}
+      </div>
+      <p class="matrix-axis matrix-axis-x">${escapeHtml(x)}</p>
+    </div>
+  </section>`;
+  }
+
+  function renderLayout(node) {
+    const label = node.attrs.label ? `<p class="layout-label">${escapeHtml(node.attrs.label)}</p>` : "";
+    const content = `${renderLines(node.lines)}${node.children.map(renderNode).join("")}`;
+    const style = layoutStyle(node.attrs);
+
+    if (node.type === "layout.device" || node.type === "component.phone") {
+      const kind = node.attrs.kind || "phone";
+      return `<section class="layout layout-device layout-device-${escapeClass(kind)}"${style}>
+    <div class="device-shell">
+      <div class="device-bar" aria-hidden="true"></div>
+      <div class="device-screen">
+        ${label}
+        ${content}
+      </div>
+    </div>
+  </section>`;
+    }
+
+    if (node.type === "layout.tabs") {
+      return renderTabs(node, style);
+    }
+
+    return `<section class="layout ${escapeClass(node.type)}"${style}>
+    ${label}
+    ${content}
+  </section>`;
+  }
+
+  function renderTabs(node, style) {
+    const panels = node.children.length
+      ? node.children
+      : [{
+          type: "panel",
+          attrs: { label: node.attrs.label || "Panel" },
+          lines: node.lines,
+          children: []
+        }];
+
+    return `<section class="layout layout-tabs"${style}>
+    <div class="tab-list" role="tablist">
+      ${panels.map((panel, index) => `<span class="tab-pill">${escapeHtml(panel.attrs?.label || findFrameLabel(panel) || `Tab ${index + 1}`)}</span>`).join("")}
+    </div>
+    <div class="tab-panels">
+      ${panels.map((panel) => `<div class="tab-panel">${renderNode(panel)}</div>`).join("")}
+    </div>
+  </section>`;
+  }
+
+  function renderStyleBlock(node) {
+    if (node.type === "style.css") {
+      return renderCssBlock(node);
+    }
+
+    const tokens = parseTokens(node.lines);
+    const styleVars = tokens.map((token) => {
+      const value = safeCssValue(token.value);
+      return value ? `--${escapeCssIdentifier(token.name)}: ${value};` : "";
+    }).filter(Boolean).join("\n");
+    const style = styleVars ? `<style data-vmd-style-tokens>\n:root {\n${styleVars}\n}\n</style>` : "";
+    return `${style}<section class="block style-token-block">
+    <p class="block-label">style tokens</p>
+    <div class="token-grid">
+      ${tokens.map(renderToken).join("")}
+    </div>
+  </section>`;
+  }
+
+  function renderRawBlock(node, options = {}) {
+    if (node.type === "raw.css" || node.type === "style.css") {
+      return renderCssBlock(node);
+    }
+
+    if (node.type === "raw.js") {
+      return `<section class="block raw-disabled">
+    <p class="block-label">raw.js disabled</p>
+    <pre>${escapeHtml(normalizeRawLines(node.lines))}</pre>
+  </section>`;
+    }
+
+    const content = normalizeRawLines(node.lines);
+    if (options.preserve || node.type === "raw.html" || node.type === "raw.svg") {
+      return options.preserve ? content : `<div class="raw-embed raw-embed-${escapeClass(node.variant || node.tag)}">${content}</div>`;
+    }
+
+    return `<pre class="raw-embed">${escapeHtml(content)}</pre>`;
+  }
+
+  function renderCssBlock(node) {
+    const css = normalizeRawLines(node.lines).replace(/<\/style/gi, "<\\/style");
+    return `<style data-vmd-raw-css>
+${css}
+</style>`;
+  }
+
+  function renderComponent(node) {
+    if (node.type === "component.phone") {
+      return renderLayout({ ...node, type: "layout.device" });
+    }
+
+    if (node.type === "component.browser") {
+      return `<section class="component component-browser">
+    <div class="browser-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="browser-canvas">
+      ${renderComponentBody(node)}
+    </div>
+  </section>`;
+    }
+
+    if (node.type === "component.metric") {
+      const fields = parseFields(node.lines);
+      const label = node.attrs.label || fields.label || "Metric";
+      const value = node.attrs.value || fields.value || node.lines[0] || "";
+      const detail = node.attrs.detail || fields.detail || fields.note || "";
+      return `<section class="component component-metric">
+    <p>${escapeHtml(label)}</p>
+    <strong>${escapeHtml(value)}</strong>
+    ${detail ? `<span>${escapeHtml(detail)}</span>` : ""}
+  </section>`;
+    }
+
+    if (node.type === "component.persona") {
+      const fields = parseFields(node.lines);
+      const name = node.attrs.name || fields.name || "Persona";
+      const role = node.attrs.role || fields.role || "";
+      return `<section class="component component-persona">
+    <div class="persona-avatar" aria-hidden="true">${escapeHtml(name.slice(0, 1).toUpperCase())}</div>
+    <div>
+      <h3>${escapeHtml(name)}</h3>
+      ${role ? `<p class="persona-role">${escapeHtml(role)}</p>` : ""}
+      ${renderLines(node.lines.filter((line) => !line.includes(":")))}
+      ${node.children.map(renderNode).join("")}
+    </div>
+  </section>`;
+    }
+
+    if (node.type === "component.token-table") {
+      const tokens = parseTokens(node.lines);
+      return `<section class="component component-token-table">
+    <table>
+      <thead><tr><th>Token</th><th>Value</th><th>Note</th></tr></thead>
+      <tbody>
+        ${tokens.map((token) => `<tr><th>${escapeHtml(token.name)}</th><td>${escapeHtml(token.value)}</td><td>${escapeHtml(token.note || "")}</td></tr>`).join("")}
+      </tbody>
+    </table>
+  </section>`;
+    }
+
+    return `<section class="component component-card">
+    ${node.attrs.title ? `<h3>${escapeHtml(node.attrs.title)}</h3>` : ""}
+    ${renderComponentBody(node)}
+  </section>`;
+  }
+
+  function renderComponentBody(node) {
+    return `${renderLines(node.lines)}${node.children.map(renderNode).join("")}`;
+  }
+
+  function renderPreserveNode(node) {
+    if (node.type === "heading") {
+      return "";
+    }
+    if (node.type === "frame" || LAYOUT_BLOCKS.has(node.type) || COMPONENT_BLOCKS.has(node.type)) {
+      return `${renderLines(node.lines)}${node.children.map(renderPreserveNode).join("")}`;
+    }
+    if (RAW_BLOCKS.has(node.type) || node.type === "style.css") {
+      return renderRawBlock(node, { preserve: true });
+    }
+    if (STYLE_BLOCKS.has(node.type)) {
+      return renderStyleBlock(node);
+    }
+    if (SEMANTIC_BLOCKS.has(node.type) || VISUAL_BLOCKS.has(node.type)) {
+      return `${renderLines(node.lines)}${node.children.map(renderPreserveNode).join("")}`;
+    }
+    return renderNode(node);
+  }
+
   function parseCompare(lines) {
     const parsed = {
       leftLabel: "Left",
@@ -377,13 +633,13 @@
       });
     }
 
-    const hasSemanticChild = node.children.some((child) => SEMANTIC_BLOCKS.has(child.type));
-    if (!hasSemanticChild) {
+    const hasKnownChild = node.children.some((child) => isKnownBlock(child.type));
+    if (!hasKnownChild && !hasNodeContent(node)) {
       diagnostics.push({
         level: "warning",
-        code: "frame-without-semantic-block",
+        code: "empty-frame",
         line: node.line,
-        message: "Frame should include at least one semantic block."
+        message: "Frame should include content or a known VMD block."
       });
     }
 
@@ -406,6 +662,33 @@
         code: "empty-semantic-block",
         line: node.line,
         message: `Semantic block "${node.type}" should not be empty.`
+      });
+    }
+
+    if (LAYOUT_BLOCKS.has(node.type) && !hasNodeContent(node)) {
+      diagnostics.push({
+        level: "warning",
+        code: "empty-layout-block",
+        line: node.line,
+        message: `Layout block "${node.type}" should contain lines or child blocks.`
+      });
+    }
+
+    if (RAW_BLOCKS.has(node.type) && node.type !== "raw.js" && !node.lines.some((line) => line.trim())) {
+      diagnostics.push({
+        level: "warning",
+        code: "empty-raw-block",
+        line: node.line,
+        message: `Raw block "${node.type}" should contain preserved source.`
+      });
+    }
+
+    if (node.type === "raw.js") {
+      diagnostics.push({
+        level: "warning",
+        code: "raw-js-disabled",
+        line: node.line,
+        message: "raw.js is parsed but not executed by the reference renderer."
       });
     }
 
@@ -453,6 +736,21 @@
           code: "timeline-too-short",
           line: node.line,
           message: "visual.timeline is more useful with two or more items."
+        });
+      }
+    }
+
+    if (node.type === "visual.matrix") {
+      const fields = parseFields(node.lines);
+      const cellCount = ["top-left", "top-right", "bottom-left", "bottom-right"]
+        .filter((key) => fields[key])
+        .length;
+      if (cellCount < 2) {
+        diagnostics.push({
+          level: "warning",
+          code: "matrix-too-sparse",
+          line: node.line,
+          message: "visual.matrix is more useful with two or more quadrant values."
         });
       }
     }
@@ -527,6 +825,10 @@
     if (!parent.lines) {
       parent.lines = [];
     }
+    if (shouldPreserveLineWhitespace(parent)) {
+      parent.lines.push(raw);
+      return;
+    }
     parent.lines.push(raw.trim());
   }
 
@@ -545,10 +847,197 @@
   }
 
   function renderLines(lines = []) {
-    if (!lines.length) {
+    const normalized = lines.map((line) => line.trim()).filter(Boolean);
+    if (!normalized.length) {
       return "";
     }
-    return `<p>${lines.map(escapeHtml).join("<br>")}</p>`;
+
+    const chunks = [];
+    let paragraph = [];
+    let list = [];
+
+    const flushParagraph = () => {
+      if (paragraph.length) {
+        chunks.push(`<p>${paragraph.map(escapeHtml).join("<br>")}</p>`);
+        paragraph = [];
+      }
+    };
+    const flushList = () => {
+      if (list.length) {
+        chunks.push(`<ul>${list.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`);
+        list = [];
+      }
+    };
+
+    for (const line of normalized) {
+      const heading = line.match(/^(#{1,6})\s+(.+)$/);
+      if (heading) {
+        flushParagraph();
+        flushList();
+        const level = Math.min(6, Math.max(2, heading[1].length + 1));
+        chunks.push(`<h${level}>${escapeHtml(heading[2])}</h${level}>`);
+        continue;
+      }
+
+      const listItem = line.match(/^-\s+(.+)$/);
+      if (listItem) {
+        flushParagraph();
+        list.push(listItem[1]);
+        continue;
+      }
+
+      flushList();
+      paragraph.push(line);
+    }
+
+    flushParagraph();
+    flushList();
+    return chunks.join("");
+  }
+
+  function isKnownBlock(type) {
+    return SEMANTIC_BLOCKS.has(type) ||
+      VISUAL_BLOCKS.has(type) ||
+      LAYOUT_BLOCKS.has(type) ||
+      STYLE_BLOCKS.has(type) ||
+      RAW_BLOCKS.has(type) ||
+      COMPONENT_BLOCKS.has(type);
+  }
+
+  function isPreserveDocument(ast) {
+    return String(ast.doc?.attrs?.fidelity || "").toLowerCase() === "preserve";
+  }
+
+  function shouldPreserveLineWhitespace(parent) {
+    return Boolean(parent && (RAW_BLOCKS.has(parent.type) || parent.type === "style.css"));
+  }
+
+  function normalizeRawLines(lines = []) {
+    const copy = [...lines];
+    while (copy.length && !copy[0].trim()) {
+      copy.shift();
+    }
+    while (copy.length && !copy[copy.length - 1].trim()) {
+      copy.pop();
+    }
+
+    const indents = copy
+      .filter((line) => line.trim())
+      .map((line) => line.match(/^\s*/)[0].length);
+    const commonIndent = indents.length ? Math.min(...indents) : 0;
+    return copy.map((line) => line.slice(commonIndent)).join("\n");
+  }
+
+  function parseFields(lines = []) {
+    const fields = {};
+    for (const line of lines) {
+      const match = line.trim().match(/^([a-zA-Z][\w-]*)\s*:\s*(.+)$/);
+      if (match) {
+        fields[match[1]] = match[2].trim();
+      }
+    }
+    return fields;
+  }
+
+  function parseTokens(lines = []) {
+    return lines.map((line) => {
+      const cleaned = line.replace(/^-\s*/, "").trim();
+      if (!cleaned) {
+        return null;
+      }
+
+      const pipeParts = cleaned.split("|").map((part) => part.trim());
+      if (pipeParts.length >= 2) {
+        return {
+          name: pipeParts[0],
+          value: pipeParts[1],
+          note: pipeParts.slice(2).join(" | ")
+        };
+      }
+
+      const match = cleaned.match(/^([a-zA-Z][\w-]*)\s*:\s*(.+?)(?:\s+-\s+(.+))?$/);
+      if (!match) {
+        return {
+          name: cleaned,
+          value: "",
+          note: ""
+        };
+      }
+      return {
+        name: match[1],
+        value: match[2],
+        note: match[3] || ""
+      };
+    }).filter(Boolean);
+  }
+
+  function renderToken(token) {
+    const swatch = looksLikeColor(token.value)
+      ? `<span class="token-swatch" style="background: ${safeCssValue(token.value)}"></span>`
+      : "";
+    return `<div class="token-item">
+      ${swatch}
+      <strong>${escapeHtml(token.name)}</strong>
+      <code>${escapeHtml(token.value)}</code>
+      ${token.note ? `<span>${escapeHtml(token.note)}</span>` : ""}
+    </div>`;
+  }
+
+  function layoutStyle(attrs = {}) {
+    const declarations = [];
+    if (attrs.columns) {
+      declarations.push(`--vmd-columns: ${safeCssValue(normalizeColumns(attrs.columns))}`);
+    }
+    if (attrs.gap) {
+      declarations.push(`--vmd-gap: ${safeCssValue(spaceToken(attrs.gap))}`);
+    }
+    if (attrs.width) {
+      declarations.push(`--vmd-width: ${safeCssValue(attrs.width)}`);
+    }
+    if (attrs.align) {
+      declarations.push(`--vmd-align: ${safeCssValue(attrs.align)}`);
+    }
+    if (!declarations.length) {
+      return "";
+    }
+    return ` style="${escapeHtml(declarations.join("; "))}"`;
+  }
+
+  function normalizeColumns(value) {
+    if (/^\d+$/.test(String(value))) {
+      return `repeat(${value}, minmax(0, 1fr))`;
+    }
+    return String(value);
+  }
+
+  function spaceToken(value) {
+    const tokens = {
+      none: "0",
+      xs: "6px",
+      small: "10px",
+      medium: "16px",
+      large: "24px",
+      xl: "34px"
+    };
+    return tokens[value] || value;
+  }
+
+  function looksLikeColor(value) {
+    return /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(String(value)) ||
+      /^rgba?\(/i.test(String(value)) ||
+      /^hsla?\(/i.test(String(value));
+  }
+
+  function safeCssValue(value) {
+    const text = String(value || "").trim();
+    if (!text || /[<>{};]/.test(text)) {
+      return "";
+    }
+    return text;
+  }
+
+  function escapeCssIdentifier(value) {
+    return String(value).replace(/[^a-zA-Z0-9_-]/g, "-");
   }
 
   function escapeClass(value) {
@@ -572,6 +1061,11 @@
     validateVmdSource,
     SEMANTIC_BLOCK_TYPES,
     VISUAL_BLOCK_TYPES,
+    LAYOUT_BLOCK_TYPES,
+    STYLE_BLOCK_TYPES,
+    RAW_BLOCK_TYPES,
+    COMPONENT_BLOCK_TYPES,
+    FIDELITY_TIERS: Array.from(FIDELITY_TIERS),
     escapeHtml
   };
 });

@@ -25,6 +25,27 @@ const fixtureSource = `@doc "Chrome Auto Render Test" {
   ::
 ::
 `;
+const preserveSource = `@doc "Chrome Preserve Test" {
+  format: preserved-html
+  fidelity: preserve
+}
+
+::raw.css
+body { margin: 0; background: rgb(12, 20, 31); }
+.preserved-fixture {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  color: rgb(240, 253, 250);
+}
+::
+
+::raw.html
+<main class="preserved-fixture">
+  <h1>Preserved Page</h1>
+</main>
+::
+`;
 
 await writeFile(fixturePath, fixtureSource, "utf8");
 
@@ -34,6 +55,14 @@ const server = http.createServer((request, response) => {
       "content-type": "text/plain; charset=utf-8"
     });
     response.end(fixtureSource);
+    return;
+  }
+
+  if (request.url === "/preserve.vmd") {
+    response.writeHead(200, {
+      "content-type": "text/plain; charset=utf-8"
+    });
+    response.end(preserveSource);
     return;
   }
 
@@ -78,6 +107,14 @@ try {
 
   await page.locator('button[data-mode="deck"]').click();
   await page.waitForSelector(".slide .block-claim", { timeout: 5000 });
+
+  const preservePage = await context.newPage();
+  await preservePage.goto(`http://127.0.0.1:${port}/preserve.vmd`);
+  await preservePage.waitForSelector("body.vmd-preserve-page", { timeout: 15000 });
+  await preservePage.waitForSelector(".preserved-fixture", { timeout: 15000 });
+  assert.equal(await preservePage.locator(".auto-banner").count(), 0, "preserve mode should not inject the VMD toolbar");
+  const preservedTextColor = await preservePage.locator(".preserved-fixture").evaluate((element) => getComputedStyle(element).color);
+  assert.equal(preservedTextColor, "rgb(240, 253, 250)");
 
   const viewerPage = await context.newPage();
   await viewerPage.goto(`chrome-extension://${extensionId}/viewer.html`);

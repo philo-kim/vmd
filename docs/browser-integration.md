@@ -30,6 +30,18 @@ Chrome requires the user to enable file URL access for this:
 
 This is the closest current behavior to browser-native VMD rendering.
 
+If a document declares:
+
+```vmd
+@doc "Imported Page" {
+  fidelity: preserve
+}
+```
+
+the automatic renderer skips the normal VMD toolbar and renders the preserved
+HTML/CSS directly. This mode is intended for files that should behave as close
+as possible to opening an HTML file in the browser.
+
 ### Manual Viewer
 
 The extension also includes a viewer page where users can upload or drag a
@@ -71,6 +83,8 @@ If VMD becomes widely used, the long-term target is native browser support:
 - registered MIME type
 - browser-level parser
 - default rendering to web-native HTML/CSS
+- explicit handling of semantic, structured, visual, preserve, and interactive
+  fidelity tiers
 - inspectable semantic AST
 - extension and DevTools hooks
 - accessibility mapping for semantic blocks

@@ -12,7 +12,11 @@ const {
   validateVmdAst,
   validateVmdSource,
   SEMANTIC_BLOCK_TYPES,
-  VISUAL_BLOCK_TYPES
+  VISUAL_BLOCK_TYPES,
+  LAYOUT_BLOCK_TYPES,
+  STYLE_BLOCK_TYPES,
+  RAW_BLOCK_TYPES,
+  COMPONENT_BLOCK_TYPES
 } = require("../core/vmd-core.cjs");
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -26,6 +30,11 @@ assert.equal(ast.children.filter((node) => node.type === "frame").length, 4);
 assert.equal(diagnostics.filter((diagnostic) => diagnostic.level === "error").length, 0);
 assert.ok(SEMANTIC_BLOCK_TYPES.includes("claim"));
 assert.ok(VISUAL_BLOCK_TYPES.includes("visual.compare"));
+assert.ok(VISUAL_BLOCK_TYPES.includes("visual.matrix"));
+assert.ok(LAYOUT_BLOCK_TYPES.includes("layout.grid"));
+assert.ok(STYLE_BLOCK_TYPES.includes("style.tokens"));
+assert.ok(RAW_BLOCK_TYPES.includes("raw.html"));
+assert.ok(COMPONENT_BLOCK_TYPES.includes("component.metric"));
 
 const readHtml = renderVmd(ast, "read");
 assert.match(readHtml, /A Family Platform For Behavior Change/);
@@ -40,6 +49,47 @@ assert.match(mapHtml, /class="map-node"/);
 const fullHtml = renderFullHtml(ast);
 assert.match(fullHtml, /<!doctype html>/);
 assert.match(fullHtml, /Family Platform Strategy/);
+
+const layered = parseVmd(`@doc "Layered" {
+  fidelity: preserve
+}
+
+::frame[role="preserve"]
+  ::raw.css
+  body { margin: 0; }
+  .box { color: #123456; }
+  ::
+
+  ::raw.html
+  <main class="box">
+    <h1>Preserved HTML</h1>
+  </main>
+  ::
+::`);
+assert.doesNotMatch(renderVmd(layered, "read"), /class="frame"/);
+assert.match(renderVmd(layered, "read"), /<main class="box">/);
+assert.doesNotMatch(renderFullHtml(layered, "read", { cssHref: null }), /extension\/styles\.css/);
+
+const visual = parseVmd(`@doc "Visual" {
+  fidelity: visual
+}
+
+::frame[role="visual"]
+  ::layout.grid[columns="2" gap="medium"]
+    ::component.metric[label="A" value="1"]
+    ::
+    ::component.card[title="B"]
+    Body
+    ::
+  ::
+  ::visual.matrix
+  top-left: A
+  top-right: B
+  ::
+::`);
+assert.match(renderVmd(visual, "read"), /layout-grid/);
+assert.match(renderVmd(visual, "read"), /component-metric/);
+assert.match(renderVmd(visual, "read"), /matrix-block/);
 
 assert.throws(
   () => parseVmd("::claim\nmissing close"),

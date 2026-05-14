@@ -3,19 +3,24 @@
 VMD is designed to be a better target for AI-assisted visual documents than raw
 HTML and CSS.
 
-The model should describe semantic structure first. The renderer should handle
-the page.
+For new documents, the model should describe semantic structure first and let
+the renderer handle the page. For imported design documents, the model should
+choose an explicit fidelity tier instead of pretending semantic blocks can
+preserve arbitrary HTML/CSS pixels.
 
 ## Prompt Pattern
 
-Use prompts that ask for VMD source, not final HTML.
+Use prompts that ask for VMD source, not final HTML, and state the fidelity
+target.
 
 ```text
 Create a VMD document for a 6-frame strategy brief.
+Use fidelity: structured.
 Use frames, claims, evidence, insights, decisions, actions, and visual.compare
 where useful.
 Keep the source readable as plain text.
-Do not add CSS or HTML.
+Use layout and component blocks if the document needs visual structure.
+Do not use raw HTML/CSS unless exact preservation is required.
 ```
 
 ## Good Output Shape
@@ -52,7 +57,12 @@ Do not add CSS or HTML.
 - Use `visual.compare` for opposing or before/after structures.
 - Use `visual.loop` for repeated cycles.
 - Use `visual.timeline` for ordered sequences.
-- Avoid inline HTML and CSS.
+- Use `layout.grid`, `layout.split`, and `component.card` when the output needs
+  real visual structure.
+- Use `style.tokens` before `style.css`.
+- Use `raw.html` and `raw.css` only for preserve-mode imports or small
+  compatibility islands.
+- Do not use `raw.js`; the reference renderer will not execute it.
 - Keep source readable before rendering.
 
 ## Review Checklist
@@ -62,6 +72,9 @@ Before accepting AI-generated VMD, check:
 - Does every frame have a clear role?
 - Does every major claim have support?
 - Are visual blocks used for structure rather than decoration?
+- Is the declared `fidelity` tier honest?
+- Are layout/component blocks enough, or is preserve mode required?
+- Are raw blocks limited to compatibility needs?
 - Is the document understandable as plain text?
 - Could the same source render as read, deck, and map views?
 

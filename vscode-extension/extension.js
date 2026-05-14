@@ -6,6 +6,10 @@ const {
   validateVmdAst,
   SEMANTIC_BLOCK_TYPES,
   VISUAL_BLOCK_TYPES,
+  LAYOUT_BLOCK_TYPES,
+  STYLE_BLOCK_TYPES,
+  RAW_BLOCK_TYPES,
+  COMPONENT_BLOCK_TYPES,
   escapeHtml
 } = require("./vendor/vmd-core.cjs");
 
@@ -166,7 +170,7 @@ function renderPreviewHtml(context, webview, document) {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
     <link rel="stylesheet" href="${styleUri}">
     <title>${title}</title>
   </head>
@@ -262,6 +266,38 @@ function createCompletionProvider() {
         ));
       }
 
+      for (const block of LAYOUT_BLOCK_TYPES) {
+        items.push(createSnippet(
+          block,
+          snippetForLayoutBlock(block),
+          `Create a ${block} layout block.`
+        ));
+      }
+
+      for (const block of COMPONENT_BLOCK_TYPES) {
+        items.push(createSnippet(
+          block,
+          snippetForComponentBlock(block),
+          `Create a ${block} component block.`
+        ));
+      }
+
+      for (const block of STYLE_BLOCK_TYPES) {
+        items.push(createSnippet(
+          block,
+          snippetForStyleBlock(block),
+          `Create a ${block} style block.`
+        ));
+      }
+
+      for (const block of RAW_BLOCK_TYPES) {
+        items.push(createSnippet(
+          block,
+          snippetForRawBlock(block),
+          `Create a ${block} compatibility block.`
+        ));
+      }
+
       return items;
     }
   };
@@ -286,6 +322,78 @@ function snippetForVisualBlock(block) {
 
   if (block === "visual.timeline") {
     return "::visual.timeline\n- ${1:First step}\n- ${2:Second step}\n- ${3:Third step}\n::";
+  }
+
+  if (block === "visual.matrix") {
+    return "::visual.matrix[x=\"${1:Low -> High}\" y=\"${2:Low -> High}\"]\ntop-left: ${3:Option A}\ntop-right: ${4:Option B}\nbottom-left: ${5:Option C}\nbottom-right: ${6:Option D}\n::";
+  }
+
+  return `::${block}\n  $0\n::`;
+}
+
+function snippetForLayoutBlock(block) {
+  if (block === "layout.grid") {
+    return "::layout.grid[columns=\"${1:2}\" gap=\"${2:medium}\"]\n  $0\n::";
+  }
+
+  if (block === "layout.split") {
+    return "::layout.split[gap=\"${1:large}\"]\n  $0\n::";
+  }
+
+  if (block === "layout.device") {
+    return "::layout.device[kind=\"${1:phone}\" width=\"${2:390px}\"]\n  $0\n::";
+  }
+
+  if (block === "layout.tabs") {
+    return "::layout.tabs\n  ::component.card[title=\"${1:Tab content}\"]\n  $0\n  ::\n::";
+  }
+
+  return `::${block}\n  $0\n::`;
+}
+
+function snippetForComponentBlock(block) {
+  if (block === "component.metric") {
+    return "::component.metric[label=\"${1:Metric}\" value=\"${2:42}\" detail=\"${3:Meaningful detail}\"]\n::";
+  }
+
+  if (block === "component.card") {
+    return "::component.card[title=\"${1:Card title}\"]\n${2:Card body}\n::";
+  }
+
+  if (block === "component.persona") {
+    return "::component.persona[name=\"${1:Persona}\" role=\"${2:Role}\"]\n- ${3:Need}\n- ${4:Pain point}\n::";
+  }
+
+  if (block === "component.token-table") {
+    return "::component.token-table\ncolor-accent: #0e7490 - Primary action\nspace-md: 16px - Default gap\n::";
+  }
+
+  return `::${block}\n  $0\n::`;
+}
+
+function snippetForStyleBlock(block) {
+  if (block === "style.tokens") {
+    return "::style.tokens\naccent: #0e7490 - Primary accent\nsurface: #fffdfa - Default surface\n::";
+  }
+
+  if (block === "style.css") {
+    return "::style.css\n.custom-block {\n  display: grid;\n}\n::";
+  }
+
+  return `::${block}\n  $0\n::`;
+}
+
+function snippetForRawBlock(block) {
+  if (block === "raw.html") {
+    return "::raw.html\n<div class=\"${1:preserved-block}\">\n  ${2:Preserved HTML}\n</div>\n::";
+  }
+
+  if (block === "raw.css") {
+    return "::raw.css\n.${1:preserved-block} {\n  display: grid;\n}\n::";
+  }
+
+  if (block === "raw.svg") {
+    return "::raw.svg\n<svg viewBox=\"0 0 100 100\" role=\"img\" aria-label=\"${1:Graphic}\">\n  <circle cx=\"50\" cy=\"50\" r=\"40\" />\n</svg>\n::";
   }
 
   return `::${block}\n  $0\n::`;

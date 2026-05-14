@@ -49,7 +49,7 @@ node bin/vmd.mjs ast samples/family-platform.vmd
 node bin/vmd.mjs ast samples/family-platform.vmd --out dist/family-platform.ast.json
 ```
 
-The semantic AST is the interoperability boundary. Renderers and validators
+The layered AST is the interoperability boundary. Renderers and validators
 should depend on the AST, not on source-string scraping.
 
 ## Validate
@@ -65,9 +65,12 @@ The validator reports:
 - parse errors
 - unknown blocks
 - frames without roles
-- frames without semantic blocks
+- empty frames
 - claims without evidence
-- invalid visual blocks, such as empty `visual.compare` or one-step loops
+- empty layout or raw blocks
+- disabled `raw.js`
+- invalid visual blocks, such as empty `visual.compare`, one-step loops, or
+  sparse matrices
 
 Validation exits with a non-zero code when an error is found. Warnings do not
 fail the command unless `--strict` is used.
@@ -100,3 +103,18 @@ This builds:
 - rendered pages for every `.vmd` file in `samples/`
 
 The gallery is designed to be published through GitHub Pages.
+
+## Visual Fidelity Verification
+
+The visual fidelity checker is a project tool rather than a packaged CLI
+subcommand:
+
+```bash
+npm run verify:visual-fidelity -- --source-dir /path/to/html/folder
+npm run verify:visual-fidelity -- --source-dir /path/to/html/folder --conversion preserve
+```
+
+Use `--conversion semantic` to measure how much visual drift appears when HTML
+is converted into VMD-native frames and blocks. Use `--conversion preserve` to
+wrap existing HTML/CSS in raw compatibility blocks and check whether the page can
+be preserved with pixel-level fidelity.
