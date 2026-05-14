@@ -1,10 +1,21 @@
 {
   "manifest_version": 3,
   "name": "VMD Viewer",
-  "description": "Upload a VMD file and render it as a semantic visual webpage.",
+  "description": "Render VMD files as semantic visual webpages.",
   "version": "0.1.0",
   "action": {
     "default_title": "Open VMD Viewer",
     "default_popup": "popup.html"
-  }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "file:///*"
+      ],
+      "js": [
+        "auto-render.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
 }

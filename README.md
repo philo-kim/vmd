@@ -9,6 +9,20 @@ become a document, deck, map, report, or interactive page.
 This repository is public because VMD should grow as a shared format, not a
 closed app feature.
 
+## Ambition
+
+The ideal end state is simple:
+
+```text
+Open a .vmd file in a browser.
+The browser renders it as a visual document.
+```
+
+VMD is designed for a world where people and AI agents create visual documents
+together. Instead of forcing every AI-assisted creator to generate complete
+HTML, CSS, and JavaScript for every page, VMD gives them a smaller and more
+portable target: semantic visual structure.
+
 ## Core Idea
 
 ```text
@@ -43,13 +57,43 @@ semantic intent for visual documents
 Most authoring tools store appearance. VMD stores meaning first. A renderer can
 then decide how that meaning should appear in each medium.
 
+## Why This Matters For AI-Assisted Creation
+
+AI can generate HTML, CSS, and JavaScript, but polished visual documents require
+many low-level layout decisions. VMD gives AI-assisted creators and vibe coders
+a higher-level target:
+
+```text
+describe the document's semantic structure,
+then let the renderer handle the visual page.
+```
+
+An author can ask for a `.vmd` document. The browser, extension, app, or renderer
+can turn that semantic source into a web-native visual page.
+
+## Browser Vision
+
+The long-term goal is for `.vmd` files to open in a browser the way `.html`
+files do. Until browsers support VMD natively, this repository provides a
+Chrome-based browser polyfill.
+
+Current behavior:
+
+- local `.vmd` files opened in Chrome can render automatically through the
+  extension content script
+- the extension popup also includes a manual viewer with upload and drag-and-drop
+- the same source can render as read, deck, and map views
+
 ## Repository Contents
 
 - `docs/manifesto.md`: why this format should exist
+- `docs/vision.md`: the maximum-state product and ecosystem vision
 - `docs/language-design.md`: language direction and design principles
 - `docs/spec-draft-v0.md`: first public grammar and AST draft
+- `docs/browser-integration.md`: path from extension polyfill to browser-native support
+- `docs/extension-architecture.md`: extension family design
 - `samples/family-platform.vmd`: sample VMD source
-- `extension/`: reference Chrome viewer
+- `extension/`: reference Chrome polyfill and viewer
 - `tools/render-html.mjs`: local renderer that converts a VMD file to static HTML
 
 ## Format Preview
@@ -73,26 +117,28 @@ then decide how that meaning should appear in each medium.
 ::
 ```
 
-## Reference Viewer
+## Reference Browser Polyfill
 
-The Chrome viewer is a reference implementation, not the definition of the
+The Chrome extension is a reference implementation, not the definition of the
 format.
 
-It supports:
+Automatic local file rendering:
+
+1. Open `chrome://extensions`
+2. Enable `Developer mode`
+3. Click `Load unpacked`
+4. Select the `extension/` directory
+5. Open the extension details page
+6. Enable `Allow access to file URLs`
+7. Open or drag a local `.vmd` file into Chrome
+
+Manual viewer:
 
 - opening a VMD viewer tab from the extension popup
 - uploading a `.vmd` file
 - dragging and dropping a `.vmd` file
 - rendering read, deck, and map modes from the same source
 - loading the packaged sample document
-
-To try it locally:
-
-1. Open `chrome://extensions`
-2. Enable `Developer mode`
-3. Click `Load unpacked`
-4. Select the `extension/` directory
-5. Click the VMD extension icon and open the viewer
 
 ## Local Static Render
 

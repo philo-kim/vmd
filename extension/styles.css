@@ -25,9 +25,32 @@ body {
   color: var(--ink);
 }
 
+body.vmd-auto-page {
+  background: var(--bg);
+}
+
 button,
 textarea {
   font: inherit;
+}
+
+.auto-banner {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 12px clamp(18px, 4vw, 48px);
+  border-bottom: 1px solid var(--line);
+  background: rgba(247, 244, 237, 0.94);
+  backdrop-filter: blur(10px);
+}
+
+.auto-banner h1 {
+  font-size: clamp(18px, 2.5vw, 28px);
+  line-height: 1.1;
 }
 
 .app-header {
@@ -442,6 +465,11 @@ h3 {
 }
 
 @media (max-width: 900px) {
+  .auto-banner {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .app-header {
     align-items: stretch;
     flex-direction: column;

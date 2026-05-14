@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "render:sample": "node tools/render-html.mjs",
-    "check": "node --check extension/vmd-parser.js && node --check extension/vmd-renderer.js && node --check extension/viewer.js && node --check extension/popup.js && node --check tools/render-html.mjs && npm run render:sample"
+    "check": "node --check extension/vmd-parser.js && node --check extension/vmd-renderer.js && node --check extension/viewer.js && node --check extension/popup.js && node --check extension/auto-render.js && node --check tools/render-html.mjs && npm run render:sample"
   },
   "keywords": [
     "markdown",

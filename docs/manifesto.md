@@ -58,6 +58,23 @@ VMD proposes a portable source format for the thinking underneath those outputs.
 The same `.vmd` file should be able to move across tools, renderers, and media
 without losing its semantic structure.
 
+## A Better Target For AI
+
+AI-assisted creation is changing how people make software and documents.
+
+But asking an AI model to generate complete visual HTML is often an awkward
+target. It forces the model to decide content, structure, layout, styling, and
+interaction at the same time.
+
+VMD separates that work.
+
+An AI model can produce the semantic source. A renderer can produce the visual
+page.
+
+This makes visual document creation more accessible to people who can describe
+what they want but do not want to hand-author HTML, CSS, and JavaScript for
+every page.
+
 ## What VMD Is Not
 
 VMD is not a replacement for HTML.
