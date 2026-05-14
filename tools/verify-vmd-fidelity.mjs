@@ -795,7 +795,7 @@ function interpretationLines(summary) {
     "Semantic conversion keeps document text and rough frame structure, but it drops bespoke CSS, layout classes, inline styles, scripts, and custom interaction state.",
     "This is the right mode when the goal is an AI-editable VMD-native document, not pixel preservation.",
     "",
-    "For identical display, use preserve conversion or a future hybrid converter that maps known components and preserves the rest as raw compatibility blocks."
+    "For identical display, use preserve conversion or a hybrid converter that maps known components and preserves the rest as raw compatibility blocks."
   ];
 }
 

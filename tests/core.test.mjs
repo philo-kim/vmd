@@ -25,7 +25,7 @@ const ast = parseVmd(source);
 const diagnostics = validateVmdAst(ast);
 
 assert.equal(ast.type, "document");
-assert.equal(ast.doc.title, "Family Platform Strategy");
+assert.equal(ast.doc.title, "Family Platform Brief");
 assert.equal(ast.children.filter((node) => node.type === "frame").length, 4);
 assert.equal(diagnostics.filter((diagnostic) => diagnostic.level === "error").length, 0);
 assert.ok(SEMANTIC_BLOCK_TYPES.includes("claim"));
@@ -48,7 +48,7 @@ assert.match(mapHtml, /class="map-node"/);
 
 const fullHtml = renderFullHtml(ast);
 assert.match(fullHtml, /<!doctype html>/);
-assert.match(fullHtml, /Family Platform Strategy/);
+assert.match(fullHtml, /Family Platform Brief/);
 
 const layered = parseVmd(`@doc "Layered" {
   fidelity: preserve

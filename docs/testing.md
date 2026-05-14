@@ -104,7 +104,7 @@ it depends on the public network and the latest Pages deployment.
 npm run benchmark:formats
 ```
 
-This compares the same strategy document in VMD, Markdown, and browser-ready
+This compares the same sample document in VMD, Markdown, and browser-ready
 HTML. It writes:
 
 ```text
@@ -134,10 +134,6 @@ The committed report is:
 benchmarks/results/open-design-ai-artifacts.md
 docs/open-design-ai-artifact-benchmark.md
 ```
-
-This benchmark is intentionally about the format's purpose. Preserve mode shows
-compatibility with generated HTML; semantic compression shows why VMD needs to
-become a smaller and more editable visual source language.
 
 ## Visual Fidelity Verification
 

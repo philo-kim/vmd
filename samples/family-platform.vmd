@@ -1,4 +1,4 @@
-@doc "Family Platform Strategy" {
+@doc "Family Platform Brief" {
   format: deck
   theme: clean
   audience: investor
@@ -30,7 +30,7 @@
   right: New category
 
   - allowance record vs habit formation
-  - parent as manager vs parent as growth partner
+  - parent as manager vs parent as development partner
   - money flow vs behavior loop
   ::
 ::
@@ -44,7 +44,7 @@
   ::
 
   ::decision
-  Position the product as a family growth platform, not as an allowance tracker.
+  Position the product as a family family development platform, not as an allowance tracker.
   ::
 ::
 

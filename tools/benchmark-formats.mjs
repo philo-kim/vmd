@@ -111,7 +111,7 @@ function buildBenchmark(input) {
   return {
     benchmarkVersion: 1,
     case: {
-      name: "Family Platform Strategy",
+      name: "Family Platform Brief",
       files: {
         vmd: "benchmarks/cases/family-platform.vmd",
         markdown: "benchmarks/cases/family-platform.md",
@@ -272,11 +272,11 @@ function renderBenchmarkMarkdown(benchmark) {
 
   return `# VMD Format Benchmark
 
-This benchmark compares the same strategy document written as VMD, Markdown, and
+This benchmark compares the same sample document written as VMD, Markdown, and
 browser-ready HTML.
 
 It is not a universal performance benchmark. It is a reproducible authoring and
-portability benchmark for one representative visual strategy document.
+portability benchmark for one representative visual sample document.
 
 It measures source size, authoring overhead, semantic portability, available
 render modes, and validation support. It does not measure browser engine speed

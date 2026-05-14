@@ -1,5 +1,5 @@
 ---
-title: Family Platform Strategy
+title: Family Platform Brief
 format: deck
 theme: clean
 audience: investor
@@ -12,7 +12,7 @@ audience: investor
 **Claim:** Allowance management is not the end point. It is the starting point
 for self-directed behavior inside the family.
 
-**Evidence:** The growth loop connects goals, actions, rewards, and repeated
+**Evidence:** The behavior loop connects goals, actions, rewards, and repeated
 habits.
 
 **Loop:** Goal setting -> Mission action -> Reward moment -> Habit formation
@@ -27,7 +27,7 @@ appears around responsibility, habits, motivation, and trust.
 | Existing apps | New category |
 | --- | --- |
 | allowance record | habit formation |
-| parent as manager | parent as growth partner |
+| parent as manager | parent as development partner |
 | money flow | behavior loop |
 
 ## The Category Shift
@@ -35,7 +35,7 @@ appears around responsibility, habits, motivation, and trust.
 **Insight:** The stronger category is not personal finance for children. It is
 family behavior design.
 
-**Decision:** Position the product as a family growth platform, not as an
+**Decision:** Position the product as a family family development platform, not as an
 allowance tracker.
 
 ## Near-Term Execution

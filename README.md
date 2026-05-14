@@ -6,28 +6,16 @@ The web has languages for structure, style, and behavior. VMD explores a missing
 layer: a portable way to describe the role of an idea so the same source can
 become a document, deck, map, report, or interactive page.
 
-This repository is public because VMD should grow as a shared format, not a
-closed app feature.
-
-## Ambition
-
-The ideal end state is simple:
-
-```text
-Open a .vmd file in a browser.
-The browser renders it as a visual document.
-```
+## Purpose
 
 VMD is designed for a world where people and AI agents create visual documents
 together. Instead of forcing every AI-assisted creator to generate complete
 HTML, CSS, and JavaScript for every page, VMD gives them a smaller and more
 portable target: layered visual structure.
 
-The goal is bigger than converting HTML into another wrapper. Existing
-AI-generated HTML is the proof of need: it can look polished, but it is a large
-implementation surface for an AI agent to revise. VMD should become the compact,
-readable source format for visual documents, while still preserving browser
-output when exact fidelity matters.
+The format is not an HTML wrapper. It is a readable source format for visual
+documents, with preservation features available when exact browser output
+matters.
 
 ## Core Idea
 
@@ -74,7 +62,7 @@ body { margin: 0; }
 Markdown made writing portable. HTML made documents linkable and structured.
 CSS made presentation reusable. JavaScript made the web programmable.
 
-VMD is a proposal for the next missing primitive:
+VMD focuses on:
 
 ```text
 semantic intent plus explicit visual fidelity
@@ -97,11 +85,9 @@ then let the renderer handle the visual page.
 An author can ask for a `.vmd` document. The browser, extension, app, or renderer
 can turn that semantic source into a web-native visual page.
 
-## Browser Vision
+## Browser Polyfill
 
-The long-term goal is for `.vmd` files to open in a browser the way `.html`
-files do. Until browsers support VMD natively, this repository provides a
-Chrome-based browser polyfill.
+This repository provides a Chrome-based browser polyfill for `.vmd` files.
 
 Current behavior:
 
@@ -117,23 +103,18 @@ Current behavior:
 
 - `docs/quickstart.md`: fastest path from source to rendered output
 - `docs/manifesto.md`: why this format should exist
-- `docs/vision.md`: the maximum-state product and ecosystem vision
-- `docs/adoption-playbook.md`: adoption path for AI-assisted creators
-- `docs/ecosystem-research-and-adoption-plan.md`: lessons from Markdown and adjacent formats
 - `docs/architecture.md`: source, AST, renderer, and extension architecture
 - `docs/cli.md`: command-line rendering, AST, validation, and gallery workflow
 - `docs/ast-schema.md`: draft JSON Schema for the layered AST
 - `docs/public-site-and-actions.md`: GitHub Pages and reusable render action
 - `docs/language-design.md`: language direction and design principles
 - `docs/spec-draft-v0.md`: first public grammar and AST draft
-- `docs/project-readiness.md`: current readiness and known limitations
-- `docs/project-audit.md`: end-to-end implementation and release audit
 - `docs/format-benchmark.md`: VMD vs Markdown vs HTML benchmark results
 - `docs/open-design-ai-artifact-benchmark.md`: Open Design AI artifact benchmark
 - `docs/visual-fidelity.md`: how to verify existing HTML-to-VMD visual drift
 - `docs/ai-authoring-guide.md`: how to use VMD as an AI generation target
-- `docs/browser-integration.md`: path from extension polyfill to browser-native support
-- `docs/extension-architecture.md`: extension family design
+- `docs/browser-integration.md`: Chrome extension rendering behavior
+- `docs/extension-architecture.md`: current extension design
 - `docs/testing.md`: local and integration test workflow
 - `docs/release.md`: release and packaging workflow
 - `samples/family-platform.vmd`: sample VMD source
@@ -354,23 +335,16 @@ See `docs/spec-draft-v0.md` for the current draft.
 
 ## Samples
 
-- `samples/family-platform.vmd`: strategy/deck example
+- `samples/family-platform.vmd`: deck example
 - `samples/ai-native-brief.vmd`: AI-native visual document argument
 - `samples/lesson-outline.vmd`: education/lesson example
 - `samples/visual-fidelity-layers.vmd`: layout, style, component, and raw preservation example
 
 ## Current Status
 
-VMD is pre-standard and experimental. The current goal is to stabilize:
-
-1. the source grammar
-2. the layered AST
-3. a small vocabulary of semantic, visual, layout, style, raw, and component blocks
-4. interoperable reference renderers
-
-The important boundary is the layered AST. VMD source should compile into a
-structured representation before it becomes HTML, slides, PDF, or any other
-output format.
+VMD is an experimental draft. The important boundary is the layered AST. VMD
+source should compile into a structured representation before it becomes HTML,
+slides, PDF, or any other output format.
 
 ## Contributing
 

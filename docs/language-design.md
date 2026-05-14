@@ -169,7 +169,7 @@ VMD documents should declare their target fidelity.
 | `structured` | semantic roles plus layout and component primitives |
 | `visual` | structured VMD plus tokens, CSS, SVG, and visual primitives |
 | `preserve` | imported HTML/CSS with minimal renderer interference |
-| `interactive` | future tier for trusted interaction models |
+| `interactive` | reserved tier for trusted interaction models |
 
 This solves the core ambiguity: a `.vmd` file can be an editable semantic
 document or a high-fidelity preserved document, but it must say which target it
@@ -297,8 +297,8 @@ Expected shape:
 }
 ```
 
-This lets later renderers target HTML, PDF, deck, SVG, or interactive web
-without reparsing the source.
+This lets renderers target HTML, PDF, deck, SVG, or interactive web without
+reparsing the source.
 
 ## Quality Checks Enabled By Semantics
 
@@ -311,16 +311,5 @@ Once blocks have roles, automated review becomes possible:
 - document requests `preserve` but includes executable script
 - imported HTML relies on features not supported by the target renderer
 
-This is where VMD becomes more than a visual renderer. It can become a system
-for checking both the structure of thinking and the fidelity risk of a visual
-artifact.
-
-## Near-Term Roadmap
-
-1. Stabilize the layered AST vocabulary.
-2. Improve layout and component coverage with real design documents.
-3. Keep semantic rendering small and readable.
-4. Make `preserve` conversion measurable through screenshot diffing.
-5. Add importers that choose between semantic, structured, visual, and preserve
-   modes.
-6. Add safe, explicit interaction rules before executing any script.
+These checks are implemented as validator diagnostics and can be expanded by
+tools that consume the layered AST.

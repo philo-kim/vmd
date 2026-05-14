@@ -9,8 +9,8 @@ source -> layered AST -> renderer
 The source syntax stays readable, but the AST now carries multiple layers:
 semantic roles, visual patterns, layout primitives, style input, raw
 compatibility blocks, and reusable components. The AST is the stable contract.
-Renderers can then target browser pages, editor previews, static HTML, PDFs,
-decks, or future native browser rendering.
+Renderers can then target browser pages, editor previews, static HTML, PDFs, or
+decks.
 
 ## Repository Layers
 
@@ -34,7 +34,7 @@ tests/
   Core and extension integration tests
 
 docs/
-  Format, ecosystem, and browser-integration documents
+  Format, usage, and integration documents
 ```
 
 ## Core Runtime
@@ -160,9 +160,7 @@ It supports:
 
 Validation supports strict mode for CI and JSON output for tools or AI agents.
 
-`tools/site-builder.mjs` builds the static site used by GitHub Pages. This is
-also the smallest public proof that VMD can be useful as a web-native document
-format before any native browser support exists.
+`tools/site-builder.mjs` builds the static site used by GitHub Pages.
 
 ## Chrome Extension
 

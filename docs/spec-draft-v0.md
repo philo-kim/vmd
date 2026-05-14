@@ -42,11 +42,11 @@ Current tiers:
 
 | Tier | Use | Expected Output |
 | --- | --- | --- |
-| `semantic` | prose, reports, decks, strategy docs | semantic roles and multi-mode rendering |
+| `semantic` | prose, reports, decks, briefs | semantic roles and multi-mode rendering |
 | `structured` | visual docs with known layouts | layout blocks and components render predictably |
 | `visual` | design-heavy docs | tokens, CSS, SVG, tables, and components are preserved where needed |
 | `preserve` | existing HTML/CSS import | reference renderer avoids VMD wrappers and emits raw preserved output |
-| `interactive` | future scripted documents | reserved; raw JavaScript is parsed but not executed today |
+| `interactive` | scripted documents | reserved; raw JavaScript is parsed but not executed today |
 
 If `fidelity: preserve` is set, the reference read renderer emits preserved raw
 content directly instead of wrapping it in the normal VMD document shell. The
@@ -68,7 +68,7 @@ state:
 A VMD document may start with an `@doc` block.
 
 ```vmd
-@doc "Family Platform Strategy" {
+@doc "Family Platform Brief" {
   format: deck
   theme: clean
   audience: investor

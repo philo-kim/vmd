@@ -14,7 +14,7 @@ Use prompts that ask for VMD source, not final HTML, and state the fidelity
 target.
 
 ```text
-Create a VMD document for a 6-frame strategy brief.
+Create a VMD document for a 6-frame structured brief.
 Use fidelity: structured.
 Use frames, claims, evidence, insights, decisions, actions, and visual.compare
 where useful.

@@ -19,14 +19,14 @@ try {
   });
   const html = await readFile(renderOut, "utf8");
   assert.match(html, /deck-view/);
-  assert.match(html, /Family Platform Strategy/);
+  assert.match(html, /Family Platform Brief/);
 
   const astOut = path.join(tempRoot, "ast.json");
   await execFileAsync("node", [cli, "ast", sample, "--out", astOut], {
     cwd: root
   });
   const ast = JSON.parse(await readFile(astOut, "utf8"));
-  assert.equal(ast.doc.title, "Family Platform Strategy");
+  assert.equal(ast.doc.title, "Family Platform Brief");
 
   const validateResult = await execFileAsync("node", [
     cli,

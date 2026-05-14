@@ -1,12 +1,7 @@
 # Public Site And GitHub Actions
 
-VMD needs a public surface that demonstrates the format without requiring users
-to install an editor or browser extension first.
-
-This repository provides two GitHub-native pieces:
-
-- a static sample gallery and playground
-- a reusable render action for `.vmd` files
+This repository includes a static sample gallery, browser playground, and local
+composite GitHub Action for rendering `.vmd` files.
 
 ## Static Gallery
 
@@ -45,8 +40,8 @@ The Pages workflow is:
 On `main`, it installs dependencies, runs `npm run build:site`, uploads
 `dist/site`, and deploys through GitHub Pages.
 
-Repository Pages settings may still need to be enabled for the first deploy,
-depending on the GitHub repository configuration.
+Repository Pages settings may need to be enabled in GitHub before the first
+deploy.
 
 ## Reusable Render Action
 
@@ -66,18 +61,3 @@ Example use inside this repository:
     mode: deck
     css: ../extension/styles.css
 ```
-
-The purpose is not only convenience. It demonstrates how other repositories
-could make `.vmd` files part of their documentation pipelines.
-
-## Strategic Role
-
-Markdown spread because it was useful inside existing workflows. For VMD, the
-GitHub path should become:
-
-```text
-write .vmd -> validate in CI -> render previews -> publish a visual page
-```
-
-That loop is the practical bridge between a local draft format and a format that
-could later be rendered natively by browsers or platforms.

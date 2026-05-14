@@ -98,9 +98,7 @@ VMD is not a replacement for Markdown.
 
 VMD is a layer above them: a layered source format for visual documents.
 
-## Standard Direction
-
-If VMD succeeds, it should become more like a shared format than a single app.
+## Format Requirements
 
 The format should be:
 
@@ -111,6 +109,3 @@ The format should be:
 - useful for documents, decks, reports, and maps
 - explicit about fidelity tiers
 - simple enough for people to write directly
-
-The long-term ambition is a common language for structured visual thinking and
-portable visual-document preservation.

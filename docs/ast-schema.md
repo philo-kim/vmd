@@ -1,6 +1,6 @@
 # AST Schema
 
-VMD source is not the long-term contract. The layered AST is.
+VMD source is the authoring syntax. The layered AST is the renderer contract.
 
 The draft JSON Schema lives at:
 
@@ -17,10 +17,10 @@ The schema gives implementers a shared shape for:
 - editor integrations
 - AI generation checks
 - conformance fixtures
-- future conversion tools
+- conversion tools
 
 The schema is intentionally permissive in v0. It defines the document and node
-shape without freezing every future block type.
+shape without freezing every additional block type.
 
 ## Current Top-Level Shape
 
@@ -28,7 +28,7 @@ shape without freezing every future block type.
 {
   "type": "document",
   "doc": {
-    "title": "Family Platform Strategy",
+    "title": "Family Platform Brief",
     "attrs": {
       "format": "deck",
       "theme": "clean",

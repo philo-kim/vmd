@@ -348,7 +348,7 @@ function renderMarkdown(summary) {
     "- AI-generated HTML is already a useful visual artifact, but it is a large browser implementation surface rather than a compact authoring source.",
     "- Preserve VMD is a compatibility tier for exact rendering. It should be used when the visual page itself is the artifact of record.",
     "- Semantic VMD is much smaller and easier for AI to edit, but it intentionally loses bespoke layout and style detail.",
-    "- The strategic target is hybrid VMD: semantic frames, structured layouts, reusable components, theme tokens, and raw compatibility only where exact visual fidelity requires it."
+    "- Hybrid VMD can combine semantic frames, structured layouts, reusable components, theme tokens, and raw compatibility where exact visual fidelity requires it."
   ];
   return `${lines.join("\n")}\n`;
 }

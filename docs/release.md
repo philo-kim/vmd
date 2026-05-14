@@ -67,9 +67,9 @@ changes. Every breaking change should update:
 npm run package:chrome
 ```
 
-The zip can be loaded manually or submitted to the Chrome Web Store later.
+The zip can be loaded manually.
 
-Before publishing publicly, review extension permissions carefully. Auto-render
+Before distributing the extension, review permissions carefully. Auto-render
 requires matching `.vmd` URLs, and local file rendering requires explicit user
 approval in Chrome.
 
@@ -79,15 +79,7 @@ approval in Chrome.
 npm run package:vscode
 ```
 
-The VSIX can be installed manually or published to the VS Code Marketplace later.
-
-Before marketplace publication:
-
-- choose a stable publisher id
-- add icon assets
-- add screenshots
-- verify extension display names
-- decide whether preview should be a default editor or optional editor
+The VSIX can be installed manually.
 
 ## GitHub Pages Release
 
