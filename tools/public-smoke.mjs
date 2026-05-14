@@ -18,8 +18,13 @@ try {
   assertIncludes(h1, "VMD", "hero title");
   assertIncludes(
     bodyText,
-    "The web needs a visual source format that AI can reason about.",
+    "One source. Four artifact surfaces.",
     "source-layer framing"
+  );
+  assertIncludes(
+    bodyText,
+    "The example has to feel like a real visual artifact.",
+    "visual artifact example"
   );
 
   if (bodyText.includes("lessons of formats") && bodyText.includes("spread")) {
