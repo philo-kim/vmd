@@ -15,6 +15,7 @@ This command:
 - validates the VS Code extension syntax
 - runs core parser/renderer assertions
 - runs CLI assertions
+- verifies generated benchmark outputs are current
 - renders the sample document to static HTML
 - builds the static gallery and playground
 
@@ -94,6 +95,23 @@ npm run smoke:public
 This opens the deployed GitHub Pages gallery, a rendered sample page, and the
 playground in Chromium. It is intentionally not part of `npm run check` because
 it depends on the public network and the latest Pages deployment.
+
+## Format Benchmark
+
+```bash
+npm run benchmark:formats
+```
+
+This compares the same strategy document in VMD, Markdown, and browser-ready
+HTML. It writes:
+
+```text
+benchmarks/results/format-benchmark.json
+benchmarks/results/format-benchmark.md
+docs/format-benchmark.md
+```
+
+`npm run check` verifies these generated files are current.
 
 ## Screenshot Capture
 

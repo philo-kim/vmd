@@ -19,6 +19,11 @@ try {
   await page.locator('button[data-mode="map"]').click();
   await page.waitForSelector(".map-view .map-node", { timeout: 15000 });
 
+  await page.goto(new URL("benchmark.html", baseUrl).toString(), { waitUntil: "networkidle" });
+  await page.waitForSelector("table", { timeout: 15000 });
+  const benchmarkTitle = await page.locator("h1").first().textContent();
+  assertIncludes(benchmarkTitle, "VMD vs Markdown", "benchmark title");
+
   await page.goto(new URL("playground.html", baseUrl).toString(), { waitUntil: "networkidle" });
   await page.waitForFunction(() => document.querySelector("#source")?.value.includes("@doc"));
   await page.locator('button[data-mode="deck"]').click();

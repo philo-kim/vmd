@@ -13,6 +13,7 @@
     "./schema": "./schemas/vmd-ast.schema.json"
   },
   "files": [
+    "benchmarks/",
     "bin/",
     "core/",
     "docs/",
@@ -43,10 +44,11 @@
     "sync:core": "node tools/sync-core.mjs",
     "render:sample": "node tools/render-html.mjs",
     "build:site": "node tools/build-site.mjs",
+    "benchmark:formats": "node tools/benchmark-formats.mjs",
     "capture:screenshots": "node tools/capture-screenshots.mjs",
     "smoke:public": "node tools/public-smoke.mjs",
     "package:npm:dry-run": "npm pack --dry-run",
-    "check": "npm run check:core-sync && node --check core/vmd-core.cjs && node --check extension/vmd-core.js && node --check extension/viewer.js && node --check extension/popup.js && node --check extension/background.js && node --check extension/auto-render.js && node --check bin/vmd.mjs && node --check tools/render-html.mjs && node --check tools/sync-core.mjs && node --check tools/check-core-sync.mjs && node --check tools/build-site.mjs && node --check tools/site-builder.mjs && node --check tools/capture-screenshots.mjs && node --check tools/public-smoke.mjs && npm --prefix vscode-extension run check && npm run test:core && npm run test:cli && npm run render:sample && npm run build:site",
+    "check": "npm run check:core-sync && node --check core/vmd-core.cjs && node --check extension/vmd-core.js && node --check extension/viewer.js && node --check extension/popup.js && node --check extension/background.js && node --check extension/auto-render.js && node --check bin/vmd.mjs && node --check tools/render-html.mjs && node --check tools/sync-core.mjs && node --check tools/check-core-sync.mjs && node --check tools/build-site.mjs && node --check tools/site-builder.mjs && node --check tools/capture-screenshots.mjs && node --check tools/public-smoke.mjs && node --check tools/benchmark-formats.mjs && npm --prefix vscode-extension run check && npm run test:core && npm run test:cli && npm run benchmark:formats -- --check && npm run render:sample && npm run build:site",
     "check:core-sync": "node tools/check-core-sync.mjs",
     "test:core": "node tests/core.test.mjs",
     "test:cli": "node tests/cli.test.mjs",

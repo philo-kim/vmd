@@ -22,6 +22,7 @@ Output:
 dist/site/
   index.html
   playground.html
+  benchmark.html
   ai-native-brief.html
   family-platform.html
   lesson-outline.html
@@ -30,7 +31,8 @@ dist/site/
 ```
 
 The gallery renders each sample in read, deck, and map modes. The playground
-lets authors edit VMD source in the browser and see the rendered result.
+lets authors edit VMD source in the browser and see the rendered result. The
+benchmark page publishes the VMD vs Markdown vs HTML comparison.
 
 ## GitHub Pages Workflow
 

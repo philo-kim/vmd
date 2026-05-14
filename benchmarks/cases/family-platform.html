@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Family Platform Strategy</title>
+    <style>
+      :root {
+        --bg: #f7f4ed;
+        --surface: #fffdfa;
+        --ink: #1f2933;
+        --muted: #66788a;
+        --line: #d9e2ec;
+        --accent: #0e7490;
+        font-family: Inter, system-ui, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--ink); }
+      header { display: flex; justify-content: space-between; gap: 16px; padding: 24px 48px; border-bottom: 1px solid var(--line); }
+      h1, h2, h3 { margin: 0; letter-spacing: 0; }
+      h1 { font-size: 52px; line-height: 1; }
+      nav { display: inline-flex; gap: 4px; align-items: start; }
+      button { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; background: #fff; color: var(--ink); cursor: pointer; }
+      button.active { background: var(--ink); color: #fff; }
+      main { padding: 32px 48px; }
+      article { max-width: 920px; margin: 0 auto; }
+      section { margin: 18px 0; border: 1px solid var(--line); border-radius: 8px; padding: 24px; background: #fff; }
+      .label { margin: 0 0 10px; color: var(--accent); font-size: 12px; font-weight: 700; text-transform: uppercase; }
+      .claim { border-color: #a5f3fc; background: #ecfeff; font-size: 26px; line-height: 1.28; }
+      .evidence { background: #f8fafc; }
+      .insight { border-color: #bbf7d0; background: #f0fdf4; }
+      .decision { border-color: #fed7aa; background: #fff7ed; }
+      .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .compare div { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+      .compare h3 { padding: 12px; background: #fff7e8; font-size: 14px; }
+      .loop { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      .loop span { border: 1px solid #99f6e4; border-radius: 999px; padding: 8px 11px; background: #f0fdfa; color: #134e4a; font-weight: 700; }
+      .deck { display: grid; gap: 18px; }
+      .slide { min-height: 520px; display: grid; align-content: center; }
+      .map { list-style: none; padding: 0; }
+      .map li { margin: 12px 0; border: 1px solid var(--line); border-radius: 8px; padding: 16px; background: #fff; }
+      [hidden] { display: none; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div>
+        <p class="label">HTML document</p>
+        <h1>Family Platform Strategy</h1>
+      </div>
+      <nav aria-label="View mode">
+        <button class="active" type="button" data-mode="read">Read</button>
+        <button type="button" data-mode="deck">Deck</button>
+        <button type="button" data-mode="map">Map</button>
+      </nav>
+    </header>
+    <main>
+      <article data-view="read">
+        <h2>A Family Platform For Behavior Change</h2>
+        <section class="claim"><p class="label">Claim</p><p>Allowance management is not the end point. It is the starting point for self-directed behavior inside the family.</p></section>
+        <section class="evidence"><p class="label">Evidence</p><p>The growth loop connects goals, actions, rewards, and repeated habits.</p></section>
+        <section><p class="label">Loop</p><div class="loop"><span>Goal setting</span><span>Mission action</span><span>Reward moment</span><span>Habit formation</span></div></section>
+        <section class="evidence"><p class="label">Evidence</p><p>Most allowance apps track money, but real family tension usually appears around responsibility, habits, motivation, and trust.</p></section>
+        <section><p class="label">Compare</p><div class="compare"><div><h3>Existing apps</h3><ul><li>allowance record</li><li>parent as manager</li><li>money flow</li></ul></div><div><h3>New category</h3><ul><li>habit formation</li><li>parent as growth partner</li><li>behavior loop</li></ul></div></div></section>
+        <section class="insight"><p class="label">Insight</p><p>The stronger category is not personal finance for children. It is family behavior design.</p></section>
+        <section class="decision"><p class="label">Decision</p><p>Position the product as a family growth platform, not as an allowance tracker.</p></section>
+        <section><p class="label">Timeline</p><ol><li>Define the semantic language</li><li>Build the browser renderer</li><li>Test with investor and education documents</li><li>Add quality checks for claims, evidence, and decisions</li></ol></section>
+        <section><p class="label">Action</p><p>Start with a small grammar and make the renderer useful before expanding the language.</p></section>
+      </article>
+      <article class="deck" data-view="deck" hidden>
+        <section class="slide claim"><p class="label">Opening</p><p>Allowance management is not the end point. It is the starting point for self-directed behavior inside the family.</p><p>The growth loop connects goals, actions, rewards, and repeated habits.</p></section>
+        <section class="slide"><p class="label">Problem</p><h2>Existing Market Limit</h2><p>Most allowance apps track money, but real family tension usually appears around responsibility, habits, motivation, and trust.</p></section>
+        <section class="slide"><p class="label">Insight</p><h2>The Category Shift</h2><p>The stronger category is not personal finance for children. It is family behavior design.</p></section>
+        <section class="slide"><p class="label">Plan</p><h2>Near-Term Execution</h2><ol><li>Define the semantic language</li><li>Build the browser renderer</li><li>Test with investor and education documents</li><li>Add quality checks for claims, evidence, and decisions</li></ol></section>
+      </article>
+      <article data-view="map" hidden>
+        <h2>A Family Platform For Behavior Change</h2>
+        <ol class="map">
+          <li><strong>opening</strong><br>Allowance management is not the end point.</li>
+          <li><strong>problem</strong><br>Existing Market Limit</li>
+          <li><strong>insight</strong><br>The Category Shift</li>
+          <li><strong>plan</strong><br>Near-Term Execution</li>
+        </ol>
+      </article>
+    </main>
+    <script>
+      const buttons = Array.from(document.querySelectorAll("[data-mode]"));
+      const views = Array.from(document.querySelectorAll("[data-view]"));
+      for (const button of buttons) {
+        button.addEventListener("click", () => {
+          for (const view of views) view.hidden = view.dataset.view !== button.dataset.mode;
+          for (const candidate of buttons) candidate.classList.toggle("active", candidate === button);
+        });
+      }
+    </script>
+  </body>
+</html>

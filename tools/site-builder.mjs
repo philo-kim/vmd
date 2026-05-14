@@ -40,6 +40,7 @@ export async function buildSite({ root, samplesDir, outDir }) {
 
   await writeFile(path.join(outDir, "index.html"), renderIndex(samples), "utf8");
   await writeFile(path.join(outDir, "playground.html"), renderPlayground(samples[0]), "utf8");
+  await writeFile(path.join(outDir, "benchmark.html"), await renderBenchmarkPage(root), "utf8");
 }
 
 function renderIndex(samples) {
@@ -69,6 +70,7 @@ function renderIndex(samples) {
         <h1>Semantic visual documents for AI-assisted creation.</h1>
         <div class="gallery-links">
           <a class="gallery-link" href="playground.html">Open playground</a>
+          <a class="gallery-link" href="benchmark.html">View benchmark</a>
           <a class="gallery-link" href="https://github.com/philo-kim/vmd">GitHub repo</a>
         </div>
       </section>
@@ -77,6 +79,88 @@ function renderIndex(samples) {
           <strong>${escapeHtml(sample.title)}</strong>
           <span>${escapeHtml(sample.file)}</span>
         </a>`).join("")}
+      </section>
+    </main>
+  </body>
+</html>`;
+}
+
+async function renderBenchmarkPage(root) {
+  const benchmark = JSON.parse(await readFile(path.join(root, "benchmarks", "results", "format-benchmark.json"), "utf8"));
+  const rows = benchmark.results.map((result) => `<tr>
+    <th scope="row">${escapeHtml(result.format)}</th>
+    <td>${result.sourceBytes}</td>
+    <td>${result.sourceLines}</td>
+    <td>${result.approxTokens}</td>
+    <td>${result.authoringOverheadBytes} (${result.authoringOverheadPercent}%)</td>
+    <td>${result.standardizedSemanticRoles}</td>
+    <td>${result.conventionSemanticHints}</td>
+    <td>${result.visualPrimitives}</td>
+    <td>${result.renderModesFromOneSource}</td>
+    <td>${result.browserNativeToday ? "yes" : "no"}</td>
+    <td>${result.contentValidation.supported ? `yes (${result.contentValidation.errors} errors, ${result.contentValidation.warnings} warnings)` : "no"}</td>
+  </tr>`).join("");
+
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VMD Benchmark</title>
+    <link rel="stylesheet" href="assets/vmd.css">
+    <style>
+      .benchmark-shell { padding: clamp(24px, 5vw, 72px); }
+      .benchmark-hero, .benchmark-section { max-width: 1080px; margin: 0 auto 28px; }
+      .benchmark-hero h1 { font-size: 56px; line-height: 0.98; }
+      .benchmark-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+      .benchmark-link { border: 1px solid var(--line); border-radius: 8px; padding: 9px 12px; background: #fff; color: var(--ink); text-decoration: none; }
+      .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+      table { width: 100%; border-collapse: collapse; min-width: 980px; }
+      th, td { padding: 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+      thead th { background: var(--surface-strong); font-size: 12px; text-transform: uppercase; }
+      tbody th { color: var(--accent-strong); }
+      .takeaways { display: grid; gap: 12px; }
+      .takeaways p { margin: 0; border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: #fff; line-height: 1.55; }
+      @media (max-width: 760px) { .benchmark-hero h1 { font-size: 38px; } }
+    </style>
+  </head>
+  <body>
+    <main class="benchmark-shell">
+      <section class="benchmark-hero">
+        <p class="eyebrow">VMD Benchmark</p>
+        <h1>VMD vs Markdown vs browser-ready HTML.</h1>
+        <div class="benchmark-links">
+          <a class="benchmark-link" href="index.html">Gallery</a>
+          <a class="benchmark-link" href="playground.html">Playground</a>
+          <a class="benchmark-link" href="https://github.com/philo-kim/vmd/blob/main/docs/format-benchmark.md">Benchmark source</a>
+        </div>
+      </section>
+      <section class="benchmark-section">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Format</th>
+                <th>Bytes</th>
+                <th>Lines</th>
+                <th>Tokens</th>
+                <th>Overhead</th>
+                <th>Native roles</th>
+                <th>Hints</th>
+                <th>Visuals</th>
+                <th>Modes</th>
+                <th>Native</th>
+                <th>Validation</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </section>
+      <section class="benchmark-section takeaways">
+        <p>Compared with Markdown, VMD is ${benchmark.comparisons.vmdVsMarkdown.sourceBytesDeltaPercent}% larger in this case, but adds ${benchmark.comparisons.vmdVsMarkdown.standardizedSemanticRoleGain} native semantic roles, ${benchmark.comparisons.vmdVsMarkdown.renderModeGain} extra render modes, and validator support.</p>
+        <p>Compared with the browser-ready HTML fixture, VMD is ${benchmark.comparisons.vmdVsHtml.sourceBytesReductionPercent}% smaller while preserving the same number of render modes through the renderer.</p>
+        <p>HTML remains the native browser substrate. VMD is the higher-level source for semantic visual documents.</p>
       </section>
     </main>
   </body>

@@ -15,6 +15,7 @@ Run:
 ```bash
 npm install
 npm run check
+npm run benchmark:formats
 npm run test:chrome
 npm run test:vscode
 npm run build:site
@@ -33,6 +34,7 @@ dist/family-platform.html
 dist/site/index.html
 docs/assets/vmd-gallery.png
 docs/assets/vmd-playground.png
+benchmarks/results/format-benchmark.md
 ```
 
 Package artifacts and `dist/` output are generated locally and are not committed

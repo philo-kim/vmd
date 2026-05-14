@@ -21,6 +21,7 @@ This project follows a human-readable changelog style inspired by
 - Reusable local GitHub Action for rendering VMD to HTML.
 - Public Pages smoke test script.
 - End-to-end project audit document.
+- Reproducible VMD vs Markdown vs HTML format benchmark.
 - Static HTML sample rendering.
 - CLI test coverage.
 - Integration tests for Chrome and VS Code extensions.

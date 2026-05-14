@@ -99,6 +99,7 @@ Current behavior:
 - `docs/spec-draft-v0.md`: first public grammar and AST draft
 - `docs/project-readiness.md`: current readiness and known limitations
 - `docs/project-audit.md`: end-to-end implementation and release audit
+- `docs/format-benchmark.md`: VMD vs Markdown vs HTML benchmark results
 - `docs/ai-authoring-guide.md`: how to use VMD as an AI generation target
 - `docs/browser-integration.md`: path from extension polyfill to browser-native support
 - `docs/extension-architecture.md`: extension family design

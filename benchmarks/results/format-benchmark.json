@@ -1,0 +1,103 @@
+{
+  "benchmarkVersion": 1,
+  "case": {
+    "name": "Family Platform Strategy",
+    "files": {
+      "vmd": "benchmarks/cases/family-platform.vmd",
+      "markdown": "benchmarks/cases/family-platform.md",
+      "html": "benchmarks/cases/family-platform.html"
+    },
+    "note": "The HTML case intentionally implements read, deck, and map views directly so it can match VMD's multi-view output without a VMD renderer."
+  },
+  "metrics": {
+    "sourceBytes": "UTF-8 bytes in the author-facing source file.",
+    "approxTokens": "Rough source token estimate using characters / 4.",
+    "authoringOverheadBytes": "Source bytes minus visible prose bytes after stripping markup, style, and script.",
+    "standardizedSemanticRoles": "Role markers understood by this repository's current format grammar, not ad hoc text labels.",
+    "conventionSemanticHints": "Human-readable or class-based hints that are not portable grammar semantics.",
+    "renderModesFromOneSource": "Distinct read/deck/map-style views available from the single source in this benchmark."
+  },
+  "results": [
+    {
+      "format": "VMD",
+      "scenario": "Semantic visual source rendered by VMD renderer",
+      "sourceBytes": 1487,
+      "sourceLines": 70,
+      "approxTokens": 372,
+      "visibleWords": 177,
+      "authoringOverheadBytes": 275,
+      "authoringOverheadPercent": 18.5,
+      "bytesPerRenderMode": 495.7,
+      "browserNativeToday": false,
+      "renderModesFromOneSource": 3,
+      "standardizedSemanticRoles": 10,
+      "conventionSemanticHints": 0,
+      "visualPrimitives": 3,
+      "contentValidation": {
+        "supported": true,
+        "errors": 0,
+        "warnings": 0
+      },
+      "downstreamPath": "VMD renderer, browser extension, VS Code extension, or static site builder"
+    },
+    {
+      "format": "Markdown",
+      "scenario": "Markdown-only source with human-readable role labels",
+      "sourceBytes": 1300,
+      "sourceLines": 52,
+      "approxTokens": 325,
+      "visibleWords": 159,
+      "authoringOverheadBytes": 198,
+      "authoringOverheadPercent": 15.2,
+      "bytesPerRenderMode": 1300,
+      "browserNativeToday": false,
+      "renderModesFromOneSource": 1,
+      "standardizedSemanticRoles": 0,
+      "conventionSemanticHints": 9,
+      "visualPrimitives": 3,
+      "contentValidation": {
+        "supported": false,
+        "errors": null,
+        "warnings": null
+      },
+      "downstreamPath": "Markdown renderer or documentation platform"
+    },
+    {
+      "format": "HTML",
+      "scenario": "Browser-ready HTML implementing read, deck, and map views manually",
+      "sourceBytes": 6703,
+      "sourceLines": 98,
+      "approxTokens": 1676,
+      "visibleWords": 279,
+      "authoringOverheadBytes": 4793,
+      "authoringOverheadPercent": 71.5,
+      "bytesPerRenderMode": 2234.3,
+      "browserNativeToday": true,
+      "renderModesFromOneSource": 3,
+      "standardizedSemanticRoles": 0,
+      "conventionSemanticHints": 6,
+      "visualPrimitives": 4,
+      "contentValidation": {
+        "supported": false,
+        "errors": null,
+        "warnings": null
+      },
+      "downstreamPath": "Browser opens directly"
+    }
+  ],
+  "comparisons": {
+    "vmdVsMarkdown": {
+      "sourceBytesDeltaPercent": 14.4,
+      "renderModeGain": 2,
+      "standardizedSemanticRoleGain": 10,
+      "validatorGain": 1
+    },
+    "vmdVsHtml": {
+      "sourceBytesDeltaPercent": -77.8,
+      "sourceBytesReductionPercent": 77.8,
+      "renderModeGain": 0,
+      "standardizedSemanticRoleGain": 10,
+      "browserNativeTradeoff": "HTML opens natively today; VMD needs a renderer or extension until native support exists."
+    }
+  }
+}
