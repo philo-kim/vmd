@@ -264,6 +264,12 @@ See `docs/cli.md`.
 
 ## Public Gallery
 
+Production site:
+
+```text
+https://vmd-sandy.vercel.app/
+```
+
 Build the static gallery and playground:
 
 ```bash
@@ -276,8 +282,8 @@ The output is written to:
 dist/site/
 ```
 
-The repository also includes a GitHub Pages workflow and a reusable local GitHub
-Action for rendering `.vmd` files.
+The repository also includes Vercel configuration, a GitHub Pages workflow, and
+a reusable local GitHub Action for rendering `.vmd` files.
 
 ## Screenshots
 

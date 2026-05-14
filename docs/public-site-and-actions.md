@@ -1,4 +1,4 @@
-# Public Site And GitHub Actions
+# Public Site, Vercel, And GitHub Actions
 
 This repository includes a static sample gallery, browser playground, and local
 composite GitHub Action for rendering `.vmd` files.
@@ -28,6 +28,29 @@ dist/site/
 The gallery renders each sample in read, deck, and map modes. The playground
 lets authors edit VMD source in the browser and see the rendered result. The
 benchmark page publishes the VMD vs Markdown vs HTML comparison.
+
+The current production site is:
+
+```text
+https://vmd-sandy.vercel.app/
+```
+
+## Vercel Deployment
+
+The Vercel project uses:
+
+```text
+vercel.json
+```
+
+Project settings:
+
+- install command: `npm ci`
+- build command: `npm run build:site`
+- output directory: `dist/site`
+
+The `.vercelignore` file excludes local dependencies, generated output, and
+private local notes from deploy uploads.
 
 ## GitHub Pages Workflow
 

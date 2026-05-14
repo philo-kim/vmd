@@ -61,7 +61,8 @@ try {
   });
   const galleryHtml = await readFile(path.join(siteOut, "index.html"), "utf8");
   const playgroundHtml = await readFile(path.join(siteOut, "playground.html"), "utf8");
-  assert.match(galleryHtml, /VMD Gallery/);
+  assert.match(galleryHtml, /Visual Semantic Markdown/);
+  assert.match(galleryHtml, /format-card/);
   assert.match(playgroundHtml, /VMD Playground/);
 
   const invalid = path.join(tempRoot, "invalid.vmd");

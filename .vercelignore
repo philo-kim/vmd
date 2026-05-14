@@ -1,7 +1,9 @@
 node_modules/
 dist/
+.git/
+.github/
 .vscode-test/
 .vercel/
-.DS_Store
-*.log
 internal-strategy/
+*.log
+.DS_Store

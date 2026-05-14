@@ -8,9 +8,9 @@ try {
   const page = await browser.newPage();
 
   await page.goto(baseUrl, { waitUntil: "networkidle" });
-  await page.waitForSelector(".sample-card", { timeout: 15000 });
+  await page.waitForSelector(".format-card", { timeout: 15000 });
   const title = await page.locator("h1").first().textContent();
-  assertIncludes(title, "Semantic visual documents", "gallery title");
+  assertIncludes(title, "VMD", "home title");
 
   await page.goto(new URL("family-platform.html", baseUrl).toString(), { waitUntil: "networkidle" });
   await page.waitForSelector(".block-claim", { timeout: 15000 });
