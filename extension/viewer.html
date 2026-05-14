@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VMD Viewer</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">VMD Viewer</p>
+        <h1>Semantic visual document renderer</h1>
+      </div>
+      <div class="actions">
+        <label class="file-button">
+          <input id="file-input" type="file" accept=".vmd,.md,text/markdown,text/plain">
+          Open VMD
+        </label>
+        <button id="sample-button" type="button">Load sample</button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="source-panel" aria-label="VMD source">
+        <div class="panel-head">
+          <h2>Source</h2>
+          <span id="file-name">No file loaded</span>
+        </div>
+        <textarea id="source-input" spellcheck="false"></textarea>
+      </section>
+
+      <section class="preview-panel" aria-label="VMD preview">
+        <div class="panel-head">
+          <h2>Preview</h2>
+          <div class="mode-tabs" role="tablist" aria-label="Preview mode">
+            <button class="mode-tab active" data-mode="read" type="button">Read</button>
+            <button class="mode-tab" data-mode="deck" type="button">Deck</button>
+            <button class="mode-tab" data-mode="map" type="button">Map</button>
+          </div>
+        </div>
+        <div id="drop-zone" class="drop-zone">
+          <div id="preview" class="preview empty-state">
+            <p>Open or drop a `.vmd` file to render it.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="viewer.js"></script>
+  </body>
+</html>
