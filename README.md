@@ -90,6 +90,7 @@ Current behavior:
 - `docs/manifesto.md`: why this format should exist
 - `docs/vision.md`: the maximum-state product and ecosystem vision
 - `docs/adoption-playbook.md`: adoption path for AI-assisted creators
+- `docs/ecosystem-research-and-adoption-plan.md`: lessons from Markdown and adjacent formats
 - `docs/architecture.md`: source, AST, renderer, and extension architecture
 - `docs/language-design.md`: language direction and design principles
 - `docs/spec-draft-v0.md`: first public grammar and AST draft
