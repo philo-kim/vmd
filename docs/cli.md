@@ -118,3 +118,15 @@ Use `--conversion semantic` to measure how much visual drift appears when HTML
 is converted into VMD-native frames and blocks. Use `--conversion preserve` to
 wrap existing HTML/CSS in raw compatibility blocks and check whether the page can
 be preserved with pixel-level fidelity.
+
+## AI Artifact Benchmark
+
+```bash
+npm run benchmark:open-design
+```
+
+This benchmark uses the public `nexu-io/open-design` repository when it is
+available locally. It compares real AI/agent-generated HTML examples against
+preserve VMD and semantic draft VMD source sizes. Use it to evaluate whether VMD
+is moving toward the core goal: a compact, AI-editable visual document source,
+not just an HTML wrapper.

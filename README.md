@@ -23,6 +23,12 @@ together. Instead of forcing every AI-assisted creator to generate complete
 HTML, CSS, and JavaScript for every page, VMD gives them a smaller and more
 portable target: layered visual structure.
 
+The goal is bigger than converting HTML into another wrapper. Existing
+AI-generated HTML is the proof of need: it can look polished, but it is a large
+implementation surface for an AI agent to revise. VMD should become the compact,
+readable source format for visual documents, while still preserving browser
+output when exact fidelity matters.
+
 ## Core Idea
 
 ```text
@@ -123,6 +129,7 @@ Current behavior:
 - `docs/project-readiness.md`: current readiness and known limitations
 - `docs/project-audit.md`: end-to-end implementation and release audit
 - `docs/format-benchmark.md`: VMD vs Markdown vs HTML benchmark results
+- `docs/open-design-ai-artifact-benchmark.md`: Open Design AI artifact benchmark
 - `docs/visual-fidelity.md`: how to verify existing HTML-to-VMD visual drift
 - `docs/ai-authoring-guide.md`: how to use VMD as an AI generation target
 - `docs/browser-integration.md`: path from extension polyfill to browser-native support

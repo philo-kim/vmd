@@ -115,6 +115,30 @@ docs/format-benchmark.md
 
 `npm run check` verifies these generated files are current.
 
+## Open Design AI Artifact Benchmark
+
+```bash
+npm run benchmark:open-design
+```
+
+This optional benchmark expects a local checkout of
+`https://github.com/nexu-io/open-design` near the VMD checkout, or an
+`OPEN_DESIGN_DIR` environment variable pointing to that repo. It measures real
+AI/agent-generated HTML examples as source material for VMD: HTML size,
+preserve-source size, semantic draft size, approximate token pressure, CSS rule
+count, inline styles, and class-heavy visual surface area.
+
+The committed report is:
+
+```text
+benchmarks/results/open-design-ai-artifacts.md
+docs/open-design-ai-artifact-benchmark.md
+```
+
+This benchmark is intentionally about the format's purpose. Preserve mode shows
+compatibility with generated HTML; semantic compression shows why VMD needs to
+become a smaller and more editable visual source language.
+
 ## Visual Fidelity Verification
 
 ```bash

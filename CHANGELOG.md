@@ -22,6 +22,8 @@ This project follows a human-readable changelog style inspired by
 - Public Pages smoke test script.
 - End-to-end project audit document.
 - Reproducible VMD vs Markdown vs HTML format benchmark.
+- Open Design AI artifact benchmark for measuring generated HTML as VMD source
+  material.
 - Layered VMD fidelity tiers covering semantic, structured, visual, preserve,
   and future interactive documents.
 - Layout, style, raw compatibility, component, and matrix visual blocks.
